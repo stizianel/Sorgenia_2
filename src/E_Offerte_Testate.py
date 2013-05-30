@@ -16,9 +16,8 @@ connstr = "SAP_USER" + '/' + "sap_user" + '@' + "192.168.0.177" + ':' + "1521" +
 conn = cx_Oracle.connect(connstr)
 
 stat_finale = '''
- SELECT                                                     
-OFFERTE_KEY                                                
-,COD_PROPOSTA                                              
+ SELECT                                                                                                 
+COD_PROPOSTA                                              
 ,COD_AGENZIA                                               
 ,COD_AGENTE                                                
 ,SOCIETA_VENDITA                                           

@@ -1,0 +1,246 @@
+<root>
+	<queries>
+	<partnerAggregatorBase>
+	<mainSelect ><![CDATA[
+	select k.surrogate_key, -- 8000000000 + 4260000,           --0 
+       --b.customer_cd_target,      --1
+       z.oldkey
+       ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
+       c.x_cognome,               --3
+       c.x_nome,                  --4
+       v.indccom,                 --5
+       v.inddcom,                 --6
+       v.indindi,                 --7
+       v.indindi||' '||v.indccvia,--8
+       substr(indcivi,0,10),      --9
+       v.indest,                  --10
+       v.indcap,                  --11
+       decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
+       v.indregio,                --13
+       case
+         when length(c.num_tel_work) > 6 then c.num_tel_work
+         when length(c.num_tel_cell) = 10 then c.num_tel_cell
+       else
+         ' '
+       end case,                  --14 
+       c.email_addr,              --15
+       v.indprov,                 --16
+       v.indprog,                 --17
+       substr(x_cognome,0,20),    --18
+       decode(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009', 'BUR001') --19
+       
+  from dbi_user.ifc_sap_crm_contatti c
+  left outer join dbi_user.ifc_sap_customer_rename b
+    on c.id_cliente = b.customer_cd_source, v_indirizzi v,
+ dbi_user.wrk_ifc_sap_crm_contatti_keys k,
+ z_temksv z
+ where tipologia is not null
+   and c.indirizzo = v.indprog
+   and c.row_id = k.row_id_contatto
+   and b.customer_cd_target is not null
+   --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
+   and c.tipologia in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
+   and (c.id_cliente = z.oldkey and z.object = 'PARTNER')
+union
+select k.surrogate_key, -- 8000000000 + 4260000,           --0 
+       --b.customer_cd_target,      --1
+       z.oldkey
+       ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
+       c.x_cognome,               --3
+       c.x_nome,                  --4
+       v.indccom,                 --5
+       v.inddcom,                 --6
+       v.indindi,                 --7
+       v.indindi||' '||v.indccvia,--8
+       substr(indcivi,0,10),      --9
+       v.indest,                  --10
+       v.indcap,                  --11
+       decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
+       v.indregio,                --13
+       case
+         when length(c.num_tel_work) > 6 then c.num_tel_work
+         when length(c.num_tel_cell) = 10 then c.num_tel_cell
+       else
+         ' '
+       end case,                  --14 
+       c.email_addr,              --15
+       v.indprov,                 --16
+       v.indprog,                 --17
+       substr(x_cognome,0,20),    --18
+       decode(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009', 'BUR001') --19
+       
+  from dbi_user.ifc_sap_crm_contatti c
+  left outer join dbi_user.ifc_sap_customer_rename b
+    on c.id_cliente = b.customer_cd_source, v_indirizzi v,
+ dbi_user.wrk_ifc_sap_crm_contatti_keys k,
+ z_temksv z
+ where tipologia is not null
+   and c.indirizzo = v.indprog
+   and c.row_id = k.row_id_contatto
+   and b.customer_cd_target is not null
+   --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
+   and c.tipologia not in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
+   and (c.id_cliente = z.oldkey and z.object = 'PARTNER')
+order by 1
+	]]></mainSelect>
+			<insertTable name='PARTNER_REF_INIT' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='INIT' />
+					<field name='PARTNER' index='0' />
+					<field name='MUSTER_KUN' constant_value='MUST00001' />
+					<field name='BU_RLTYP' index='2' />
+					<field name='BU_TYPE' constant_value='1' />
+					<field name='BPKIND' constant_value='0010' />
+			</insertTable>
+		    <insertTable name='PARTNER_REF_BUT000' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT000' />
+					<field name='TITLE' constant_value='' />
+					<field name='NAME_ORG1'  constant_value='' />
+					<field name='NAME_ORG2'  constant_value='' />
+					<field name='NAME_ORG3'  constant_value='' />
+					<field name='NAME_ORG4'  constant_value='' />
+					<field name='LEGAL_ENTY' constant_value='' />
+					<field name='NAME_LAST'  index='3' />
+					<field name='NAME_FIRST' index='4' />
+					<field name='PARTGRPTYP' constant_value='' />
+					<field name='NAME_GRP1'  constant_value='' />
+					<field name='NAME_GRP2'  constant_value='' />
+					<field name='BU_SORT1'   index='18' />
+					<field name='BU_SORT2'   index='18' />
+			</insertTable>
+			<insertTable name='PARTNER_REF_BUTCOM' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUTCOM' />
+					<field name='ICOM_TEL_NUMBER' index='14' />
+					<field name='ICOM_SMTP_ADDR' index='15' />
+			</insertTable>		
+			<insertTable name='PARTNER_REF_BUT020' truncate = 'True' break_index='' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT020' />
+					<field name='XDFADR' constant_value='' />
+					<field name='NAME_CO' constant_value='' />
+					<field name='REGION' index='16' />
+					<field name='POST_CODE1' index='11' />
+					<field name='STREET' index='8' />
+					<field name='HOUSE_NUM1' index='9' />					
+					<field name='TEL_NUMBER' constant_value='' />
+					<field name='TEL_EXTENS' constant_value='' />
+					<field name='HOUSE_NUM2' constant_value='' />
+					<field name='CITY1' index='6' />
+					<field name='ADEXT_ADDR' index='17' />
+					<field name='COUNTRY' index='12' />
+			</insertTable>
+			<insertTable name='PART_REL_INIT' truncate = 'True' break_index=''>
+				    <field name='LEGACY' 	index='0' />
+					<field name='TIPO' 		constant_value='INIT' />
+					<field name='PARTNER1' 	index='1' />
+					<field name='PARTNER2' 	index='0' />
+					<field name='DATE_TO'  	constant_value='99991231' />
+					<field name='DATE_FROM' constant_value='20010101' />
+					<field name='RELTYP'    index='19' />					
+			</insertTable>
+	</partnerAggregatorBase>	
+
+    <partnerRefExtractor>
+		<mainSelect ><![CDATA[
+		select 
+      a.legacy,                               -- 0   INIT
+      a.legacy||c.adext_addr,                 -- 1
+      a.legacy||c.adext_addr,                 -- 2
+      ' ',                                    -- 3
+      ' ',                                    -- 4
+      a.legacy,                               -- 5
+      a.tipo,                                 -- 6  
+      a.partner,                              -- 7
+      a.muster_kun,                           -- 8
+      a.bu_rltyp,                             -- 9
+      a.bu_type,                              -- 10
+      a.bpkind,                               -- 11
+      b.legacy,                               -- 12  BUT000
+      b.tipo,                                 -- 13
+      b.bu_sort1,                             -- 14
+      b.bu_sort2,                             -- 15
+      b.title,                                -- 16 
+      b.name_org1,                            -- 17
+      b.name_org2,                            -- 18
+      b.name_org3,                            -- 19
+      b.name_org4,                            -- 20     
+      b.legal_enty,                           -- 21
+      b.name_last,                            -- 22
+      b.name_first,                           -- 23
+      b.partgrptyp,                           -- 24
+      b.name_grp1,                            -- 25
+      b.name_grp2,                            -- 26
+      ' ',                                    -- 27
+      ' ',                                    -- 28
+      ' ',                                    -- 29
+      b.zzfactor,                             -- 30
+      b.zzstato,                              -- 31
+      b.zzaedat,                              -- 32
+      b.zzpool,                               -- 33
+      b.zzwaers,                              -- 34
+      replace(to_char(b.zzfattu,'99999999990D99'),'.',','),        -- 35 
+      replace(to_char(b.zzplafond_ric,'99999999990D99'),'.',','),  -- 36
+      replace(to_char(b.zzplafond,'99999999990D99'),'.',','),      -- 37
+      replace(to_char(b.zzprotest,'99999999990D99'),'.',','),      -- 38
+      replace(to_char(b.zzpregiud,'99999999990D99'),'.',','),  -- 39 
+      b.zzrating,                             -- 40
+      b.zzdtcost,                             -- 41
+      b.zzvalid,                              -- 42
+      b.zzcrmdt,                              -- 43
+      b.zzcrmcc,                              -- 44
+      b.zzmahns_gas,                          -- 45
+      b.zzmahns_pow,                          -- 46
+      b.zzmahns_fot,                          -- 47
+      b.zzcesdt,                              -- 48
+      b.zzfldis1,                             -- 49             
+      b.zzsegcli,                             -- 50
+      b.zzsegcred,                            -- 51
+      c.legacy,                               -- 52 BUT020
+      c.tipo,                                 -- 53
+      c.adext_addr,                           -- 54
+      c.city1,                                -- 55
+      c.post_code1,                           -- 56
+      c.street,                               -- 57
+      c.house_num1,                           -- 58
+      c.country,                              -- 59
+      c.region,                               -- 60
+      c.tel_number,                           -- 61
+      m.legacy,                               -- 62 BUTCOM
+      m.tipo,                                 -- 63
+      m.icom_tel_number,                      -- 64
+      m.icom_smtp_addr                        -- 65 
+      from
+      partner_ref_init   a,
+      partner_ref_but000 b,
+      partner_ref_but020 c,
+      partner_ref_butcom m
+      where
+      a.legacy = b.legacy and
+      a.legacy = c.legacy and
+      a.legacy = m.legacy
+      order by a.legacy, a.legacy||c.adext_addr, a.legacy||c.adext_addr
+       ]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='51'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='2' field_start_index='62' field_end_index='65' condition_index='62' condition_value = 'None' condition_type='.ne'>
+       	</csvLine>
+       	<csvLine line_index='3' break_index='1' field_start_index='52' field_end_index='61'>
+       	</csvLine>
+       	<ende field_index='0' />
+	</partnerRefExtractor>
+	
+	<partnerRelExtractor>
+		<mainSelect ><![CDATA[
+		select * from PART_REL_INIT
+		order by legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='6'>
+       	</csvLine>
+       	<ende field_index='0' />
+    </partnerRelExtractor>
+   </queries>
+</root>

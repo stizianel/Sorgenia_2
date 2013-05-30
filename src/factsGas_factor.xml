@@ -1,0 +1,188 @@
+<root>
+	<queries>
+	<FactorGasAggregator>
+		<mainSelect ><![CDATA[
+       select C.cncon,  --0
+        C.cncon,                                    --1 
+        a.operando,                                 --2
+        --to_char(c.cdsti,'yyyymmdd'),                             --3
+        '20090701',
+        data_validita_al,                           --4
+        case when a.operando='GFCORR1590' then GET_GFCORR1590(A.OPERANDO,C.CNCON) ELSE to_number(valori)  END CASE,                                      --5
+        nvl(prezzo,0) ,                             --6
+        b.id_operando                            --7
+        from  z_prodotto_operando a, z_anagrafica_operandi b,DBI_USER.ifc_sap_anagrcontrgas C,DBI_USER.ifc_sap_punti_fornitura d
+        where c.ctar1=a.ctar1
+        and C.cncon IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and a.operando = b.operando
+        and tipo = 'FACTOR'
+        and c.cncon=d.dbi_punto_key
+        --AND c.cdsti IS NOT NULL
+        group by 
+        C.cncon, 
+        C.cncon, 
+        a.operando, 
+        to_char(c.cdsti,'yyyymmdd'),
+        data_validita_al, 
+         to_number(valori),
+        nvl(prezzo,0),
+        b.id_operando 
+        order by a.operando
+        ]]></mainSelect>
+		
+		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		     <insertTable name='GAS_FACTS_F_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_FACT' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '7' />
+		   </insertTable> 
+		   <insertTable name='GAS_FACTS_V_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'    index='0' />
+		     <field name='TIPO'       constant_value='V_FACT' />
+		     <field name='TARIFART'   constant_value='' />
+		      <field name='FACTOR'     index='5' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index= '7' /> 
+		     </insertTable> 
+		
+	</FactorGasAggregator>
+	<FactorGasExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               GAS_FACTS_KEY.LEGACY,  --0
+               GAS_FACTS_KEY.TIPO,--1
+               GAS_FACTS_KEY.ANLAGE, --2
+               GAS_FACTS_KEY.BIS, --3
+               GAS_facts_f_factor.legacy, --4
+               GAS_facts_f_factor.tipo, --5
+               GAS_facts_f_factor.operand, --6
+               GAS_facts_f_factor.saison, --7
+               GAS_facts_f_factor.prog, --8
+               GAS_facts_v_factor.legacy, --9
+               GAS_facts_v_factor.tipo, --10
+               GAS_facts_v_factor.ab, --11
+               GAS_facts_v_factor.bis, --12
+               GAS_facts_v_factor.factor, --13
+               GAS_facts_v_factor.tarifart, --14
+               GAS_facts_v_factor.kondigr, --15
+              GAS_facts_v_factor.prog --16
+              from GAS_facts_key,GAS_facts_f_factor,GAS_facts_v_factor
+              where GAS_facts_key.legacy = GAS_facts_f_factor.legacy
+              and GAS_facts_v_factor.legacy=GAS_facts_key.legacy
+              and GAS_facts_f_factor.legacy=GAS_facts_v_factor.legacy
+              and GAS_facts_f_factor.prog=GAS_facts_v_factor.prog
+              order by GAS_facts_f_factor.prog
+                 ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</FactorGasExtractor>
+	
+	<UDEFGasAggregator>
+         <mainSelect legacy_name='a.cncon' ><![CDATA[
+        select v.cncon,  --0
+           v.cncon,                                    --1 
+           a.operando,                                 --2
+         --  to_char(v.cdsti,'yyyymmdd'),                              -- 3
+         '20090701',
+           '99991231' ,                           --4
+           b.id_operando ,                       --5
+           case when a.operando='TIPOLOGIAC' then 'A' when a.operando='GI_CATEGOR' then d.CATEGORIA_USO_GAS_ANU else a.CTAR1 end case 
+        from DBI_USER.ifc_sap_anagrcontrgas v, z_prodotto_operando a, z_anagrafica_operandi b,dbi_user.ifc_delibera_gas d 
+        where  a.ctar1=v.ctar1
+        and v.cncon IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and a.operando = b.operando and  d.pr_anu=v.cncon
+        and tipo = 'USERDEF'
+        group by 
+        v.cncon, 
+        v.cncon, 
+         to_char(v.cdsti,'yyyymmdd'),
+        a.operando,a.valori, d.CATEGORIA_USO_GAS_ANU,
+       a.CTAR1,
+        b.id_operando
+     order by v.cncon
+       ]]></mainSelect>
+     <insertTable name='GAS_FACTS_KEY' truncate = 'false' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		   <insertTable name='GAS_FACTS_F_UDEF' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_UDEF' />
+		     <field name='OPERAND' index = '2' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		   </insertTable> 
+		    <insertTable name='GAS_FACTS_V_UDEF' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_UDEF' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='UDEFVAL1' index='6' />
+		     <field name='UDEFVAL2' constant_value='' />
+		     <field name='UDEFVAL3' constant_value='' />
+		     <field name='UDEFVAL4' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		    </insertTable> 
+		    </UDEFGasAggregator>
+		  
+		    <UDEFGasExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               GAS_FACTS_KEY.LEGACY,  --0
+               GAS_FACTS_KEY.TIPO,--1
+               GAS_FACTS_KEY.ANLAGE, --2
+               GAS_FACTS_KEY.BIS, --3
+               GAS_FACTS_F_UDEF.LEGACY, --4
+               GAS_FACTS_F_UDEF.TIPO, --5
+               GAS_FACTS_F_UDEF.OPERAND, --6
+               GAS_FACTS_F_UDEF.SAISON,--7
+               GAS_FACTS_F_UDEF.PROG, --8
+               GAS_FACTS_V_UDEF.LEGACY, --9
+               GAS_FACTS_V_UDEF.TIPO,--10
+               GAS_FACTS_V_UDEF.AB, --11
+               GAS_FACTS_V_UDEF.BIS, --12
+               GAS_FACTS_V_UDEF.UDEFVAL1, --13
+               GAS_FACTS_V_UDEF.UDEFVAL2,--14
+               GAS_FACTS_V_UDEF.UDEFVAL3,--15
+               GAS_FACTS_V_UDEF.UDEFVAL4,--16
+               GAS_FACTS_V_UDEF.TARIFART, --17
+               GAS_FACTS_V_UDEF.KONDGIR, --18
+               GAS_FACTS_V_UDEF.PROG --19
+               FROM 
+              GAS_FACTS_KEY,GAS_FACTS_F_UDEF,GAS_FACTS_V_UDEF
+              WHERE
+              GAS_FACTS_KEY.LEGACY = GAS_FACTS_F_UDEF.LEGACY
+          AND GAS_FACTS_F_UDEF.LEGACY = GAS_FACTS_V_UDEF.LEGACY
+          and GAS_FACTS_F_UDEF.PROG = GAS_FACTS_V_UDEF.PROG  
+          order by GAS_FACTS_F_UDEF.prog
+     ]]></mainSelect>
+     <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+         </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='18'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</UDEFGasExtractor>
+              
+	</queries>
+</root>
+

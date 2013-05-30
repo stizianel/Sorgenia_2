@@ -1,0 +1,182 @@
+<root>
+	<queries>
+
+	<FactAggregator>
+         <mainSelect legacy_name='a.cncon' ><![CDATA[
+        select 
+        a.cncon ,                              -- 0 
+        a.cncon ,                              -- 1
+       '20010101',                             -- 2
+       '99991231' ,                            -- 3
+       decode (c.operando,'ED_LIM_BOP','12','EDPOTDIS00',cast(a.cpot1 as varchar2(10)),'EDPOTCIMP0',cast(a.cpota as varchar2(10)),cast(a.cpot1 as varchar2(10))), -- 4
+       cast(a.cpota as varchar2(10)),                        -- 5
+       b.fl_esente_iee,                                     --6
+       b.fl_esente_iae ,                                     --7
+       a.ctar1,                                              --8
+       c.operando,                                           --9
+       DECODE(d.tipo,'DEMA','1','RATE TYPE','2','QPRICE','3'),   --10                                           
+       c.valori,                                             --11
+       c.prezzo,                                              --12
+       d.id_operando                                         --13
+   	from  DBI_USER.ifc_sap_anagrcontrele a,  DBI_USER.rpl_anu_t_accise_ee b,
+   	       z_prodotto_operando c ,z_anagrafica_operandi d
+      where a.cncon=b.cd_punto
+     and a.ctar1=c.ctar1
+      and c.operando=d.operando
+      and a.cncon in (select c.cncon from z_test_contratti c  where c.cncon='EX3501431')--where c.note ='attivi ee')
+      and b.d_valido_al is null
+	  order by cd_punto   
+     ]]></mainSelect>
+     <insertTable name='FACTS_KEY' truncate = 'True' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		   <insertTable name='FACTS_F_DEMA' truncate = 'True' break_index='' condition_index='10' condition_value = '1' condition_type='.eq.'  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_DEMA' />
+		     <field name='OPERAND' index = '9' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='13' />
+		   </insertTable> 
+		   <insertTable name='FACTS_V_DEMA' truncate = 'True' break_index=''  condition_index='10' condition_value = '1' condition_type='.eq.'  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_DEMA' />
+		     <field name='AB' constant_value='20010101' />
+		     <field name='BIS' constant_value='99991231' />
+		     <field name='LMENGE'   index = '4'  />
+		     <field name='LMENGE2'  constant_value=''  />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='13' />  
+		     </insertTable>	
+		    <insertTable name='FACTS_F_RATE_TYPE' truncate = 'True' break_index=''  condition_index='10' condition_value = '2' condition_type='.eq.'  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_RATE' />
+		     <field name='OPERAND' index = '9'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='13' />
+		    </insertTable> 
+		   <insertTable name='FACTS_V_RATE_TYPE' truncate = 'True' break_index='' condition_index='10' condition_value = '2' condition_type='.eq.'  >
+		   <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_RATE' />
+		     <field name='AB' constant_value='20010101' />
+		     <field name='BIS' constant_value='99991231' />
+		      <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='13' />
+		     </insertTable> 	   
+		     <insertTable name='FACTS_F_QPRICE' truncate = 'True' break_index=''   condition_index='10' condition_value = '3' condition_type='.eq.'  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_QPRI' />
+		     <field name='OPERAND' index = '9'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='13' />
+		   </insertTable> 
+		   <insertTable name='FACTS_V_QPRICE' truncate = 'True' break_index=''  condition_index='10' condition_value = '3' condition_type='.eq.'  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_QPRI' />
+		     <field name='AB' constant_value='20010101' />
+		     <field name='BIS' constant_value='99991231' />
+		     <field name='PREIS' index='12' />
+		     <field name='PRSBTR' constant_value='' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'  index ='13' />   
+		     </insertTable> 
+		  </FactAggregator> 
+	    
+	     <FactExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               FACTS_F_DEMA.LEGACY, --4
+               FACTS_F_DEMA.TIPO,--5
+               FACTS_F_DEMA.OPERAND,--6
+               FACTS_F_DEMA.SAISON,--7
+               FACTS_F_DEMA.PROG,--8
+               FACTS_V_DEMA.LEGACY,--9
+               FACTS_V_DEMA.TIPO,--10
+               FACTS_V_DEMA.AB,--11
+               FACTS_V_DEMA.BIS,--12
+               FACTS_V_DEMA.LMENGE,--13
+               FACTS_V_DEMA.LMENGE2,--14
+               FACTS_V_DEMA.TARIFART,--15
+               FACTS_V_DEMA.KONDIGR,--16
+               FACTS_V_DEMA.operand, --17
+               FACTS_V_DEMA.PROG ,--18    
+               FACTS_F_RATE_TYPE.LEGACY, --19
+               FACTS_F_RATE_TYPE.TIPO, --20
+               FACTS_F_RATE_TYPE.OPERAND, --21  
+               FACTS_F_RATE_TYPE.SAISON , --22
+               FACTS_F_RATE_TYPE.PROG, --23
+               FACTS_V_RATE_TYPE.LEGACY, --24
+               FACTS_V_RATE_TYPE.TIPO, --25
+               FACTS_V_RATE_TYPE.AB, --26
+               FACTS_V_RATE_TYPE.BIS, --27
+               FACTS_V_RATE_TYPE.TARIFART, --28
+               FACTS_V_RATE_TYPE.KONDIGR, --29
+               FACTS_V_RATE_TYPE.PROG, --30
+               FACTS_F_QPRICE.LEGACY, --31
+               FACTS_F_QPRICE.TIPO, --32
+               FACTS_F_QPRICE.OPERAND, --33
+               FACTS_F_QPRICE.SAISON, --34
+               FACTS_F_QPRICE.PROG, --35
+               FACTS_V_QPRICE.LEGACY, --36
+               FACTS_V_QPRICE.TIPO, --37
+               FACTS_V_QPRICE.AB, --38
+               FACTS_V_QPRICE.BIS, --39
+               FACTS_V_QPRICE.PREIS, --40
+               FACTS_V_QPRICE.PRSBTR, --41
+               FACTS_V_QPRICE.WAERS, --42
+               FACTS_V_QPRICE.TARIFART, --43
+               FACTS_V_QPRICE.KONDGIR, --44
+               FACTS_V_QPRICE.PROG --45
+              
+         FROM
+              FACTS_KEY,
+              FACTS_F_DEMA,
+              FACTS_V_DEMA ,
+              FACTS_F_RATE_TYPE,
+              FACTS_V_RATE_TYPE,
+                FACTS_F_QPRICE,
+              FACTS_V_QPRICE
+                       
+       WHERE
+              FACTS_KEY.LEGACY = FACTS_F_DEMA.LEGACY
+          AND FACTS_F_DEMA.LEGACY = FACTS_V_DEMA.LEGACY
+          and FACTS_F_DEMA.PROG = FACTS_V_DEMA.PROG  
+          AND FACTS_KEY.LEGACY = FACTS_F_RATE_TYPE.LEGACY
+          AND FACTS_F_RATE_TYPE.LEGACY=FACTS_V_RATE_TYPE.LEGACY
+          AND FACTS_F_RATE_TYPE.PROG=FACTS_V_RATE_TYPE.PROG
+          AND FACTS_KEY.LEGACY=FACTS_F_QPRICE.LEGACY
+          AND FACTS_F_QPRICE.LEGACY=FACTS_V_QPRICE.LEGACY
+          AND FACTS_F_QPRICE.PROG=FACTS_V_QPRICE.PROG
+          order by FACTS_KEY.legacy, FACTS_F_DEMA.prog,FACTS_F_RATE_TYPE.PROG,FACTS_F_QPRICE.PROG
+     ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+         </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'  condition_index='5'  condition_value ='F_DEMA'  condition_type='.eq.' >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='16' condition_index='18'  condition_value ='V_DEMA'   condition_type='.eq.' >
+         </csvLine>   
+          <csvLine line_index='03' break_index=''  field_start_index='19'  field_end_index='22'    >
+         </csvLine>       
+         <csvLine line_index='04' break_index=''   field_start_index='24'  field_end_index='29'    >
+         </csvLine> 
+         <csvLine line_index='05' break_index=''   field_start_index='31'  field_end_index='34'    >
+         </csvLine>  
+         <csvLine line_index='06' break_index=''   field_start_index='36'  field_end_index='44'    >
+         </csvLine>  
+   
+ <ende field_index='0' />
+	</FactExtractor>
+	 		 
+	 </queries>
+</root>     
+	     

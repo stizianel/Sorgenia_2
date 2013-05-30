@@ -1,0 +1,110 @@
+<root>
+	<queries>
+	<qpriGasLargeAggregator>
+		<mainSelect ><![CDATA[
+       select 
+       v.dbi_original_key_pr,                       --0
+        v.dbi_original_key_pr,                             --1
+        a.operando,                                        --2    
+         to_char(d.d_inizio_val,'yyyymmdd'),               --3                          
+       case when to_char(d.d_fine_val,'yyyymmdd') is null then data_fine_val_gas(v.dbi_original_key_pr,a.operando,a.ctar1,d.d_inizio_val,d.d_fine_val)
+      else to_char(d.d_fine_val,'yyyymmdd') end case,                   --4
+        a.tipo_tariffa,                                    --5
+        nvl(d.n_valore,0),                                 --6
+        b.id_operando                                      --7   
+        from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v, gas_z_param_operando_large a, gas_anagrafica_operandi b,
+        DBI_USER.rpl_anu_t_param_valori_large  D
+        where a.ctar1=v.ctar1
+        and  v.dbi_original_key_pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and a.operando = b.operando
+        and D.CD_PARAMETRO_VALORE_LARGE=a.cd_parametro
+        and v.dbi_original_key_pr=d.cd_punto
+        and b.tipo ='QPRICE'
+        group by 
+         v.dbi_original_key_pr,   
+        v.dbi_original_key_pr,                                      
+        a.operando,                                       
+         to_char(d.d_inizio_val,'yyyymmdd'),                          
+        to_char(d.d_fine_val,'yyyymmdd'),                    
+        a.tipo_tariffa,                                        
+        nvl(d.n_valore,0), 
+        data_fine_val_gas(v.dbi_original_key_pr,a.operando,a.ctar1,d.d_inizio_val,d.d_fine_val),                                
+        b.id_operando                                
+        order by   v.dbi_original_key_pr
+        ]]></mainSelect>
+		     <insertTable name='PGAS_FACTS_F_QPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_QPRI' />
+		     <field name='OPERAND' index ='2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		   </insertTable> 
+		   <insertTable name='PGAS_FACTS_V_QPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_QPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		     </insertTable> 	
+	</qpriGasLargeAggregator>
+	
+	<tqpriGasLargeAggregator>
+		<mainSelect ><![CDATA[
+       select 
+       v.dbi_original_key_pr,                       --0
+        v.dbi_original_key_pr,                             --1
+        a.operando,                                        --2    
+         to_char(d.d_inizio_val,'yyyymmdd'),               --3                          
+       case when to_char(d.d_fine_val,'yyyymmdd') is null then data_fine_val_gas(v.dbi_original_key_pr,a.operando,a.ctar1,d.d_inizio_val,d.d_fine_val)
+      else to_char(d.d_fine_val,'yyyymmdd') end case,                   --4
+        a.tipo_tariffa,                                    --5
+        nvl(d.n_valore,0),                                 --6
+        b.id_operando                                      --7   
+        from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v, gas_z_param_operando_large a, gas_anagrafica_operandi b,
+        DBI_USER.rpl_anu_t_param_valori_large  D
+        where a.ctar1=v.ctar1
+        and  v.dbi_original_key_pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and a.operando = b.operando
+        and D.CD_PARAMETRO_VALORE_LARGE=a.cd_parametro
+        and v.dbi_original_key_pr=d.cd_punto
+        and b.tipo ='TPRICE'
+        group by 
+         v.dbi_original_key_pr,   
+        v.dbi_original_key_pr,                                      
+        a.operando,                                       
+         to_char(d.d_inizio_val,'yyyymmdd'),                          
+        to_char(d.d_fine_val,'yyyymmdd'),                    
+        a.tipo_tariffa,                                        
+        nvl(d.n_valore,0), 
+        data_fine_val_gas(v.dbi_original_key_pr,a.operando,a.ctar1,d.d_inizio_val,d.d_fine_val),                                
+        b.id_operando                                
+        order by   v.dbi_original_key_pr
+        ]]></mainSelect>
+		     <insertTable name='PGAS_FACTS_F_TPRI' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_QPRI' />
+		     <field name='OPERAND' index ='2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		   </insertTable> 
+		   <insertTable name='PGAS_FACTS_T_QPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_QPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		     </insertTable> 	
+	</tqpriGasLargeAggregator>
+	</queries>
+</root>
+

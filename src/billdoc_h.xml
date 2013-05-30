@@ -1,0 +1,98 @@
+<root>
+	<queries>
+	<billdocHAggregator>
+		<mainSelect ><![CDATA[
+        select * from (
+        select  
+        t.dbi_cd_punto||to_char(t.ldall,'YYYYMMDD') as lk,          -- 0
+        e.acdan,                                                    -- 1
+        e.cflg9,                                                    -- 2
+        e.dbi_original_key_pr,                                      -- 3
+        to_char(f.dt_inizio_fornitura,'YYYYMMDD') as dtini,         -- 4
+        to_char(t.ldall,'YYYYMMDD') as dtfine,                      -- 5
+        to_char(sysdate,'YYYYMMDD') as dtoggi,                      -- 6
+        decode(e.caliv,'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), -- 7
+        ableinh,                                                   -- 8
+        dec_ktokl(e.cserv, e.acatc),                                -- 9
+        dec_tipolettura(e.cflg4, t.ldall),                          -- 10
+        row_number() over (partition by t.dbi_cd_punto, lmari, lprog order by ldall) ordine 
+        from instmgmt_diint i, dbi_user.ifc_sap_letture_ele_anubis t, v_contratti e, dbi_user.ifc_sap_punti_fornitura f,
+             instln_data z
+        where i.anlage = t.dbi_cd_punto
+--        and e.cncon in (select cncon from z_pr_in_lavorazione)
+        and e.dbi_original_key_pr in ('PR313295')
+        and t.dbi_cd_punto = e.dbi_original_key_pr
+        and t.dbi_cd_punto = z.legacy
+        and t.dbi_cd_punto = f.dbi_punto_key
+        and t.ldall > to_date(i.eadat, 'YYYYMMDD')
+        and ldall is not null) where ordine = 1
+        order by lk
+        ]]></mainSelect>
+		<insertTable name='BILLDOC_ERCH_H' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='ERCH' />
+				<field name='BUKRS' constant_value='SORG' />
+				<field name='SPARTE' constant_value='P' />
+				<field name='GPARTNER' index='1' />
+				<field name='VKONT' index='2' />
+				<field name='VERTRAG' index='3' />
+				<field name='BEGABRPE' index='4' />
+				<field name='ENDABRPE' index='5' />
+				<field name='ABRDATS' index='5' />
+				<field name='ADATSOLL' index='5' />
+				<field name='PTERMTDAT' constant_value=' ' />
+				<field name='BELEGDAT' index='5' />
+				<field name='ABRVORG' index='10' />
+				<field name='HVORG' constant_value='0100' />
+				<field name='KOFIZ' index='7' />
+				<field name='PORTION' index='8' />
+				<field name='ABLEINH' index='8' />
+				<field name='BACKBI' constant_value='0' />
+				<field name='PERENDBI' constant_value='0' />
+				<field name='ZUORDDAA' index='5' />
+				<field name='KTOKLASSE' index='9' />
+				<field name='NOCANC' constant_value='X' />
+				<field name='ACTPERIOD' constant_value='4000' />
+				<field name='ACTPERORG' constant_value='4000' />
+				<field name='BASDYPER' constant_value='1' />
+		</insertTable>
+	</billdocHAggregator>
+	
+	<billdocHExtractor>
+		<mainSelect ><![CDATA[
+		select 
+			legacy
+		,   'ERCH'
+		,   'SORG'
+		,   'P'
+		,   Gpartner
+		,   Vkont
+		,   Vertrag
+		,   Begabrpe
+		,   Endabrpe
+		,   Endabrpe
+		,   Endabrpe
+		,   ' '
+		,   Endabrpe
+		,   Abrvorg
+		,   '0100'
+		,   Kofiz
+		,   Ableinh
+		,   Ableinh
+		,   '0'
+		,   '0'
+		,   Endabrpe
+		,   Ktoklasse
+		,   'X'
+		,   '4000'
+		,   '4000'
+		,   '1'
+		from tmp_billdoc_erch_h
+		order by legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='25'>
+       	</csvLine>
+		<ende field_index='0' />
+	</billdocHExtractor>
+	</queries>
+</root>

@@ -1,0 +1,91 @@
+<root>
+	<queries>
+
+	<premiseAggregator>
+		<mainSelect ><![CDATA[
+	   select v.cncon,      -- 0
+       b.indprog,           -- 1
+       substr(y.comune_amm,0,40),  -- 2
+       y.comune_catast,     -- 3
+       y.cod_comune_catast, -- 4
+       y.sezione,           -- 5
+       substr(y.foglio,0,4),-- 6
+       y.particella,        -- 7
+       y.subalterno,        -- 8
+       y.flag_imm_no_catastato, -- 9
+       y.flag_imm_no_catastabile -- 10
+  from v_contratti v
+  left outer join v_dati_arcata y
+    on v.cncon = cd_pt, DBI_USER.ifc_sap_anagrindirizzi_pr b
+ where v.cncon = b.Pr
+   and v.cncon in (select cncon from z_pr_in_lavorazione)
+ group by v.cncon,
+          b.indprog,
+          y.comune_amm,
+          y.comune_catast,
+          y.cod_comune_catast,
+          y.sezione,
+          y.foglio,
+          y.particella,
+          y.subalterno,
+          y.flag_imm_no_catastato,
+          y.flag_imm_no_catastabile
+		]]></mainSelect>
+		<insertTable name='PREMISE_EVBSD' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='EVBSD' />
+				<field name='HAUS' index='1' />
+				<field name='LGZUSATZ' constant_value='' />
+				<field name='VBSART' constant_value='01' />
+				<field name='FLOOR' constant_value='' />
+				<field name='ROOMNUMBER' constant_value='' />
+				<field name='ZCODAMM'  index='2' />
+				<field name='ZCODCAT'  index='4' />
+				<field name='ZSEZURB'  index='5' />
+				<field name='ZZFOGLIO' index='6' />
+				<field name='ZZPARTIC' index='7' />
+				<field name='ZZSUBALT' index='8' />
+				<field name='ZZPARTAV' constant_value='' />
+				<field name='ZZCRPTAV' constant_value='' />
+				<field name='ZZPORMAT' constant_value='' />
+				<field name='ZZT_U' constant_value='' />
+				<field name='ZZI_P' constant_value='' />
+				<field name='ZZNOACST' index='9' />
+				<field name='ZZNOACBL' index='10' />
+				<field name='ZZAECAT' constant_value='' />
+		</insertTable>
+	</premiseAggregator>
+	
+	<premiseExtractor>
+		<mainSelect ><![CDATA[
+       	select  a.legacy,
+	        a.tipo,
+	        a.haus,
+	        a.lgzusatz,
+	        a.vbsart,
+	        a.floor,
+	        a.roomnumber,
+	        a.zcodamm,
+	        a.zcodcat,
+	        a.zsezurb,
+	        a.zzfoglio,
+	        a.zzpartic,
+	        a.zzsubalt,
+	        a.zzpartav,
+	        a.zzcrptav,
+	        a.zzpormat,
+	        a.zzt_u,
+	        a.zzi_p,
+	        a.zznoacst,
+	        a.zznoacbl,
+	        a.zzaecat
+        from premise_evbsd a
+        	order by legacy
+       ]]></mainSelect>
+       <csvLine line_index='0' last='True' field_start_index='0' field_end_index='20'>
+       	</csvLine>
+		<ende field_index='0' />
+    </premiseExtractor>
+    
+	</queries>
+</root>

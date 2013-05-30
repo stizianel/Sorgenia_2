@@ -1,0 +1,53 @@
+<root>
+	<queries>
+	
+    <profheadAggregator>
+		<mainSelect ><![CDATA[
+       select cncon || '-' || to_char(b.dt_inizio_fornitura, 'YYYYMMDD') || '-' ||
+       PRNUM, -- 0
+       to_char(b.dt_inizio_fornitura, 'YYYYMMDD'), -- 1                                                   
+       decode(prnum,
+              1,
+              'Profilo energia attiva',
+              2,
+              'Profilo energia reattiva',
+              'err'), -- 2                                                 
+       decode(prnum, 1, 'KWH', 2, 'KRH', 'ERR'), -- 3
+       decode(prnum, 1, 'ZSOSTSTOP', 2, 'ZREPL0P', 'ERR') -- 4         
+  from dbi_user.ifc_sap_anagrcontrele   a,
+       devinforec_int,
+       z_grnum,
+       dbi_user.ifc_sap_punti_fornitura b
+ where substr(legacy, (instr(legacy, 'P'))) = cncon
+   and matnr = cod_gruppo
+   and (a.cncon = b.dbi_punto_key and a.ctipo = b.ptipo)
+   and a.cncon in (select cncon from z_pr_in_lavorazione)
+   and matnr = 'EAR2'
+ order by cncon, prnum
+		]]></mainSelect>
+		<insertTable name='PROFHEAD_HEAD' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='PHDDAT' />
+				<field name='PROFTEXT' index='2' />
+				<field name='SPARTE' constant_value='P' />
+				<field name='MASS' index='3' />
+				<field name='PROFSDECIMALS' constant_value='06' />
+				<field name='PROFOFFSET' constant_value=' ' />
+				<field name='DATEFROM' index='1' />
+				<field name='DATETO' constant_value='99991231' />
+				<field name='REPLACEMETHODGRP' index='4' />
+				<field name='DAY_OFFSET' constant_value=' ' />
+		</insertTable>
+	</profheadAggregator>	
+	
+    <profheadExtractor>
+		<mainSelect ><![CDATA[
+		select * from profhead_head
+		order by legacy
+       ]]></mainSelect>
+       		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='10'>
+       		</csvLine>
+			<ende field_index='0' />
+	</profheadExtractor>
+	</queries>
+</root>

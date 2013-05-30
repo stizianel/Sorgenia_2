@@ -1,0 +1,53 @@
+<root>
+	<queries>
+	<QuanGasLargeAggregator>
+		<mainSelect ><![CDATA[
+        SELECT 
+               A.dbi_original_key_pr,            --0
+               A.dbi_original_key_pr,            --1
+               b.operando,                       --2
+               case when b.operando='GQVMICA000' then '20090701' else to_char(d.d_inizio_val,'yyyymmdd') end case,--3                           
+              case when b.operando='GQVMICA000' then '99991231'  else  to_char(d.d_fine_val,'yyyymmdd') end case, --4
+               c.id_operando ,                   --5
+               gas_parametri_large_factor(b.operando,A.dbi_original_key_pr,b.ctar1,d.d_inizio_val) --6 --campo menge
+              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,
+                   gas_z_param_operando_large b,
+                   gas_anagrafica_operandi c,
+                  DBI_USER.rpl_anu_t_param_valori_large d
+             WHERE b.operando=c.operando
+             and b.cd_parametro=d.cd_parametro_valore_large
+               and a.dbi_original_key_pr IN (select c.cncon from Z_pr_in_lavorazione_gas c )
+               and b.ctar1=a.ctar1
+               AND d.cd_punto=A.dbi_original_key_pr
+               AND C.TIPO='QUANT'
+               group by 
+              A.dbi_original_key_pr,  --0
+               A.dbi_original_key_pr,        --1
+               b.operando,   --2
+               to_char(d.d_inizio_val,'yyyymmdd'),--3                           --3 
+               to_char(d.d_fine_val,'yyyymmdd'), 
+               c.id_operando ,  --7
+               gas_parametri_large_factor(b.operando,A.dbi_original_key_pr,b.ctar1,d.d_inizio_val) --8 --campo menge
+               order by A.dbi_original_key_pr
+        ]]></mainSelect>
+		   <insertTable name='PGAS_EMG_FACTS_QUANT' truncate = 'True' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_QUAN' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '5' />
+		   </insertTable> 
+		   <insertTable name='PGAS_EMG_VALUE_QUANT' truncate = 'True' break_index='' >
+		     <field name='LEGACY'     index='0' />
+		     <field name='TIPO'       constant_value='V_QUAN' />
+		     <field name='MENGE'      index='6' />
+		     <field name='TARIFART'   constant_value='' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index='5' /> 
+		     </insertTable> 
+		  	</QuanGasLargeAggregator>              
+	</queries>
+</root>
+

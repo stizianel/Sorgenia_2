@@ -1,0 +1,49 @@
+<root>
+	<queries>
+	<meterread96Aggregator>
+		<mainSelect ><![CDATA[
+		select * from (
+        select  t.dbi_cd_punto||to_char(t.ldall,'YYYYMMDD')||lmari||lprog as lk,
+        t.dbi_cd_punto, 
+        to_char(t.ldall,'YYYYMMDD') as dtlet, 
+        t.ltipo, 
+        t.lmari, 
+        t.lprog, 
+        g.equnrneu, 
+        d.matnr, 
+        dec_numeratore(d.matnr,lprog,lmari,ltipo), 
+        decode(lmari, 'P', round(t.lline,1), round(t.llet1)) lettura,
+        dec_tipolettura(e.cflg4, t.ldall), e.cflg4,
+        row_number() over (partition by dbi_cd_punto, lmari, lprog order by ldall) ordine 
+        from instmgmt_diint i, dbi_user.ifc_sap_letture_gas_anubis t, instmgmt_diger g, devinforecg_int d, dbi_user.ifc_sap_anagrcontrgas e
+        where i.anlage = t.dbi_cd_punto
+        and i.legacy = g.legacy
+        and g.equnrneu = d.legacy
+        and dbi_cd_punto = e.cncon
+        and t.ldall > to_date(i.eadat, 'YYYYMMDD')
+        ) where ordine > 1
+        order by dbi_cd_punto, dtlet, ordine, lmari, lprog 
+		]]></mainSelect>
+		<insertTable name='METERREAD_IEABLU' truncate = 'True' break_index=''>
+		<field name='LEGACY' index='0' />
+		<field name='TIPO' constant_value='IEABLU' />
+		<field name='EQUNR' index='6' />
+		<field name='ZWNUMMER' index='8' />
+		<field name='ABLESGR'  index='10' />
+		<field name='ZWSTAND' index='9' />
+		<field name='ISTABLART' constant_value='01' />
+		<field name='ABLESER' constant_value='001' />
+		<field name='ADAT' index='2' />
+		<field name='ATIM' constant_value='' />
+		</insertTable>
+	</meterread96Aggregator>
+	<meterreadExtractor>
+		<mainSelect ><![CDATA[
+			select * from meterread_ieablu order by legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='9'>
+       	</csvLine>
+       	<ende field_index='0' />
+    </meterreadExtractor>
+	</queries>
+</root>

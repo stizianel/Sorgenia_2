@@ -1,0 +1,94 @@
+<root>
+	<queries>
+	<FactorLargeAggregator>
+		<mainSelect ><![CDATA[
+        select C.DBI_ORIGINAL_KEY_PR,  --0
+        C.DBI_ORIGINAL_KEY_PR,                                    --1 
+        a.operando,                                 --2
+        to_char(d.d_inizio_val, 'yyyymmdd') ,  --3
+       case when  to_char(d.d_fine_val, 'yyyymmdd')  is null then '99991231'
+        else to_char(d.d_fine_val, 'yyyymmdd') end case ,--4
+        PARAMETRI_LARGE_FACTOR(A.OPERANDO,c.DBI_ORIGINAL_KEY_PR,c.ctar1,d.d_inizio_val),   --5                                --5  
+           b.id_operando                              --6    
+        from  z_parametro_operando_large a,
+              z_anagrafica_operandi b,
+              DBI_USER.ifc_sap_anagrcontrele C ,
+              DBI_USER.rpl_anu_t_param_valori_large d
+        where
+       a.TIPO= c.cfreq
+         AND    d.cd_punto= c.DBI_ORIGINAL_KEY_PR
+         and a.ctar1=c.ctar1 
+         and c.ctar1 ='STD_GDS1'
+         and a.cd_parametro=d.cd_parametro_valore_large
+         and C.DBI_ORIGINAL_KEY_PR IN (select c.cncon from z_test_contratti c where c.note='lotto 21' )
+         and a.operando = b.operando 
+         and b.tipo = 'FACTOR'
+        group by 
+           C.DBI_ORIGINAL_KEY_PR, 
+           C.DBI_ORIGINAL_KEY_PR, 
+           a.operando, 
+           to_char(d.d_inizio_val, 'yyyymmdd') ,  --3
+                    --  nvl(n_valore,0) , 
+           b.id_operando , 
+            to_char(d.d_fine_val, 'yyyymmdd'),
+          PARAMETRI_LARGE_FACTOR(A.OPERANDO,c.DBI_ORIGINAL_KEY_PR,c.ctar1,d.d_inizio_val)
+        order by a.operando
+        ]]></mainSelect>
+		     <insertTable name='PFACTS_F_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_FACT' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '6' />
+		   </insertTable> 
+		   <insertTable name='PFACTS_V_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'    index='0' />
+		     <field name='TIPO'       constant_value='V_FACT' />
+		     <field name='TARIFART'   constant_value='' />
+		     <field name='FACTOR'     index='5' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index= '6' /> 
+		     </insertTable> 
+		
+	</FactorLargeAggregator>
+	<FactorLargeExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               PFACTS_KEY.LEGACY,  --0
+               PFACTS_KEY.TIPO,--1
+               PFACTS_KEY.ANLAGE, --2
+               PFACTS_KEY.BIS, --3
+               Pfacts_f_factor.legacy, --4
+               Pfacts_f_factor.tipo, --5
+               Pfacts_f_factor.operand, --6
+               Pfacts_f_factor.saison, --7
+               Pfacts_f_factor.prog, --8
+               Pfacts_v_factor.legacy, --9
+               Pfacts_v_factor.tipo, --10
+               Pfacts_v_factor.ab, --11
+               Pfacts_v_factor.bis, --12
+               replace(to_char(Pfacts_v_factor.factor,'9990.9'),'.',','),
+               --to_number(to_char(Pfacts_v_factor.factor)), --13
+               Pfacts_v_factor.tarifart, --14
+               Pfacts_v_factor.kondigr, --15
+               Pfacts_v_factor.prog --16
+              from Pfacts_key,Pfacts_f_factor,Pfacts_v_factor
+              where Pfacts_key.legacy = Pfacts_f_factor.legacy
+              and Pfacts_v_factor.legacy=Pfacts_key.legacy
+              and Pfacts_f_factor.legacy=Pfacts_v_factor.legacy
+              and Pfacts_f_factor.prog=Pfacts_v_factor.prog
+              order by Pfacts_f_factor.prog
+                 ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</FactorLargeExtractor>
+	</queries>
+</root>
+

@@ -1,0 +1,372 @@
+<root>
+	<queries>
+	<qpriAggregator>
+		<mainSelect ><![CDATA[
+        select  v.DBI_ORIGINAL_KEY_PR,                       --0
+         v.DBI_ORIGINAL_KEY_PR,                              --1
+        a.operando,                                          --2         
+       case when a.operando='EPB_A_43' then A.DATA_VALIDITA
+           when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita)
+           when to_char(d.dt_inizio_fornitura,'yyyymmdd') is null then  get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
+           else to_char(d.dt_inizio_fornitura,'yyyymmdd') end case,--3 
+        CASE WHEN a.operando='EPB_A_43' then A.DATA_VALIDITA_AL
+            ELSE get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al) END CASE,---4
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo ,                                        --8      
+        v.DBI_ORIGINAL_KEY_PR||a.operando                         --9    
+        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+        where 
+          d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
+          and a.acquisizione= v.cfreq
+          and a.ctar1=v.ctar1 
+          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+          and a.operando = b.operando 
+          and tipo ='QPRICE'
+          and a.prodotto='STD_TANDEM'
+            AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+   And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+        GROUP BY 
+         v.DBI_ORIGINAL_KEY_PR,    --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2         
+        to_char(d.dt_inizio_fornitura,'yyyymmdd'),                                 --3 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+        get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita),
+        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),---4
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo ,                                        --8      
+        v.DBI_ORIGINAL_KEY_PR||a.operando ,
+        A.DATA_VALIDITA,A.DATA_VALIDITA_AL
+    UNION
+           select  v.DBI_ORIGINAL_KEY_PR,    --0
+            v.DBI_ORIGINAL_KEY_PR,                                       --1
+            a.operando,                                    --2         
+           case when a.operando='EPB_A_43' then A.DATA_VALIDITA
+                when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita)
+                when to_char(d.dt_inizio_fornitura,'yyyymmdd') is null then  get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
+                else to_char(d.dt_inizio_fornitura,'yyyymmdd') end case,--3 
+          CASE WHEN a.operando='EPB_A_43' then A.DATA_VALIDITA_AL
+               ELSE get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al) END CASE,---4
+          valori,                                        --5
+          nvl(prezzo,0),                                 --6
+          b.id_operando ,                                 --7  
+          tipo ,                                        --8      
+          v.DBI_ORIGINAL_KEY_PR||a.operando                         --9    
+        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+        where  d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
+          and a.ctar1=v.ctar1 
+          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+          and a.operando = b.operando
+          and tipo ='QPRICE'
+            AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+         And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+          and a.prodotto='STD_TANDEM'
+        GROUP BY 
+         v.DBI_ORIGINAL_KEY_PR,    --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2         
+ to_char(d.dt_inizio_fornitura,'yyyymmdd'),                                 --3 
+ get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+ get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita),
+        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),---4
+       valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo ,                                        --8      
+         v.DBI_ORIGINAL_KEY_PR||a.operando ,
+         A.DATA_VALIDITA,A.DATA_VALIDITA_AL
+         ]]></mainSelect>
+		
+		     <insertTable name='FACTS_F_QPRICE' truncate = 'True' break_index='9' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_QPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		   </insertTable> 
+		   <insertTable name='FACTS_V_QPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_QPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		     </insertTable> 
+		
+	</qpriAggregator>
+	 <FactQpriExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               facts_f_qprice.legacy, --4
+               facts_f_qprice.tipo,  --5
+               facts_f_qprice.operand, --6
+               facts_f_qprice.saison, --7
+               facts_f_qprice.prog, --8
+               facts_v_qprice.legacy, --9
+               facts_v_qprice.tipo, --10
+               facts_v_qprice.ab, --11
+               facts_v_qprice.bis, --12
+               facts_v_qprice.preis, --13
+               facts_v_qprice.prsbtr, --14
+               facts_v_qprice.waers, --15
+               facts_v_qprice.tarifart, --16
+               facts_v_qprice.kondgir, --17
+               facts_v_qprice.prog --18
+              from facts_key,facts_f_qprice,facts_v_qprice
+              where facts_key.legacy = facts_f_qprice.legacy
+              and facts_v_qprice.legacy=facts_key.legacy
+              and facts_f_qprice.legacy=facts_v_qprice.legacy
+              and facts_f_qprice.prog=facts_v_qprice.prog
+              order by facts_f_qprice.prog
+        ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='17'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</FactQpriExtractor>
+	
+	<LPriceAggregator>
+		<mainSelect ><![CDATA[
+		select  v.DBI_ORIGINAL_KEY_PR,     --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4                
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8          
+        from  DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+        where 
+          d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
+         and a.acquisizione= v.cfreq
+        and v.ctar1=a.ctar1
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+           AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+   And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
+        and a.operando = b.operando
+        and tipo ='LPRICE'
+              and a.prodotto='STD_TANDEM'
+        group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo
+        UNION
+        	select  v.DBI_ORIGINAL_KEY_PR,     --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+         valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8          
+        from  DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+        where 
+          d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
+          and v.ctar1=a.ctar1
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+        and a.operando = b.operando
+        and tipo ='LPRICE'
+              and a.prodotto='STD_TANDEM'
+        group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo
+       
+         ]]></mainSelect>
+		
+		   <insertTable name='FACTS_F_LPRI' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_LPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		   </insertTable> 
+		   <insertTable name='FACTS_V_LPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_LPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='TARIFART' index='6' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		     </insertTable> 
+		    </LPriceAggregator>
+		    
+		 <LPriceExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3   
+               FACTS_F_LPRI.LEGACY, --4
+               FACTS_F_LPRI.TIPO, --5
+               FACTS_F_LPRI.OPERAND , --6
+               FACTS_F_LPRI.SAISON, --7
+               FACTS_F_LPRI.PROG, --8
+               FACTS_V_LPRICE.LEGACY, --9
+               FACTS_V_LPRICE.TIPO, --10
+               FACTS_V_LPRICE.AB , --11
+               FACTS_V_LPRICE.BIS, --12
+               FACTS_V_LPRICE.PREIS, --13
+               FACTS_V_LPRICE.TARIFART, --14
+               FACTS_V_LPRICE.KONDGIR, --15
+               FACTS_V_LPRICE.PROG --16
+               from facts_key,FACTS_F_LPRI,FACTS_V_LPRICE
+              where facts_key.legacy = FACTS_F_LPRI.legacy
+              and FACTS_V_LPRICE.legacy=facts_key.legacy
+              and FACTS_F_LPRI.legacy=FACTS_V_LPRICE.legacy
+              and FACTS_F_LPRI.prog=FACTS_V_LPRICE.prog
+              order by FACTS_F_LPRI.prog
+               ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</LPriceExtractor>
+		    <TPriceAggregator>
+		<mainSelect ><![CDATA[
+		select  v.DBI_ORIGINAL_KEY_PR,     --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+         valori ,     --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8   
+from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b, DBI_USER.ifc_sap_punti_fornitura d
+        where
+         d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
+        and v.ctar1=a.ctar1
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+        and a.operando = b.operando
+        and tipo ='TPRICE'
+              and a.prodotto='STD_TANDEM'
+        group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo
+        UNION
+        	select  v.DBI_ORIGINAL_KEY_PR,     --0
+         v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+         valori ,     --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8   
+from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b, DBI_USER.ifc_sap_punti_fornitura d
+        where
+         d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
+        and v.ctar1=a.ctar1
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+        and a.operando = b.operando
+        and tipo ='TPRICE'
+              and a.prodotto='STD_TANDEM'
+        group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo
+      
+         ]]></mainSelect>
+		
+		   <insertTable name='FACTS_F_TPRI' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_TPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		   </insertTable> 
+		   <insertTable name='FACTS_V_TPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_TPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		     </insertTable> 
+		    </TPriceAggregator>
+		        
+		 <TPriceExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3   
+               FACTS_F_TPRI.LEGACY, --4
+               FACTS_F_TPRI.TIPO, --5
+               FACTS_F_TPRI.OPERAND , --6
+               FACTS_F_TPRI.SAISON, --7
+               FACTS_F_TPRI.PROG, --8
+               FACTS_V_TPRICE.LEGACY, --9
+               FACTS_V_TPRICE.TIPO, --10
+               FACTS_V_TPRICE.AB , --11
+               FACTS_V_TPRICE.BIS, --12
+               FACTS_V_TPRICE.PREIS, --13
+               FACTS_V_TPRICE.PRSBTR, --14
+               FACTS_V_TPRICE.WAERS, --15
+               FACTS_V_TPRICE.TARIFART, --16
+               FACTS_V_TPRICE.KONDGIR, --17
+               FACTS_V_TPRICE.PROG --18
+               from facts_key,FACTS_F_TPRI,FACTS_V_TPRICE
+              where facts_key.legacy = FACTS_F_TPRI.legacy
+              and FACTS_V_TPRICE.legacy=facts_key.legacy
+              and FACTS_F_TPRI.legacy=FACTS_V_TPRICE.legacy
+              and FACTS_F_TPRI.prog=FACTS_V_TPRICE.prog
+              order by FACTS_F_TPRI.prog
+               ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='17'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</TPriceExtractor>
+	</queries>
+</root>
+

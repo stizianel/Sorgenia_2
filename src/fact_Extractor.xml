@@ -1,0 +1,138 @@
+<root>
+	<queries>
+
+	    
+	     <FactExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               FACTS_F_DEMA.LEGACY, --4
+               FACTS_F_DEMA.TIPO,--5
+               FACTS_F_DEMA.OPERAND,--6
+               FACTS_F_DEMA.SAISON,--7
+               FACTS_F_DEMA.PROG,--8
+               FACTS_V_DEMA.LEGACY,--9
+               FACTS_V_DEMA.TIPO,--10
+               FACTS_V_DEMA.AB,--11
+               FACTS_V_DEMA.BIS,--12
+               FACTS_V_DEMA.LMENGE,--13
+               FACTS_V_DEMA.LMENGE2,--14
+               '' factor, 
+               '' preis, 
+               '' prsbtr,
+               '' waers, 
+               FACTS_V_DEMA.TARIFART,--15
+               FACTS_V_DEMA.KONDIGR,--16
+               FACTS_V_DEMA.PROG --17    
+             FROM
+              FACTS_KEY,
+              FACTS_F_DEMA,
+              FACTS_V_DEMA
+           WHERE
+              FACTS_KEY.LEGACY = FACTS_F_DEMA.LEGACY
+          AND FACTS_F_DEMA.LEGACY = FACTS_V_DEMA.LEGACY
+          and FACTS_F_DEMA.PROG = FACTS_V_DEMA.PROG  
+    union all
+     SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--23
+               FACTS_KEY.ANLAGE, --24
+               FACTS_KEY.BIS, --25
+               facts_f_qprice.legacy, --26
+               facts_f_qprice.tipo,  --27
+               facts_f_qprice.operand, --28
+               facts_f_qprice.saison, --29
+               facts_f_qprice.prog, --30
+               facts_v_qprice.legacy, --31
+               facts_v_qprice.tipo, --32
+               facts_v_qprice.ab, --33
+               facts_v_qprice.bis, --34
+               null lmenge, --35
+               null lmenge2, --36
+               null factor, --37
+               facts_v_qprice.preis, --38
+               facts_v_qprice.prsbtr, --39
+               facts_v_qprice.waers, --40
+               facts_v_qprice.tarifart, --41
+               facts_v_qprice.kondgir, --42
+               facts_v_qprice.prog --43
+              from facts_key,facts_f_qprice,facts_v_qprice
+              where facts_key.legacy = facts_f_qprice.legacy
+              and facts_v_qprice.legacy=facts_key.legacy
+              and facts_f_qprice.legacy=facts_v_qprice.legacy
+              and facts_f_qprice.prog=facts_v_qprice.prog
+          union all
+           SELECT
+               FACTS_KEY.LEGACY,  --44
+               FACTS_KEY.TIPO,--45
+               FACTS_KEY.ANLAGE, --46 
+               FACTS_KEY.BIS, --47
+               facts_f_factor.legacy, --48
+               facts_f_factor.tipo, --49
+               facts_f_factor.operand, --50
+               facts_f_factor.saison, --51
+               facts_f_factor.prog, --52
+               facts_v_factor.legacy, --53
+               facts_v_factor.tipo, --54
+               facts_v_factor.ab, --55
+               facts_v_factor.bis, --56
+                null lmenge,--57
+               null lmenge2, --58
+               null preis, --59
+               null prsbtr,--60
+               null waers,--61
+               facts_v_factor.factor, --62
+               facts_v_factor.tarifart, --63
+               facts_v_factor.kondigr, --64
+              facts_v_factor.prog --65
+              from facts_key,facts_f_factor,facts_v_factor
+              where facts_key.legacy = facts_f_factor.legacy
+              and facts_v_factor.legacy=facts_key.legacy
+              and facts_f_factor.legacy=facts_v_factor.legacy
+              and facts_f_factor.prog=facts_v_factor.prog
+            union all
+    SELECT
+               FACTS_KEY.LEGACY,  --66
+               FACTS_KEY.TIPO,--67
+               FACTS_KEY.ANLAGE, --68
+               FACTS_KEY.BIS, --69
+               facts_f_rate_type.legacy, --70
+               facts_f_rate_type.tipo, --71
+               facts_f_rate_type.operand, --72
+               facts_f_rate_type.saison, --73
+               facts_f_rate_type.prog, --74
+               facts_v_rate_type.legacy, --75
+               facts_v_rate_type.tipo, --76
+                facts_v_rate_type.ab, --77
+               facts_v_rate_type.bis, --78
+               null lmenge,--79
+               null lmenge2,--80
+               null preis, --81
+               null prsbtr,--82
+               null waers,--83
+               null factor,--84
+               facts_v_rate_type.tarifart, --85
+               facts_v_rate_type.kondigr, --86
+              facts_v_rate_type.prog--87
+              from facts_key,facts_f_rate_type,facts_v_rate_type
+              where facts_key.legacy = facts_f_rate_type.legacy
+              and facts_v_rate_type.legacy=facts_key.legacy
+              and facts_f_rate_type.legacy=facts_v_rate_type.legacy
+              and facts_f_rate_type.prog=facts_v_rate_type.prog
+           ]]></mainSelect>
+     <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='16'  >
+         </csvLine>   
+        
+         <ende field_index='0' />
+	</FactExtractor>
+	 		 
+	 </queries>
+</root>     
+	     

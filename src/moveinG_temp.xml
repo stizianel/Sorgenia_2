@@ -1,0 +1,63 @@
+<root>
+	<queries>
+	<moveinGAggregator>
+		<mainSelect ><![CDATA[
+ 			select  a.cncon,                         --0
+            decode(a.ctipo, '1', 'P', '3', 'G'), --1
+            a.cflg9,                             --2
+            apers,                               --3
+            decode(a.caliv,'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), --4
+--            to_char(p.dt_inizio_fornitura,'YYYYMMDD'),                                  --5
+            case when nvl(p.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) < to_date('20090701','YYYYMMDD') then '20090701' 
+               else to_char(p.dt_inizio_fornitura,'YYYYMMDD') end, -- 1                                                   -- 0
+            dec_serviceid(b.cdist),                                                     --6
+            dec_cokey(a.cserv, acatc),                                                  --7
+            dec_gsber(k.ktokl, a.ctipo),                                                --8
+            a.cserv,
+            acatc,
+            dec_stagruver_gas(acatc)                                                    --11
+            from v_contratti a, DBI_USER.ifc_sap_anagrcontrgas b, dbi_user.ifc_sap_punti_fornitura p, accountg_vkp k --, z_temksv z
+            where 
+            a.cncon = p.dbi_punto_key and
+            a.cncon in (select cncon from z_pr_in_lavorazione_gas)
+            and a.cncon = b.cncon and b.ctipo = 3
+            and a.cflg9 = k.legacy
+            --and a.cncon = z.oldkey
+        ]]></mainSelect>
+		<insertTable name='MOVEING_EVER' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='EVER' />
+				<field name='BUKRS' constant_value='SORG' />
+				<field name='SPARTE' index='1' />
+				<field name='KOFIZ' index='4' />
+				<field name='GEMFAKT' constant_value='1' />
+				<field name='VBEZ' constant_value=' ' />
+				<field name='VBEGINN' index='5' />
+				<field name='VREFER' index='0' />
+				<field name='ANLAGE' index='0' />
+				<field name='VKONTO' index='2' />
+				<field name='EINZDAT' index='5' />
+				<field name='MAHNV' constant_value='' />
+				<field name='GSBER' index='8' />
+				<field name='STAGRUVER' index='11' />
+				<field name='EINZDAT_ALT' constant_value='' />
+				<field name='SERVICEID' constant_value='GV_0000001' />
+				<field name='COKEY' index='8' />
+				<field name='INVOICING_PARTY' constant_value='GV_0000001' />
+				<field name='CONTRACTCLASS' constant_value='' />
+		</insertTable>
+	</moveinGAggregator>
+	
+	<moveinGExtractor>
+		<mainSelect ><![CDATA[
+		select * 
+		from moveing_ever
+		order by legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='19'>
+       	</csvLine>
+		<ende field_index='0' />
+	</moveinGExtractor>
+	</queries>
+</root>
+

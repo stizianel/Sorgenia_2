@@ -1,0 +1,130 @@
+<root>
+	<queries>
+    <DocumentAggregator>
+         <mainSelect ><![CDATA[
+	   select v.cflg9 || '-' || B.CUSTOMER_TRX_ID, --0
+       TO_CHAR(B.TRX_DATE, 'YYYYMMDD'), --1
+       TO_CHAR(SYSDATE, 'YYYYMMDD'), --2
+       SUBSTR(B.TRX_NUMBER, 0, 16), --3
+       b.amount_due_original, --4
+       TO_CHAR(b.due_date, 'YYYYMMDD'), --5
+       ltrim(p.gpart,'0'), --6
+       b.cd_entita_fatt, --7
+       ' ', --v.dbi_original_key_pr, attenzione tolto per test factoring --8
+       dec_betrw(b.amount_due_original), --9
+       dec_tvorg(b.amount_due_original), --10
+       v.cflg9, --11
+       b.account_number,
+       b.amount_due_remaining,
+       b.docuemnt_type,
+       b.document_type_description,
+       dec_gsber(p.ktokl, v.ctipo),
+       to_char(to_date(b.competence_date,'DD-MON-YY','NLS_DATE_LANGUAGE = ITALIAN'),'YYYYMMDD'), --17
+       case when cflg4 = 'MENSILE' then
+          to_char(last_day(to_date(b.competence_date,'DD-MON-YY','NLS_DATE_LANGUAGE = ITALIAN')),'YYYYMMDD')
+       else
+          to_char(last_day(add_months(to_date(b.competence_date,'DD-MON-YY','NLS_DATE_LANGUAGE = ITALIAN'),1)),'YYYYMMDD')
+       end,
+       v.acdan
+  from dbi_user.wrk_oa_documents b,
+       v_contratti               v,
+       z_fkkvkp                  p,
+       z_temksv                  z
+       -- tolto z_ever per prove factor
+ where lpad(v.acdan, 7, ' 0 ') = b.account_number
+   and v.cflg9 = cd_entita_fatt
+   and v.cflg9 = z.oldkey and object = 'ACCOUNT'
+   and z.newkey = p.vkont
+ order by acdan
+       ]]></mainSelect>
+    <insertTable name='DOCUMENT_FKKKO' truncate = 'True' break_index='0' >
+             <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KO' />
+		     <field name='BLART' constant_value='RX' />
+		     <field name='BLDAT' index='1' />
+		     <field name='BUDAT' index='2' />
+		     <field name='XBLNR' index='3' />
+	</insertTable> 
+    <insertTable name='DOCUMENT_FKKOP' truncate = 'True' break_index='0' >
+             <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='OP' />
+		     <field name='BUKRS' constant_value='SORG' />
+		     <field name='GSBER' index='16' />
+		     <field name='GPART' index='6' />
+		     <field name='VTREF' index='8' />
+		     <field name='VKONT' index='11' />
+		     <field name='HVORG' constant_value='RIPR' />
+		     <field name='TVORG' index='10' />
+		     <field name='SPART' constant_value='P' />
+		     <field name='HKONT' constant_value='0000130013' />
+		     <field name='MWSKZ' constant_value='' />
+		     <field name='FAEDN' index='5' />
+		     <field name='BETRW' index='4' />
+		     <field name='ABRZU' index='17' />
+		     <field name='ABRZO' index='18' />
+   </insertTable> 
+   <insertTable name='DOCUMENT_FKKOPK' truncate = 'True' break_index='0'  >
+             <field name='LEGACY' index='0' />
+		     <field name='TIPO'  constant_value='OPK' />
+		     <field name='BUKRS' constant_value='SORG' />
+		     <field name='HKONT' constant_value='999997'/>
+		     <field name='BETRW' index='9' />
+		     <field name='MWSKZ' constant_value='' />
+		     <field name='SBASW' constant_value='' />
+		     <field name='KTOSL' constant_value='' />
+		     <field name='STPRZ' constant_value='' />
+   </insertTable> 		   
+  </DocumentAggregator> 
+		   
+<DocumentExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               DOCUMENT_FKKKO.LEGACY, --0
+               DOCUMENT_FKKKO.TIPO,   --1
+               DOCUMENT_FKKKO.BLART,  --2
+               DOCUMENT_FKKKO.BLDAT , --3
+               DOCUMENT_FKKKO.BUDAT , --4
+               DOCUMENT_FKKKO.XBLNR , --5
+               DOCUMENT_FKKOP.LEGACY, --6
+               DOCUMENT_FKKOP.TIPO, --7
+               DOCUMENT_FKKOP.BUKRS, --8
+               DOCUMENT_FKKOP.GSBER, --9
+               DOCUMENT_FKKOP.GPART, --10
+               DOCUMENT_FKKOP.VTREF,--11
+               DOCUMENT_FKKOP.VKONT,--12
+               DOCUMENT_FKKOP.HVORG, --13
+               DOCUMENT_FKKOP.TVORG,--14
+               DOCUMENT_FKKOP.SPART, --15
+               DOCUMENT_FKKOP.HKONT,--16
+               DOCUMENT_FKKOP.MWSKZ,--17
+               DOCUMENT_FKKOP.FAEDN, --18
+               DOCUMENT_FKKOP.BETRW, --19
+               DOCUMENT_FKKOP.ABRZU, --20
+               DOCUMENT_FKKOP.ABRZO, --21
+               DOCUMENT_FKKOPK.LEGACY, --22
+               DOCUMENT_FKKOPK.TIPO, --231
+               DOCUMENT_FKKOPK.BUKRS,--24
+               DOCUMENT_FKKOPK.HKONT, --25
+               DOCUMENT_FKKOPK.BETRW, --26
+               DOCUMENT_FKKOPK.MWSKZ, --27
+               DOCUMENT_FKKOPK.SBASW, --28
+               DOCUMENT_FKKOPK.KTOSL, --29
+               DOCUMENT_FKKOPK.STPRZ --30
+           FROM DOCUMENT_FKKKO,
+                DOCUMENT_FKKOP,
+                DOCUMENT_FKKOPK
+           WHERE DOCUMENT_FKKKO.LEGACY=DOCUMENT_FKKOP.LEGACY
+           	 AND DOCUMENT_FKKKO.LEGACY=DOCUMENT_FKKOPK.LEGACY
+           ORDER BY DOCUMENT_FKKKO.LEGACY
+            ]]></mainSelect>
+         <csvLine line_index='00' break_index='0' field_start_index='0' field_end_index='5' >
+         </csvLine>
+         <csvLine line_index='01' break_index='' field_start_index='6' field_end_index='21' >
+         </csvLine>  
+         <csvLine line_index='01' break_index='' field_start_index='22' field_end_index='30' >
+         </csvLine>  
+         <ende field_index='0' />
+	</DocumentExtractor>     
+		 
+ </queries>
+</root>     

@@ -1,0 +1,140 @@
+<root>
+	<queries>
+	
+	<accountAggregator>
+		<mainSelect ><![CDATA[
+        select  cflg9,          --0
+        a.acdan,                --1
+        indprog,                --2
+        a.delprog,              --3
+        apers,                  --4
+        acatc,                  --5
+        ' ',                    --6
+        substr(arags,0,35),     --7
+        dec_ezawe(a.delprog),   --8
+        dec_ikey(acatc),        --9
+        dec_togru(acatc),       --10
+        dec_ktokl(cserv, acatc), --11
+        dec_mahnv(cserv, acatc), --12
+        dec_azawe(cserv, acatc, deliban),  --13
+        decode(dec_azawe(cserv, acatc, deliban), 'C', a.delprog, ' '), --14
+        dec_ausgrup_in(segmento_cliente_sap, cserv)                    --15
+        from v_contratti a left outer join dbi_user.ifc_sap_anagrbanche b on (cflg9 = delef and a.delprog = b.delprog),
+        dbi_user.ifc_sap_anagrindirizzi i
+        where 
+        a.cflg9 = i.indcli
+        and  a.acdan in (select legacy from partner_but020)
+        group by
+        cflg9, 
+        acdan, 
+        indprog, 
+        a.delprog,
+        apers, 
+        acatc, 
+        substr(a.arags,0,35), 
+        dec_ezawe(a.delprog), 
+        dec_ikey(a.acatc),
+        dec_togru(a.acatc),
+        dec_ktokl(cserv, a.acatc),
+        dec_mahnv(cserv, a.acatc),
+        dec_azawe(cserv, a.acatc, deliban),
+        decode(dec_azawe(cserv, a.acatc, deliban), 'C', a.delprog, ' '),
+        dec_ausgrup_in(a.segmento_cliente_sap, cserv)
+    order by cflg9, acdan, indprog desc, a.delprog
+        ]]></mainSelect>
+		<insertTable name='ACCOUNT_INIT' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='INIT' />
+				<field name='VKONT' constant_value='' />
+				<field name='GPART' index='1' />
+				<field name='VKTYP' constant_value='03' />
+				<field name='VKONA' index='0' />
+		</insertTable>
+		<insertTable name='ACCOUNT_VK' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='VK' />
+				<field name='VKBEZ' index='7' />
+		</insertTable>
+		<insertTable name='ACCOUNT_VKP' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='VKP' />
+				<field name='PARTNER' index='1' />
+				<field name='EXVKO' index='3' />
+				<field name='OPBUK' constant_value='SORG' />
+				<field name='EZAWE' index='8' />
+				<field name='IKEY' index='9' />
+				<field name='MAHNV' index='12' />
+				<field name='VKPBZ' constant_value='01' />
+				<field name='TOGRU' index='10' />
+				<field name='ADRNB_EXT' index='2' />
+				<field name='ZAHLKOND' constant_value='I030' />
+				<field name='VERTYP' constant_value='0001' />
+				<field name='KOFIZ_SD' constant_value='99' />
+				<field name='KTOKL' index='11' />
+				<field name='FORMKEY' constant_value='IS_U_BILL' />
+				<field name='KZABSVER' constant_value='0' />
+				<field name='EBVTY_EXT' index='3' />
+				<field name='ABVTY_EXT' index='14' />
+				<field name='FITYP' constant_value='LM' />
+				<field name='SENDCONTROL_RH' constant_value='Z001' />
+				<field name='STDBK' constant_value='SORG' />
+				<field name='ZZRICHRID' constant_value=' ' />
+				<field name='AZAWE' index='13' />
+				<field name='AUSGRUP_IN' index='15' />
+		</insertTable>
+	</accountAggregator>
+	
+	<accountExtractor>
+		<mainSelect ><![CDATA[
+		select 
+		a.legacy,
+		a.tipo,
+		a.gpart,
+		a.vktyp,
+		a.vkona,
+		b.legacy,
+		b.tipo,
+		b.vkbez,
+		c.legacy,
+		c.tipo,
+		c.partner,
+		c.exvko,
+		c.opbuk,
+		c.ezawe,
+		c.azawe,
+		c.ikey,
+		c.mahnv,
+		c.vkpbz,
+		c.togru,
+		c.adrnb_ext,
+		c.zahlkond,
+		c.vertyp,
+		c.kofiz_sd,
+		c.ktokl,
+		c.formkey,
+		c.ausgrup_in,
+		c.kzabsver,
+		c.ebvty_ext,
+		c.abvty_ext,
+		c.fityp,
+		c.sendcontrol_rh,
+		c.stdbk,
+		c.zzrichrid
+		from account_init a, account_vk b, account_vkp c
+		where
+		a.legacy = b.legacy and
+		a.legacy = c.legacy
+		order by a.legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='4'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='' field_start_index='5' field_end_index='7'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='' field_start_index='8' field_end_index='32'>
+       	</csvLine>
+		<ende field_index='0' />
+	</accountExtractor>
+	
+	</queries>
+</root>
+

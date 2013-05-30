@@ -1,0 +1,54 @@
+<root>
+	<queries>	
+			
+		<GeolabComuniImporter>
+<description ><![CDATA[
+ Importa dati da file COMUNI di Geolab
+]]></description>
+<startIndex>2</startIndex>
+<insertTable name='GEOLAB_COMUNI' truncate = 'True' >
+		<field name='IDLOCALITA' index='0' />
+		<field name='LOCALITA' index='1' />
+		<field name='ISTAT' index='2' />
+		<field name='PROVINCIA' index='3' />
+		<field name='IDPROVINCIA' index='4' />
+		<field name='LOCALITA_SHORT' index='5' />
+</insertTable>     
+</GeolabComuniImporter>
+
+		<GeolabFrazioniImporter>
+<description ><![CDATA[
+ Importa dati da file FRAZIONI di Geolab
+]]></description>
+<startIndex>2</startIndex>
+<insertTable name='GEOLAB_FRAZIONI' truncate = 'True' >
+		<field name='IDLOCALITA' index='0' />
+		<field name='IDFRAZIONE' index='1' />
+		<field name='CAP' index='2' />
+		<field name='FRAZIONE' index='3' />
+		<field name='FRAZIONE_SHORT' index='4' />
+</insertTable>     
+</GeolabFrazioniImporter>
+
+		<GeolabStradeImporter>
+<description ><![CDATA[
+ Importa dati da file STRADE di Geolab
+]]></description>
+<startIndex>2</startIndex>
+<insertTable name='GEOLAB_STRADE' truncate = 'True' >
+		<field name='STATO' index='0' />
+		<field name='IDSTRADA' index='1' />
+		<field name='STRADA' index='2' />
+		<field name='IDLOCALITA' index='3' />
+		<field name='IDFRAZIONE' index='4' />
+		<field name='CAP' index='5' />
+		<field name='DACIVICO' index='6' />
+		<field name='DAESPONENTE' index='7' />
+		<field name='ACIVICO' index='8' />
+		<field name='AESPONENTE' index='9' />
+		<field name='TIPOCIVICO' index='10' />
+</insertTable>     
+</GeolabStradeImporter>
+
+	</queries>
+</root>

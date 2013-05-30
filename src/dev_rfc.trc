@@ -1,0 +1,658 @@
+
+**** ERROR file opened at 20121005 154426 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:4048 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 15:44:28 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 154500 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:2372 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 15:45:02 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 154714 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:4704 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 15:47:16 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 160659 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:2644 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 16:07:01 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 160854 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7556 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 16:08:56 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 160934 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9524 Error in program 'python': ======> CMALLC : rc=20 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host 10.5.7.206 / 3300
+ERROR       Return codes ( function=STIAsRcvFromGw /
+            CPIC-RC=CM_PRODUCT_SPECIFIC_ERROR / SAP-RC=GW_CONNECT_FAILED )
+TIME        Fri Oct 05 16:09:34 2012
+RELEASE     720
+COMPONENT   CPIC (TCP/IP)
+VERSION     3
+RC          772
+MODULE      r3cpic.c
+LINE        8674
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 161045 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:3952 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 16:10:47 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 161235 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5432 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 16:12:37 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 162148 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5772 Error in program 'python': ======> Nome o password errati (ripetere il logon)
+T:5772 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 162333 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:10000 Error in program 'python': ======> Nome o password errati (ripetere il logon)
+T:10000 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 162508 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5036 Error in program 'python': ======> A condition specified dynamically has an unexpected format.
+T:5036 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:5036 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 162659 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9000 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:26:59 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 162800 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6024 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:28:00 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 162842 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9984 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Fri Oct  5 16:28:44 2012
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20121005 163054 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:3440 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:30:54 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163138 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6300 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:31:38 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163210 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5924 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:32:10 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163309 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7960 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:33:09 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163418 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6304 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:34:18 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163534 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:2568 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:35:34 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 163626 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9152 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Fri Oct 05 16:36:26 2012
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20121005 165259 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+>TS> Fri Oct 05 16:53:00 2012
+T:6784 Error in program 'python': ======> A condition specified dynamically has an unexpected format.
+T:6784 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:6784 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 165347 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6540 Error in program 'python': ======> A condition specified dynamically has an unexpected format.
+T:6540 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:6540 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 165538 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6632 Error in program 'python': ======> A condition specified dynamically has an unexpected format.
+T:6632 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:6632 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121005 165643 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6384 Error in program 'python': ======> A condition specified dynamically has an unexpected format.
+T:6384 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:6384 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121009 143047 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5004 Error in program 'python': ======> A dynamically specified column name is unknown.
+T:5004 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:5004 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121116 123104 ora solare Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7956 Error in program 'python': ======> A dynamically specified column name is unknown.
+T:7956 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:7956 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121116 123249 ora solare Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9188 Error in program 'python': ======> A dynamically specified column name is unknown.
+T:9188 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:9188 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20121116 135228 ora solare Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9108 Error in program 'python': ======> Nome o password errati (ripetere il logon)
+T:9108 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20130416 155241 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+>TS> Tue Apr 16 15:52:43 2013
+T:5152 Error in program 'python': ***************************************************************
+T:5152 Error in program 'python': * Error in application program.
+T:5152 Error in program 'python': * SAP error code : TSV_TNEW_BLOCKS_NO_ROLL_MEMORY
+T:5152 Error in program 'python': * Try ABAP/4 report RSNAPDOK to read complete message text.
+T:5152 Error in program 'python': * Also look at the system log in the target system
+T:5152 Error in program 'python': * function/module/line : tsvPageAdminResize/abtsv.c#/2545
+T:5152 Error in program 'python': * Parameters
+T:5152 Error in program 'python': * 0: 
+T:5152 Error in program 'python': * 1: 532500
+T:5152 Error in program 'python': * 2: Session memory
+T:5152 Error in program 'python': * 3: 
+T:5152 Error in program 'python': * 4: 
+T:5152 Error in program 'python': * 5: 
+T:5152 Error in program 'python': * 6: 
+T:5152 Error in program 'python': * 7: 
+T:5152 Error in program 'python': * 8: 
+T:5152 Error in program 'python': ***************************************************************
+T:5152 Error in program 'python': ***** closing all connections ...
+>TS> Tue Apr 16 15:52:46 2013
+T:5152 Error in program 'python': ********************************************* aborting process.
+
+M  
+M [Thr 5152] Tue Apr 16 15:52:46 2013
+M  [Thr 5152] rfcStackTrace TSV_TNEW_BLOCKS_NO_ROLL_MEMORY Tue Apr 16 15:52:46 2013
+M  [Thr 5152] ------------------ C-STACK ----------------------
+Error: Can't initialize symbol engine (0x8)
+M  [Thr 5152] -------------------------------------------------
+
+**** ERROR file opened at 20130416 155543 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:6224 Error in program 'python': ***************************************************************
+T:6224 Error in program 'python': * Error in application program.
+T:6224 Error in program 'python': * SAP error code : TSV_TNEW_BLOCKS_NO_ROLL_MEMORY
+T:6224 Error in program 'python': * Try ABAP/4 report RSNAPDOK to read complete message text.
+T:6224 Error in program 'python': * Also look at the system log in the target system
+T:6224 Error in program 'python': * function/module/line : tsvPageAdminResize/abtsv.c#/2545
+T:6224 Error in program 'python': * Parameters
+T:6224 Error in program 'python': * 0: 
+T:6224 Error in program 'python': * 1: 532500
+T:6224 Error in program 'python': * 2: Session memory
+T:6224 Error in program 'python': * 3: 
+T:6224 Error in program 'python': * 4: 
+T:6224 Error in program 'python': * 5: 
+T:6224 Error in program 'python': * 6: 
+T:6224 Error in program 'python': * 7: 
+T:6224 Error in program 'python': * 8: 
+T:6224 Error in program 'python': ***************************************************************
+T:6224 Error in program 'python': ***** closing all connections ...
+T:6224 Error in program 'python': ********************************************* aborting process.
+
+M  
+M [Thr 6224] Tue Apr 16 15:55:43 2013
+M  [Thr 6224] rfcStackTrace TSV_TNEW_BLOCKS_NO_ROLL_MEMORY Tue Apr 16 15:55:43 2013
+M  [Thr 6224] ------------------ C-STACK ----------------------
+Error: Can't initialize symbol engine (0x8)
+M  [Thr 6224] -------------------------------------------------
+
+**** ERROR file opened at 20130416 161606 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:4084 Error in program 'python': ***************************************************************
+T:4084 Error in program 'python': * Error in application program.
+T:4084 Error in program 'python': * SAP error code : TSV_TNEW_BLOCKS_NO_ROLL_MEMORY
+T:4084 Error in program 'python': * Try ABAP/4 report RSNAPDOK to read complete message text.
+T:4084 Error in program 'python': * Also look at the system log in the target system
+T:4084 Error in program 'python': * function/module/line : tsvPageAdminResize/abtsv.c#/2545
+T:4084 Error in program 'python': * Parameters
+T:4084 Error in program 'python': * 0: 
+T:4084 Error in program 'python': * 1: 499732
+T:4084 Error in program 'python': * 2: Session memory
+T:4084 Error in program 'python': * 3: 
+T:4084 Error in program 'python': * 4: 
+T:4084 Error in program 'python': * 5: 
+T:4084 Error in program 'python': * 6: 
+T:4084 Error in program 'python': * 7: 
+T:4084 Error in program 'python': * 8: 
+T:4084 Error in program 'python': ***************************************************************
+T:4084 Error in program 'python': ***** closing all connections ...
+T:4084 Error in program 'python': ********************************************* aborting process.
+
+M  
+M [Thr 4084] Tue Apr 16 16:16:06 2013
+M  [Thr 4084] rfcStackTrace TSV_TNEW_BLOCKS_NO_ROLL_MEMORY Tue Apr 16 16:16:06 2013
+M  [Thr 4084] ------------------ C-STACK ----------------------
+Error: Can't initialize symbol engine (0x8)
+M  [Thr 4084] -------------------------------------------------
+
+**** ERROR file opened at 20130416 162349 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7024 Error in program 'python': ======> A dynamic Open SQL statement has an unexpected format.
+T:7024 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:7024 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20130416 162425 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7508 Error in program 'python': ======> A dynamically specified column name is unknown.
+T:7508 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:7508 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20130416 162444 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:8992 Error in program 'python': ======> A dynamically specified column name is unknown.
+T:8992 Error in program 'python': <* RfcReceive [1] : returns 3:RFC_SYS_EXCEPTION
+T:8992 Error in program 'python': <* RfcCallReceive [1] : returns 3:RFC_SYS_EXCEPTION
+
+**** ERROR file opened at 20130417 135620 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7672 Error in program 'python': ***************************************************************
+T:7672 Error in program 'python': * Error in application program.
+T:7672 Error in program 'python': * SAP error code : TSV_TNEW_BLOCKS_NO_ROLL_MEMORY
+T:7672 Error in program 'python': * Try ABAP/4 report RSNAPDOK to read complete message text.
+T:7672 Error in program 'python': * Also look at the system log in the target system
+T:7672 Error in program 'python': * function/module/line : tsvPageAdminResize/abtsv.c#/2545
+T:7672 Error in program 'python': * Parameters
+T:7672 Error in program 'python': * 0: 
+T:7672 Error in program 'python': * 1: 516116
+T:7672 Error in program 'python': * 2: Session memory
+T:7672 Error in program 'python': * 3: 
+T:7672 Error in program 'python': * 4: 
+T:7672 Error in program 'python': * 5: 
+T:7672 Error in program 'python': * 6: 
+T:7672 Error in program 'python': * 7: 
+T:7672 Error in program 'python': * 8: 
+T:7672 Error in program 'python': ***************************************************************
+T:7672 Error in program 'python': ***** closing all connections ...
+T:7672 Error in program 'python': ********************************************* aborting process.
+
+M  
+M [Thr 7672] Wed Apr 17 13:56:20 2013
+M  [Thr 7672] rfcStackTrace TSV_TNEW_BLOCKS_NO_ROLL_MEMORY Wed Apr 17 13:56:20 2013
+M  [Thr 7672] ------------------ C-STACK ----------------------
+Error: Can't initialize symbol engine (0x8)
+M  [Thr 7672] -------------------------------------------------
+
+**** ERROR file opened at 20130418 111329 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:7028 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '10.5.7.206:3300' not reached
+TIME        Thu Apr 18 11:13:29 2013
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 10.5.7.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20130418 111749 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+>TS> Thu Apr 18 11:17:55 2013
+T:5796 Error in program 'python': ***************************************************************
+T:5796 Error in program 'python': * Error in application program.
+T:5796 Error in program 'python': * SAP error code : TSV_TNEW_BLOCKS_NO_ROLL_MEMORY
+T:5796 Error in program 'python': * Try ABAP/4 report RSNAPDOK to read complete message text.
+T:5796 Error in program 'python': * Also look at the system log in the target system
+T:5796 Error in program 'python': * function/module/line : tsvPageAdminResize/abtsv.c#/2545
+T:5796 Error in program 'python': * Parameters
+T:5796 Error in program 'python': * 0: 
+T:5796 Error in program 'python': * 1: 516116
+T:5796 Error in program 'python': * 2: Session memory
+T:5796 Error in program 'python': * 3: 
+T:5796 Error in program 'python': * 4: 
+T:5796 Error in program 'python': * 5: 
+T:5796 Error in program 'python': * 6: 
+T:5796 Error in program 'python': * 7: 
+T:5796 Error in program 'python': * 8: 
+T:5796 Error in program 'python': ***************************************************************
+T:5796 Error in program 'python': ***** closing all connections ...
+T:5796 Error in program 'python': ********************************************* aborting process.
+
+M  
+M [Thr 5796] Thu Apr 18 11:17:55 2013
+M  [Thr 5796] rfcStackTrace TSV_TNEW_BLOCKS_NO_ROLL_MEMORY Thu Apr 18 11:17:55 2013
+M  [Thr 5796] ------------------ C-STACK ----------------------
+Error: Can't initialize symbol engine (0x8)
+M  [Thr 5796] -------------------------------------------------
+
+**** ERROR file opened at 20130423 150941 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:4624 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '10.5.7.206:3300' not reached
+TIME        Tue Apr 23 15:09:41 2013
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 10.5.7.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20130423 161320 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:9144 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Tue Apr 23 16:13:20 2013
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+
+
+**** ERROR file opened at 20130423 161351 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5928 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Tue Apr 23 16:13:29 2013
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20130423 161525 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:5540 Error in program 'python': ======> CMALLC : rc=27 > Connect from SAP gateway to RFC server failed
+Connect_PM  GWHOST=10.5.7.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    SAP-Gateway on host SDISVIL.eutile.it / sapgw00
+ERROR       timeout during allocate
+TIME        Tue Apr 23 16:15:03 2013
+RELEASE     720
+COMPONENT   SAP-Gateway
+VERSION     2
+RC          242
+MODULE      gwr3cpic.c
+LINE        1995
+DETAIL      no connect of TP sapdp00 from host 10.5.7.206 after 20 sec
+COUNTER     2
+
+
+**** ERROR file opened at 20130423 170617 ora legale Europa occidentale, SAP-REL 720,0,39 RFC-VER 3  MT-SL
+T:4148 Error in program 'python': ======> SAP_CMINIT3 : rc=20 > Connect to SAP gateway failed
+Connect_PM  GWHOST=192.168.62.206, GWSERV=sapgw00, SYSNR=00
+
+LOCATION    CPIC (TCP/IP) on local host
+ERROR       partner '192.168.62.206:3300' not reached
+TIME        Tue Apr 23 17:06:17 2013
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -10
+MODULE      nixxi.cpp
+LINE        3255
+DETAIL      NiPConnect2: 192.168.62.206:3300
+SYSTEM CALL connect
+ERRNO       10060
+ERRNO TEXT  WSAETIMEDOUT: Connection timed out
+COUNTER     1
+

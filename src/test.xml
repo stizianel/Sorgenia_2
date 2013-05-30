@@ -1,0 +1,24 @@
+<root>
+	<query>
+		<preExtractor>
+		<mainSelect ><![CDATA[
+		alter session set nls_numeric_characters = ',.'
+		]]></mainSelect>
+		</preExtractor>
+		
+		<billdocExtractor>
+		<mainSelect ><![CDATA[
+		select *
+  		from billdoc_erch a,
+  		billdoc_erchz b
+  		where a.legacy = b.legacy
+ 		order by a.legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='25'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='' field_start_index='26' field_end_index='70'>
+       	</csvLine>
+		<ende field_index='0' />
+		</billdocExtractor>
+	</query>
+</root>

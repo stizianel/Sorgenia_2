@@ -1,0 +1,112 @@
+<root>
+	<queries>
+	<FlagAggregator>
+		<mainSelect ><![CDATA[
+       select v.DBI_ORIGINAL_KEY_PR,    --0
+        v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4                      
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8          
+        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+       where v.ctar1 = a.ctar1 
+         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
+         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
+         and a.operando = b.operando
+         and tipo ='FLAG'
+         and a.prodotto='STD_TANDEM'
+        group by 
+        v.DBI_ORIGINAL_KEY_PR,
+        v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4   
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo
+        UNION
+      select v.DBI_ORIGINAL_KEY_PR,    --0
+        v.DBI_ORIGINAL_KEY_PR,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8          
+        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+       where v.ctar1 = a.ctar1 
+         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR 
+        and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
+        and a.operando = b.operando
+        and tipo ='FLAG'
+        AND A.ACQUISIZIONE=V.CFREQ
+        and a.prodotto='STD_TANDEM'
+        group by 
+        v.DBI_ORIGINAL_KEY_PR,
+        v.DBI_ORIGINAL_KEY_PR, 
+        a.operando, 
+        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
+         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4  
+        valori, 
+        nvl(prezzo,0),b.id_operando,tipo       
+        ]]></mainSelect>
+		
+		   <insertTable name='FACTS_F_FLAG' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_FLAG' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index= '7'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_FLAG' truncate = 'True' break_index='' >
+		      <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_FLAG' />
+		     <field name='AB'   index='3' />
+		     <field name='BIS' index='4' />
+		      <field name='BOOLKZ' index='6' />
+		      <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='7' />
+		     </insertTable> 		
+	</FlagAggregator>
+	<FlagExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               FACTS_F_FLAG.legacy, --4
+               FACTS_F_FLAG.tipo, --5
+               FACTS_F_FLAG.operand, --6
+               FACTS_F_FLAG.saison, --7
+               FACTS_F_FLAG.prog, --8
+               FACTS_V_FLAG.legacy, --9
+               FACTS_V_FLAG.tipo, --10
+               FACTS_V_FLAG.ab, --11
+               FACTS_V_FLAG.bis, --12
+               FACTS_V_FLAG.boolkz, --13
+               FACTS_V_FLAG.tarifart, --14
+               FACTS_V_FLAG.kondigr, --15
+               FACTS_V_FLAG.prog --16
+              from facts_key,FACTS_F_FLAG,FACTS_V_FLAG
+              where facts_key.legacy = FACTS_F_FLAG.legacy
+              and FACTS_V_FLAG.legacy=facts_key.legacy
+              and FACTS_F_FLAG.legacy=FACTS_V_FLAG.legacy
+              and FACTS_F_FLAG.prog=FACTS_V_FLAG.prog
+              order by FACTS_F_FLAG.prog
+           ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</FlagExtractor>
+	</queries>
+</root>
+

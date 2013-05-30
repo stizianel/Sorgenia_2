@@ -1,0 +1,186 @@
+<root>
+	<query>
+		<id>A001</id>
+		<descrizione>"Clienti con contratto attivo senza indirizzo"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrclienti t
+			where t.acdan not in
+			(select indcli from dbi_user.ifc_sap_anagrindirizzi)
+			and atipoentita = 'CLIENTE'
+			and acdan in (select acdan from v_contratti)
+		</select>
+	</query>
+	<query>
+		<id>A002</id>
+		<descrizione>"Clienti con contratto attivo tipo F senza codice fiscale"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrclienti t
+				where apers  = 'F' and acdfi is null
+				and atipoentita = 'CLIENTE'
+				and acdan in (select acdan from v_contratti)
+		</select>
+	</query>
+	<query>
+		<id>A003</id>
+		<descrizione>"Clienti con contratto attivo tipo G senza partita iva"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrclienti t
+				where apers  = 'G' and apiva is null
+				and atipoentita = 'CLIENTE'
+				and acdan in (select acdan from v_contratti)
+		</select>
+	</query>
+	<query>
+		<id>A004</id>
+		<descrizione>"Contratti elettrici con metodo pagamento RID senza appoggio bancario"</descrizione>
+		<select>select cncon, cmepag, cflg9
+				from dbi_user.ifc_sap_anagrcontrele t
+				where 
+				cmepag = 'RID' and
+				cflg9 not in (select delef from dbi_user.ifc_sap_anagrbanche)
+		</select>
+	</query>
+	<query>
+		<id>A005</id>
+		<descrizione>"Contratti gas con metodo pagamento RID senza appoggio bancario"</descrizione>
+		<select>select cncon, cmepag, cflg9
+				from dbi_user.ifc_sap_anagrcontrgas t
+				where 
+				cmepag = 'RID' and
+				cflg9 not in (select delef from dbi_user.ifc_sap_anagrbanche)
+		</select>
+	</query>
+	<query>
+		<id>A006</id>
+		<descrizione>"Contratti ee con entità fatturabile senza indirizzo di invio"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrcontrele a
+				where a.cflg9 not in
+				(select b.indcli from dbi_user.ifc_sap_anagrindirizzi b
+				where indtipoentita = 'ENTITA FATTURABILE')
+		</select>
+	</query>
+	<query>
+		<id>A007</id>
+		<descrizione>"Contratti gas con entità fatturabile senza indirizzo di invio"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrcontrgas a
+				where a.cflg9 not in
+				(select b.indcli from dbi_user.ifc_sap_anagrindirizzi b
+				where indtipoentita = 'ENTITA FATTURABILE')
+		</select>
+	</query>
+	<query>
+		<id>A008</id>
+		<descrizione>"Contratti ele senza indirizzo PR"</descrizione>
+		<select>select cncon from dbi_user.ifc_sap_anagrcontrele 
+				where cncon not in 
+				(select pr from dbi_user.ifc_sap_anagrindirizzi_pr)
+		</select>
+	</query>
+	<query>
+		<id>A009</id>
+		<descrizione>"Contratti gas senza indirizzo PR"</descrizione>
+		<select>select cncon from dbi_user.ifc_sap_anagrcontrgas 
+				where cncon not in 
+				(select pr from dbi_user.ifc_sap_anagrindirizzi_pr)
+		</select>
+	</query>
+	<query>
+		<id>A010</id>
+		<descrizione>"Contratti gas con indirizzo COMUNE NON DEFINITO"</descrizione>
+		<select>select cncon,         --0 
+            c.indccom,            --1
+              c.inddcom,            --2
+              c.indcap,            -- 3
+              c.indindi||' '||c.indccvia, --4
+              substr(c.indcivi,0,10),     --5
+              c.indprov,                  --6
+              dec_regiogroup(c.indregio)  --7
+              from DBI_USER.ifc_sap_anagrcontrgas t, DBI_USER.ifc_sap_anagrindirizzi_pr b, v_indirizzi c
+              where t.cncon = b.pr  and
+              b.indprog = c.indprog and
+              inddcom = 'NON DEFINITO'
+		</select>
+	</query>
+	<query>
+		<id>A011</id>
+		<descrizione>"Contratti ele con indirizzo COMUNE NON DEFINITO"</descrizione>
+		<select>select cncon,         --0 
+            c.indccom,            --1
+              c.inddcom,            --2
+              c.indcap,            -- 3
+              c.indindi||' '||c.indccvia, --4
+              substr(c.indcivi,0,10),     --5
+              c.indprov,                  --6
+              dec_regiogroup(c.indregio)  --7
+              from DBI_USER.ifc_sap_anagrcontrele t, DBI_USER.ifc_sap_anagrindirizzi_pr b, v_indirizzi c
+              where t.cncon = b.pr  and
+              b.indprog = c.indprog and
+              inddcom = 'NON DEFINITO'
+		</select>
+	</query>
+	<query>
+		<id>A012</id>
+		<descrizione>"Misuratori ele con gruppo numeratori errato"</descrizione>
+		<select>select cncon,
+			      substr(matricola_misuratore, 0, 18),
+			      gruppo_misuratori_sap,
+			      count(*)
+			      from v_contratti, dbi_user.stg_ret_pod_misuratori
+			      where 
+			      cflg1 = 'ATTIVO' and
+			      ctipo = '1' and
+			      cpod = pod  and
+			      gruppo_misuratori_sap not in (select cod_gruppo from z_grnum z)    
+			      group by    
+			      cncon,
+			      substr(matricola_misuratore, 0, 18),
+			      gruppo_misuratori_sap
+		</select>
+	</query>
+	<query>
+		<id>A013</id>
+		<descrizione>"Misuratori ele con matricola = POD"</descrizione>
+		<select>select cncon,
+			      substr(matricola_misuratore, 0, 18)
+			      from v_contratti, dbi_user.stg_ret_pod_misuratori
+			      where 
+			      cflg1 = 'ATTIVO' and
+			      ctipo = '1' and
+			      cpod = pod
+			      and substr(matricola_misuratore, 3,2) = 'IT'
+			      group by cncon, substr(matricola_misuratore, 0, 18)
+		</select>
+	</query>
+	<query>
+		<id>A014</id>
+		<descrizione>"Contratti ele senza letture"</descrizione>
+		<select>select cncon from v_contratti
+		        where ctipo = 1
+		        and cncon not in
+		        (select distinct(dbi_cd_punto) from dbi_user.ifc_sap_letture_ele_anubis t)
+		</select>
+	</query>
+	<query>
+		<id>W001</id>
+		<descrizione>"Clienti con contratto attivo con IBAN non IT"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrbanche b
+				where substr(deliban,0,2) != 'IT'
+				and delcli in (select acdan from v_contratti)
+		</select>
+	</query>
+	<query>
+		<id>W002</id>
+		<descrizione>"Contratti attivi EE con categoria NULL"</descrizione>
+		<select>select acatc, count(*) from v_contratti v
+				where ctipo = 1 
+				group by acatc
+				order by count(*) desc
+		</select>
+	</query>
+	<query>
+		<id>W003</id>
+		<descrizione>"Contratti attivi Gas con categoria NULL"</descrizione>
+		<select>select acatc, count(*) from v_contratti v
+				where ctipo = 3 
+				group by acatc
+				order by count(*) desc
+		</select>
+	</query>
+</root>

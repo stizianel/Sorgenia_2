@@ -1,0 +1,275 @@
+<root>
+	<queries>
+	<partnerAggregatorBase>
+	<mainSelect ><![CDATA[
+		select acdan, 
+      		  'Z000000006',
+   			  substr(arags,0,40),
+		      acognome,
+		      anome, 
+		      substr(decode(apers, 'N', 'G', 'Y', 'F', 'G'),0),
+		      asesso, 
+		      acdfi, 
+		      apiva,
+		      dec_acatc(acatc), 
+		      adtna, 
+		      alcna,
+		      substr(arags,0,20)
+		      from DBI_USER.ifc_sap_anagrclienti a
+		      where 
+		      acdan in (select acdan from z_test_contratti where note = 'attivi gas' and partner = 'N.A.')
+	]]></mainSelect>
+			<insertTable name='PARTNER_INIT' truncate = 'True' break_index=''  condition_index='5' condition_value = 'G' condition_type='.eq.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='INIT' />
+					<field name='PARTNER' index='0' />
+					<field name='MUSTER_KUN' constant_value='MUST00001' />
+					<field name='BU_RLTYP' constant_value='MKK' />
+					<field name='BU_TYPE' constant_value='2' />
+					<field name='BPKIND' constant_value='0002' />
+			</insertTable> 
+			<insertTable name='PARTNER_INIT' truncate = 'True' break_index=''  condition_index='5' condition_value = 'F' condition_type='.eq.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='INIT' />
+					<field name='PARTNER' index='0' />
+					<field name='MUSTER_KUN' constant_value='MUST00002' />
+					<field name='BU_RLTYP' constant_value='MKK' />
+					<field name='BU_TYPE' constant_value='1' />
+					<field name='BPKIND' constant_value='0010' />
+			</insertTable>
+			<insertTable name='PARTNER_BUT000' truncate = 'True' break_index=''  condition_index='5' condition_value = 'G' condition_type='.eq.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT000' />
+					<field name='TITLE' constant_value='' />
+					<field name='NAME_ORG1' index='2' />
+					<field name='NAME_ORG2' constant_value='' />
+					<field name='NAME_ORG3' constant_value='' />
+					<field name='NAME_ORG4' constant_value='' />
+					<field name='LEGAL_ENTY' index='9' />
+					<field name='NAME_LAST' constant_value='' />
+					<field name='NAME_FIRST' constant_value='' />
+					<field name='PARTGRPTYP' constant_value='' />
+					<field name='NAME_GRP1' constant_value='' />
+					<field name='NAME_GRP2' constant_value='' />
+					<field name='BU_SORT1' index='12' />
+					<field name='BU_SORT2' index='12' />
+			</insertTable>
+			<insertTable name='PARTNER_BUT000' truncate = 'True' break_index=''  condition_index='5' condition_value = 'F' condition_type='.eq.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT000' />
+					<field name='TITLE' constant_value='' />
+					<field name='NAME_ORG1' constant_value='' />
+					<field name='NAME_ORG2' constant_value='' />
+					<field name='NAME_ORG3' constant_value='' />
+					<field name='NAME_ORG4' constant_value='' />
+					<field name='LEGAL_ENTY' index='9' />
+					<field name='NAME_LAST' index='3' />
+					<field name='NAME_FIRST' index='4' />
+					<field name='PARTGRPTYP' constant_value='' />
+					<field name='NAME_GRP1' constant_value='' />
+					<field name='NAME_GRP2' constant_value='' />
+					<field name='BU_SORT1' index='3' />
+					<field name='BU_SORT2' index='3' />
+			</insertTable>
+			
+		</partnerAggregatorBase>		
+	<partnerAggregatorBanche>
+		<mainSelect ><![CDATA[
+			select delcli,
+		      delprog,
+		      delabi,
+		      delabi||delcab,
+		      delcin,
+		      deliban,
+		      substr(deliban,-12),
+		      delint
+		      from DBI_USER.ifc_sap_anagrbanche a
+		      where 
+		      delcli in (select acdan from z_test_contratti where note = 'attivi gas' and partner = 'N.A.')
+		]]></mainSelect>
+		<insertTable name='PARTNER_BUT0BK' truncate = 'True' break_index='' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT0BK' />
+					<field name='BANKL' index='3' />
+					<field name='BANKN' index='6' />
+					<field name='BKONT' index='4' />
+					<field name='KOINH' index='7' />
+					<field name='IBAN'  index='5' />
+					<field name='BKEXT' index='1' />
+		</insertTable>
+	</partnerAggregatorBanche>
+	<partnerAggregatorIndi>
+		<mainSelect ><![CDATA[
+			select    acdan,     -- 0 
+	          cust_addr_key,     -- 1
+	          comune_cliente,    -- 2
+	          toponimo_cliente||' '||via_cliente,  -- 3
+	          civico_cliente,                      -- 4
+	          cap_cliente,                         -- 5
+	          provincia_cliente,                   -- 6
+	          ef_addr_key,                         -- 7
+	          comune_ef,                           -- 8
+	          toponimo_ef||' '||via_ef,            -- 9
+	          civico_ef,                           -- 10
+	          cap_ef,                              -- 11
+	          provincia_ef                         -- 12
+	          from 
+	          DBI_USER.ifc_delibera_gas, z_test_contratti 
+	          where note = 'attivi gas' and partner = 'N.A.'
+	          and cncon = pr_anu
+	          order by acdan
+		]]></mainSelect>
+		<insertTable name='PARTNER_BUT020' truncate = 'True' break_index='' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT020' />
+					<field name='XDFADR' constant_value='' />
+					<field name='NAME_CO' constant_value='' />
+					<field name='REGION' index='6' />
+					<field name='POST_CODE1' index='5' />
+					<field name='STREET' index='3' />
+					<field name='HOUSE_NUM1' index='4' />					
+					<field name='TEL_NUMBER' constant_value='' />
+					<field name='TEL_EXTENS' constant_value='' />
+					<field name='HOUSE_NUM2' constant_value='' />
+					<field name='CITY1' index='2' />
+					<field name='ADEXT_ADDR' index='1' />
+			</insertTable>
+	</partnerAggregatorIndi>
+	
+	<partnerAggregatorUtindi>
+		<mainSelect ><![CDATA[
+			select    acdan, 
+          cust_addr_key,
+          'Z000000002'
+			from       DBI_USER.ifc_delibera_gas, z_test_contratti 
+            where note = 'attivi gas' and partner = 'N.A.'
+	          and cncon = pr_anu
+			union
+			select    acdan, 
+          cust_addr_key,
+          'Z000000007'
+			from       DBI_USER.ifc_delibera_gas, z_test_contratti 
+            where note = 'attivi gas' and partner = 'N.A.'
+	          and cncon = pr_anu
+			order by acdan
+		]]></mainSelect>
+			<insertTable name='PARTNER_BUT021' truncate = 'True' break_index='' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='BUT021' />
+					<field name='ADEXT_ADVW' index='1' />
+					<field name='ADR_KIND' index='2' />
+					<field name='XDFADU' constant_value='' />
+			</insertTable>
+		</partnerAggregatorUtindi>
+		
+		<partnerAggregatorTax>
+			<mainSelect ><![CDATA[
+				select acdan, apiva, acdfi, LENGTH(TRIM(TRANSLATE(acdfi, ' +-.0123456789',' '))), 'IT'||apiva
+      			from DBI_USER.ifc_sap_anagrclienti
+      			where 
+      			acdan in (select acdan from z_test_contratti where note = 'attivi gas' and partner = 'N.A.')
+			]]></mainSelect>
+			<insertTable name='PARTNER_TAXNUM' truncate = 'True' break_index='' condition_index='3' condition_value = 'None' condition_type='.ne.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='TAXNUM' />
+					<field name='TAXTYPE' constant_value='IT1' />
+					<field name='TAXNUM' index='2' />
+			</insertTable>
+			<insertTable name='PARTNER_TAXNUM' truncate = 'True' break_index='' condition_index='3' condition_value = 'None' condition_type='.eq.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='TAXNUM' />
+					<field name='TAXTYPE' constant_value='ITZ' />
+					<field name='TAXNUM' index='2' />
+			</insertTable>
+			<insertTable name='PARTNER_TAXNUM' truncate = 'True' break_index='' condition_index='1' condition_value = 'None' condition_type='.ne.' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='TAXNUM' />
+					<field name='TAXTYPE' constant_value='IT0' />
+					<field name='TAXNUM' index='4' />
+			</insertTable>
+	   </partnerAggregatorTax>
+	   
+       <partnerExtractor>
+		<mainSelect ><![CDATA[
+			select 
+			a.legacy,                               -- 0
+			a.legacy||c.adext_addr,                 -- 1
+			a.legacy||c.adext_addr||d.adr_kind,     -- 2
+			a.legacy||k.bkext,                      -- 3
+			a.legacy||t.taxtype||t.taxnum,          -- 4
+			a.legacy,                               -- 5
+			a.tipo,                                 -- 6  
+			a.partner,                              -- 7
+			a.muster_kun,                           -- 8
+			a.bu_rltyp,                             -- 9
+			a.bu_type,                              -- 10
+			a.bpkind,                               -- 11
+			b.legacy,                               -- 12
+			b.tipo,                                 -- 13
+			b.bu_sort1,                             -- 14
+			b.bu_sort2,                             -- 15
+			b.title,                                -- 16 
+			b.name_org1,                            -- 17
+			b.name_org2,                            -- 18
+			b.name_org3,                            -- 19
+			b.name_org4,                            -- 20     
+			b.legal_enty,                           -- 21
+			b.name_last,                            -- 22
+			b.name_first,                           -- 23
+			b.partgrptyp,                           -- 24
+			b.name_grp1,                            -- 25
+			b.name_grp2,                            -- 26
+			c.legacy,                               -- 27 BUT020
+			c.tipo,                                 -- 28
+			c.adext_addr,                           -- 29
+			c.city1,                                -- 30
+			c.post_code1,                           -- 31
+			c.street,                               -- 32
+			c.house_num1,                           -- 33
+			c.region,                               -- 34
+			c.tel_number,                           -- 35
+			d.legacy,                               -- 36 BUT0IS
+			d.tipo,                                 -- 37
+			d.adext_advw,                           -- 38
+			d.adr_kind,                             -- 39
+			d.xdfadu,                               -- 40
+			k.legacy,                               -- 41 BUT0BK
+			k.tipo,                                 -- 42   
+			k.bankl,                                -- 43
+			k.bankn,                                -- 44
+			k.bkont,                                -- 45
+			k.koinh,                                -- 46 
+			k.bkext,                                -- 47
+			k.iban,                                 -- 48
+			t.legacy,                               -- 49 TAXNUM
+			t.tipo,                                 -- 50
+			t.taxtype,                              -- 51
+			t.taxnum                                -- 52 
+			from
+			partner_init a left outer join partner_but0bk k on a.legacy = k.legacy
+	    	left outer join partner_but021 d on a.legacy = d.legacy,
+			partner_but000 b,
+			partner_but020 c,
+			partner_taxnum t
+			where
+			a.legacy = b.legacy and
+			a.legacy = c.legacy and
+			a.legacy = t.legacy
+			order by a.legacy, a.legacy||c.adext_addr, a.legacy||c.adext_addr||d.adr_kind,a.legacy||k.bkext,a.legacy||t.taxtype||t.taxnum
+       ]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='24'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='3' field_start_index='41' field_end_index='48' condition_index='41' condition_value = 'None' condition_type='.ne.'>
+       	</csvLine>
+       	<csvLine line_index='3' break_index='1' field_start_index='27' field_end_index='35'>
+       	</csvLine>
+       	<csvLine line_index='4' break_index='2' field_start_index='36' field_end_index='40' condition_index='36' condition_value = 'None' condition_type='.ne'>
+       	</csvLine>
+       	<csvLine line_index='5' break_index='4' field_start_index='49' field_end_index='52'>
+       	</csvLine>
+       	<ende field_index='0' />
+	</partnerExtractor>
+   </queries>
+</root>

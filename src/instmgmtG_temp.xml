@@ -1,0 +1,100 @@
+<root>
+	<queries>
+	<instmgmtAggregator>
+		<mainSelect ><![CDATA[
+		select cncon,
+       case
+         when nvl(b.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) <
+              to_date('20090701', 'YYYYMMDD') then
+          '20090701'
+         else
+          to_char(b.dt_inizio_fornitura, 'YYYYMMDD')
+       end, -- 1                                                   -- 0
+       '04', -- 2
+       prnum, -- 3
+       '000001', -- 4
+       '0', -- 5
+       'G_' || tipo_profilo_utilizzo_anu, -- 6
+       d.volumi_annui_anu, -- 7
+       i.legacy, -- 8
+       tpnum, -- 9
+       substr(b.cabina_remi,-8), -- 10
+       e.pr_area_ai,  -- 11
+       e.temp_area    -- 12
+  from dbi_user.ifc_sap_anagrcontrgas   a,
+       devinforecg_int i,
+       z_grnum,
+       dbi_user.ifc_sap_punti_fornitura b,
+       dbi_user.ifc_delibera_gas        d,
+       adrcity_city e
+ where cncon in (select cncon from z_pr_in_lavorazione_gas)
+   and substr(i.legacy, (instr(i.legacy, 'P'))) = cncon
+   and matnr = cod_gruppo
+   and (a.cncon = b.dbi_punto_key and a.ctipo = b.ptipo)
+   and cncon = d.pr_anu
+   and d.istat_cliente = e.legacy
+ order by cncon, prnum
+		]]></mainSelect>
+		<insertTable name='INSTMGMTG_DIINT' truncate = 'True' break_index='0' >
+		<field name='LEGACY' index='0' />
+		<field name='TIPO' constant_value='DI_INT' />
+		<field name='DEVLOC' constant_value=' ' />
+		<field name='ANLAGE' index='0' />
+		<field name='EADAT'  index='1' />
+		<field name='ACTION' index='2' />
+		</insertTable>
+		<insertTable name='INSTMGMTG_DIZW' truncate = 'True' break_index='' >
+		<field name='LEGACY' index='0' />
+		<field name='TIPO' constant_value='DI_ZW' />
+		<field name='ZWNUMMERA' constant_value=' ' />
+		<field name='ZWNUMMERE' index='3' />
+		<field name='KONDIGRE'  index='4' />
+		<field name='ZWSTANDCA' constant_value=' ' />
+		<field name='ZWSTANDCE' index='5' />
+		<field name='THGVER'    constant_value=' ' />
+		<field name='ZWNABR'    constant_value=' ' />
+		<field name='TARIFART'  index='6' />
+		<field name='PERVERBR'  index='7' />
+		<field name='GVERRECH'  constant_value=' ' />
+		<field name='KENNZIFFE' constant_value=' ' />
+		<field name='ABRFAKTE'  constant_value=' ' />
+		<field name='NABLESENE' constant_value=' ' />
+		<field name='EQUNRE'    index='8' />
+		<field name='EQUNRA'    constant_value=' ' />
+		<field name='TEMP_AREA' constant_value=' ' />
+		<field name='PR_AREA_AI' constant_value=' ' />
+		<field name='CALOR_AREA' constant_value=' ' />
+		</insertTable>
+		<insertTable name='INSTMGMTG_DIGER' truncate = 'True' break_index='0' >
+		<field name='LEGACY' index='0' />
+		<field name='TIPO' constant_value='DI_GER' />
+		<field name='GERWECHS'  constant_value=' ' />
+		<field name='EQUNRNEU'  index='8' />
+		<field name='TRENRE'    constant_value=' ' />
+		<field name='WANDNRE'   constant_value=' ' />
+		<field name='ABRFAKT'   constant_value=' ' />
+		<field name='DRUCKNRE'  constant_value=' ' />
+		<field name='MESSDRCK'  constant_value=' ' />
+		<field name='AUSBAU'    constant_value=' ' />
+		<field name='GVERRECHG' constant_value=' ' />
+		<field name='TARIFARTG' constant_value=' ' />
+		<field name='KONDIGRG'  constant_value=' ' />
+		<field name='EQUNRALT'  constant_value=' ' />
+		</insertTable>
+	</instmgmtAggregator>
+	<instmgmtExtractor>
+		<mainSelect ><![CDATA[
+			select * from instmgmtg_diint a, instmgmtg_dizw b, instmgmtg_diger c
+			where a.legacy = b.legacy and
+			a.legacy = c.legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='5'>
+       	</csvLine>
+		<csvLine line_index='1' break_index='' field_start_index='6' field_end_index='25'>
+       	</csvLine>
+		<csvLine line_index='2' break_index='0' field_start_index='26' field_end_index='39'>
+       	</csvLine>
+       	<ende field_index='0' />
+    </instmgmtExtractor>
+	</queries>
+</root>

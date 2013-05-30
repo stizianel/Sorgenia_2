@@ -1,0 +1,112 @@
+<root>
+	<queries>
+
+	<instlnAggregator>
+		<mainSelect ><![CDATA[
+	      select a.dbi_original_key_pr as cncon, --0
+       a.ctar1, --1
+       decode(a.ctipo, '3', 'G', '1', 'P', 'P'), --2
+       decode(a.ctipo, '3', '02', '1', '04', '04'), --3
+       decode(a.mercato_versione, 'LARGE', 'ECTLGRES00', 'ECTMMRES00'), --4
+       decode(a.ctipo, '3', 'G001', '1', 'P001', 'ERR'), --5
+       REGEXP_SUBSTR(a.cncon, '[[:digit:]]+'), --6
+       a.cpod, --7
+       dec_rete(a.cdist), --8  
+       dec_anlart(a.ctfor, a.crete), --9  
+       dec_spebene(a.crete, a.ctens), --10
+       dec_branche(a.ctfor), --11
+       ulettura --12
+  from DBI_USER.ifc_sap_anagrcontrele a,
+       z_temp_ulettura                b,
+       dbi_user.ifc_sap_statopunti    s
+ where a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
+   and a.dbi_original_key_pr = b.cncon
+   and s.cd_punto = a.dbi_original_key_pr
+   and s.stato_punto_dbi = 'ATTIVO'
+   and a.d_valido_al = to_date('31/12/9999', 'dd/mm/yyyy')
+ order by a.cpod
+		]]></mainSelect>
+		<insertTable name='INSTLN_KEY' truncate = 'True' break_index='7' >
+				<field name='LEGACY' index='7' />
+				<field name='TIPO' constant_value='KEY' />
+				<field name='ANLAGE' constant_value=' ' />
+		</insertTable>
+		<insertTable name='INSTLN_DATA' truncate = 'True' break_index='7' >
+				<field name='LEGACY' index='7' />
+				<field name='TIPO' constant_value='DATA' />
+				<field name='SPARTE' index='2' />
+				<field name='VSTELLE' index='0' />
+				<field name='BAPERTYP' constant_value='X' />
+				<field name='SPEBENE' index='10' />
+				<field name='ANLART' index='9' />
+				<field name='NODISCONCT' constant_value=' ' />
+				<field name='SERVICE' index='3' />
+				<field name='DEREGSTAT' constant_value='1' />
+				<field name='AB' constant_value='20010101' />
+				<field name='TARIFTYP' index='4' />
+				<field name='BRANCHE' index='11' />
+				<field name='AKLASSE' index='5' />
+				<field name='ABLEINH' index='12' />
+		</insertTable>
+		<insertTable name='INSTLN_POD' truncate = 'True' break_index='7' >
+				<field name='LEGACY' index='7' />
+				<field name='TIPO' constant_value='POD' />
+				<field name='DATEFROM' constant_value='20010101' />
+				<field name='TIMEFROM' constant_value='000000' />
+				<field name='EUIROLE_TECH' constant_value=' ' />
+				<field name='UITYPE' constant_value='0001' />
+				<field name='EXT_UI' index='7' />
+				<field name='UISTRUTYP' constant_value='01' />
+				<field name='GRID_ID' index='8' />
+				<field name='GRID_LEVEL' constant_value=' ' />
+		</insertTable>
+	</instlnAggregator>
+	
+	<instlnExtractor>
+		<mainSelect ><![CDATA[
+       		select a.legacy,
+			a.tipo,
+			a.anlage,
+			b.legacy,
+			b.tipo,
+			b.sparte,
+			b.vstelle,
+			' ',
+			b.bapertyp,
+			b.spebene,
+			b.anlart,
+			b.nodisconct,
+			b.service,
+			b.deregstat,
+			b.ab,
+			b.tariftyp,
+			b.branche,
+			b.aklasse,
+			b.ableinh,
+			c.legacy,
+			c.tipo,
+			c.datefrom,
+			c.timefrom,
+			c.euirole_tech,
+			c.uitype,
+			c.ext_ui,
+			c.uistrutyp,
+			c.grid_id,
+			c.grid_level
+			from instln_key a, instln_data b, instln_pod c
+			where
+			a.legacy = b.legacy
+			and a.legacy = c.legacy
+       ]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='2'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='3' field_end_index='18'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='0' field_start_index='19' field_end_index='28'>
+       	</csvLine>
+		<ende field_index='0' />
+	</instlnExtractor>
+	
+	</queries>
+</root>
+

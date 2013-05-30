@@ -1,0 +1,103 @@
+<root>
+	<queries>
+	
+    <adrcityAggregator>
+		<mainSelect ><![CDATA[
+       select INDCCOM, 
+			INDPROV, 
+			INDDCOM, 
+			substr(INDDCOM,0,24), 
+			substr(INDDCOM,0,10),
+			dec_temp_area(indzona, indgradi),
+			dec_pr_area(indlevel),
+			dec_regiogroup(indregio)
+			from DBI_USER.ifc_sap_comuni
+		]]></mainSelect>
+		<insertTable name='ADRCITY_CITY' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='CITY' />
+				<field name='CITY_CODE' index='0' />
+				<field name='REGION' index='1' />
+				<field name='CITY_NAME' index='2' />
+				<field name='CITY_SHORT' index='3' />
+				<field name='CITY_SH10' index='4' />
+				<field name='TEMP_AREA' index='5' />
+				<field name='PR_AREA_AI' index='6' />
+				<field name='REGIOGROUP' index='7' />
+		</insertTable>
+	</adrcityAggregator>
+	
+    <adrcitycprtAggregator>
+		<mainSelect ><![CDATA[
+       select B.INDCCOM, 
+      	A.IDFRAZIONE, 
+      	CAP,
+      	substr(FRAZIONE,0,40)
+      	from dbi_user.SOURCE_GEOLAB_FRAZIONI A, dbi_user.ifc_sap_comuni B where A.IDLOCALITA = B.IDLOCALITA_GEOLAB
+		]]></mainSelect>
+		<insertTable name='ADRCITY_CPRT' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='CPRT' />
+				<field name='CITYP_CODE' index='1' />
+				<field name='POST_CODE' index='2' />
+				<field name='CITY_PART' index='3' />
+		</insertTable>
+	</adrcitycprtAggregator>
+	
+    <adrcitycpcdAggregator>
+		<mainSelect ><![CDATA[
+		select B.INDCCOM, 
+	      CAP
+	      from dbi_user.ifc_sap_geolab_strade A, dbi_user.ifc_sap_comuni B where A.IDLOCALITA = B.IDLOCALITA_GEOLAB
+    	union
+    	select B.INDCCOM,
+         cap
+         from geolab_frazioni a, dbi_user.ifc_sap_comuni B where a.idlocalita = B.IDLOCALITA_GEOLAB
+		GROUP BY B.INDCCOM, CAP
+		order by INDCCOM, cap
+		]]></mainSelect>
+		<insertTable name='ADRCITY_CPCD' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='CPCD' />
+				<field name='POST_CODE' index='1' />
+		</insertTable>
+	</adrcitycpcdAggregator>
+	
+    <adrcityExtractor>
+		<mainSelect ><![CDATA[
+select 
+		a.legacy,
+		a.tipo,
+		a.city_code,
+		a.region,
+		NVL(a.regiogroup, ' '),
+		NVL(a.temp_area,  ' '),
+		NVL(a.pr_area_ai, ' '),
+		a.city_name,
+		a.city_short,
+		a.city_sh10,
+		b.legacy,
+		b.tipo,
+		b.cityp_code,
+		b.post_code,
+		b.city_part,
+		c.legacy,
+		c.tipo,
+		c.post_code,
+		c.legacy||c.post_code
+		from adrcity_city a left outer join adrcity_cprt b on (a.legacy = b.legacy), 
+		adrcity_cpcd c
+		where
+		a.legacy = c.legacy
+		order by a.legacy, c.post_code
+       ]]></mainSelect>
+       		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='9'>
+       		</csvLine>
+       		<csvLine line_index='1' break_index='' field_start_index='10' field_end_index='14' condition_index='10' condition_value = 'None' condition_type='.ne.'>
+       		</csvLine>
+       		<csvLine line_index='2' break_index='18' field_start_index='15' field_end_index='17' condition_index='15' condition_value = 'None' condition_type='.ne.'>
+       		</csvLine>
+			<ende field_index='0' />
+	</adrcityExtractor>
+	</queries>
+</root>

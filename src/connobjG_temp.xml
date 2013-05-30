@@ -1,0 +1,81 @@
+<root>
+	<queries>
+		<connobjAggregator>
+			<mainSelect ><![CDATA[
+				select        
+              v.cncon,         --0 
+              c.indccom,            --1
+              c.inddcom,            --2
+              c.indcap,            -- 3
+              c.indindi||' '||c.indccvia, --4
+              nvl(substr(c.indcivi,0,10),'99999'),     --5
+              c.indprov,                  --6
+              dec_regiogroup(c.indregio),  --7
+              decode(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT')
+              from v_contratti v, DBI_USER.ifc_sap_anagrindirizzi_pr b, v_indirizzi c, dbi_user.ifc_delibera_gas d
+              where
+              v.cncon = b.pr and
+              b.indprog = c.indprog and
+              v.ctipo = '3' and
+              d.pr_user = v.cncon and
+              v.cncon in (select cncon from z_pr_in_lavorazione_gas)
+              group by
+              v.cncon,
+              c.indccom,            --1
+              c.inddcom,            --2
+              c.indcap,            -- 3
+              c.indindi||' '||c.indccvia, --4
+              substr(c.indcivi,0,10),     --5
+              c.indprov,                  --6
+              dec_regiogroup(c.indregio),  --7
+              decode(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT')
+              order by v.cncon  
+	      ]]></mainSelect>
+			<insertTable name='CONNOBJ_COEHA' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='CO_EHA' />
+					<field name='PLTXT' constant_value='Punto di connessione' />
+					<field name='SWERK' constant_value='' />
+			</insertTable>
+			<insertTable name='CONNOBJ_COADR' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='CO_ADR' />
+					<field name='CITY1' index='2' />
+					<field name='POST_CODE1' index='3' />
+					<field name='STREET' index='4' />
+					<field name='HOUSE_NUM1' index='5' />
+					<field name='HOUSE_NUM2' constant_value='' />
+					<field name='REGION' index='6' />
+					<field name='REGIOGROUP' index='7' />
+					<field name='COUNTRY' index='8' />
+			</insertTable>
+		</connobjAggregator>
+		
+		<connobjExtractor>
+		<mainSelect ><![CDATA[
+			select  a.legacy,
+	        a.tipo,
+	        a.pltxt,
+	        a.swerk,
+	        b.legacy,
+	        b.tipo,
+	        b.city1,
+	        b.post_code1,
+	        b.street,
+	        b.house_num1,
+	        b.house_num2,
+	        b.country,
+	        b.region,
+	        b.regiogroup
+	        from connobj_coeha a, connobj_coadr b
+	        where
+	        a.legacy = b.legacy
+	    ]]></mainSelect>
+       	<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='3'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='' field_start_index='4' field_end_index='12'>
+       	</csvLine>
+		<ende field_index='0' />
+	</connobjExtractor>
+	</queries>
+</root>

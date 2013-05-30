@@ -1,0 +1,1163 @@
+<root>
+	<queries>
+	
+	<accountAggregator>
+		<mainSelect ><![CDATA[
+        select  cflg9, 
+        ccdan, 
+        indprog, 
+        a.delprog, 
+        apers, 
+        acatc, 
+        atsocerp, 
+        substr(arags,0,35), 
+        dec_ezawe(a.delprog), 
+        dec_ikey(acatc),
+        dec_togru(acatc),
+        dec_ktokl(cserv)
+from dbi_user.ifc_sap_anagrcontrele a left outer join dbi_user.ifc_sap_anagrbanche b
+on (ccdan = delcli and a.delprog = b.delprog),
+dbi_user.ifc_sap_anagrindirizzi i,
+dbi_user.ifc_sap_anagrclienti c
+where 
+ccdan = indcli
+and ccdan = acdan
+and cflg1 = 'ATTIVO' --and cflg9 is not null
+and ccdan in ('0013818', '0054169', '0052865', '0019009')
+group by
+cflg9, 
+        ccdan, 
+        indprog, 
+        a.delprog, 
+        apers, 
+        acatc, 
+        atsocerp, 
+        substr(arags,0,35), 
+        dec_ezawe(a.delprog), 
+        dec_ikey(acatc),
+        dec_togru(acatc),
+        dec_ktokl(cserv)
+order by cflg9, ccdan, indprog, delprog
+        ]]></mainSelect>
+		<insertTable name='ACCOUNT_INIT' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='1' />
+				<field name='TIPO' constant_value='INIT' />
+				<field name='VKONT' constant_value='' />
+				<field name='GPART' index='1' />
+				<field name='VKTYP' constant_value='03' />
+				<field name='VKONA' index='0' />
+		</insertTable>
+		<insertTable name='ACCOUNT_VK' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='1' />
+				<field name='TIPO' constant_value='VK' />
+				<field name='VKBEZ' index='7' />
+		</insertTable>
+		<insertTable name='ACCOUNT_VKP' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='1' />
+				<field name='TIPO' constant_value='VKP' />
+				<field name='PARTNER' index='1' />
+				<field name='EXVKO' constant_value='' />
+				<field name='OPBUK' constant_value='SORG' />
+				<field name='EZAWE' index='8' />
+				<field name='IKEY' index='9' />
+				<field name='MAHNV' constant_value='G1' />
+				<field name='VKPBZ' constant_value='01' />
+				<field name='TOGRU' index='10' />
+				<field name='ADRNB_EXT' index='2' />
+				<field name='ZAHLKOND' constant_value='I030' />
+				<field name='VERTYP' constant_value='0001' />
+				<field name='KOFIZ_SD' constant_value='99' />
+				<field name='KTOKL' index='11' />
+				<field name='FORMKEY' constant_value='IS_U_BILL' />
+				<field name='KZABSVER' constant_value='0' />
+				<field name='EBVTY_EXT' index='3' />
+				<field name='ABVTY_EXT' index='3' />
+				<field name='FITYP' constant_value='LM' />
+				<field name='SENDCONTROL_RH' constant_value='Z001' />
+				<field name='STDBK' constant_value='SORG' />
+				<field name='ZZRICHRID' constant_value=' ' />
+		</insertTable>
+	</accountAggregator>
+	
+	<accountExtractor>
+		<mainSelect ><![CDATA[
+		select 
+		a.legacy,
+		a.tipo,
+		a.gpart,
+		a.vktyp,
+		a.vkona,
+		b.legacy,
+		b.tipo,
+		b.vkbez,
+		c.legacy,
+		c.tipo,
+		c.partner,
+		c.exvko,
+		c.opbuk,
+		c.ezawe,
+		c.azawe,
+		c.ikey,
+		c.mahnv,
+		c.vkpbz,
+		c.togru,
+		c.adrnb_ext,
+		c.zahlkond,
+		c.vertyp,
+		c.kofiz_sd,
+		c.ktokl,
+		c.formkey,
+		c.kzabsver,
+		c.ebvty_ext,
+		c.abvty_ext,
+		c.fityp,
+		c.sendcontrol_rh,
+		c.stdbk,
+		c.zzrichrid
+		from account_init a, account_vk b, account_vkp c
+		where
+		a.legacy = b.legacy and
+		a.legacy = c.legacy
+		order by a.legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='4'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='' field_start_index='5' field_end_index='7'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='' field_start_index='8' field_end_index='31'>
+       	</csvLine>
+		<ende field_index='0' />
+	</accountExtractor>
+
+	<instlnAggregator>
+		<mainSelect ><![CDATA[
+			select cncon,
+			ctar1,
+			decode(ctipo, '3','G','1','P','P'),
+			decode(ctipo, '3', '02', '1', '04', '04'),
+			decode(ctipo, '3', 'GCTMMRES00', '1', 'ECTMMRES00', 'ERRORE'),
+			decode(ctipo, '3', 'G001', '1', 'P001', 'ERR'),
+			REGEXP_SUBSTR(cncon,'[[:digit:]]+'),
+      		'01611050001988',
+			'ENEL_GAS',
+			decode(ctipo, '3', 'GA', '1', '30', 'ER'),
+			decode(ctipo, '3', ' ', '1', '01', 'ER')
+			from v_contratti
+			where 
+--			cflg1 = 'ATTIVO' and
+			ctipo = '3'
+			and cncon = 'PR2263995'
+		]]></mainSelect>
+		<insertTable name='INSTLN_KEY' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='KEY' />
+				<field name='ANLAGE' index='6' />
+		</insertTable>
+		<insertTable name='INSTLN_DATA' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='DATA' />
+				<field name='SPARTE' index='2' />
+				<field name='VSTELLE' index='0' />
+				<field name='BAPERTYP' constant_value='X' />
+				<field name='SPEBENE' index='10' />
+				<field name='ANLART' index='9' />
+				<field name='NODISCONCT' constant_value=' ' />
+				<field name='SERVICE' index='3' />
+				<field name='DEREGSTAT' constant_value='1' />
+				<field name='AB' constant_value='20010101' />
+				<field name='TARIFTYP' index='4' />
+				<field name='BRANCHE' constant_value='99' />
+				<field name='AKLASSE' index='5' />
+				<field name='ABLEINH' constant_value='MMEN0001' />
+		</insertTable>
+		<insertTable name='INSTLN_POD' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='POD' />
+				<field name='DATEFROM' constant_value='20010101' />
+				<field name='TIMEFROM' constant_value='000000' />
+				<field name='EUIROLE_TECH' constant_value=' ' />
+				<field name='UITYPE' constant_value='0001' />
+				<field name='EXT_UI' index='7' />
+				<field name='UISTRUTYP' constant_value='01' />
+				<field name='GRID_ID' index='8' />
+				<field name='GRID_LEVEL' constant_value=' ' />
+		</insertTable>
+	</instlnAggregator>
+	
+	<instlnExtractor>
+		<mainSelect ><![CDATA[
+       		select a.legacy,
+			a.tipo,
+			a.anlage,
+			b.legacy,
+			b.tipo,
+			b.sparte,
+			b.vstelle,
+			b.bapertyp,
+			b.spebene,
+			b.anlart,
+			b.nodisconct,
+			b.service,
+			b.deregstat,
+			b.ab,
+			b.tariftyp,
+			b.branche,
+			b.aklasse,
+			b.ableinh,
+			c.legacy,
+			c.tipo,
+			c.datefrom,
+			c.timefrom,
+			c.euirole_tech,
+			c.uitype,
+			c.ext_ui,
+			c.uistrutyp,
+			c.grid_id,
+			c.grid_level
+			from instln_key a, instln_data b, instln_pod c
+			where
+			a.legacy = b.legacy
+			and a.legacy = c.legacy
+       ]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='2'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='3' field_end_index='17'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='0' field_start_index='18' field_end_index='27'>
+       	</csvLine>
+		<ende field_index='0' />
+	</instlnExtractor>
+	
+	
+       
+       
+       
+       
+       <connobjMainCursor><![CDATA[
+       select pdr, comune, cap, indirizzo, civico from sices_pyt.zedm_gas_pdr
+       ]]></connobjMainCursor>	
+       
+	
+       <premiseMainCursor><![CDATA[
+       select pdr from sices_pyt.zedm_gas_pdr, sices_pyt.zedm_connobj_coadr 
+       where sices_pyt.zedm_gas_pdr.pdr = sices_pyt.zedm_connobj_coadr.legacy
+       ]]></premiseMainCursor>
+       
+     
+       
+       <instlnGMainCursor><![CDATA[
+       select 
+			gpd.pdr, 
+			data_decorrenza, 
+			calibro, 
+			cod_contratto, 
+			tipologia_uso, 
+			classe_apartenenza, 
+			c, 
+			consumo_anno,
+      		data_inizio_validita
+		from sices_pyt.zedm_gas_pdr gpd left join sices_pyt.zedm_gas_contratto gct 
+			on to_number(gpd.pdr) = to_number(gct.pdr) 
+			left join sices_pyt.zedm_gas_contatore gco on to_number(gco.pdr) = to_number(gpd.pdr)       
+		group by 
+			gpd.pdr, 
+			data_decorrenza, 
+			calibro, 
+			cod_contratto, 
+			tipologia_uso, 
+			classe_apartenenza, 
+			c, 
+			consumo_anno,
+      		data_inizio_validita
+		order by gpd.pdr
+       ]]></instlnGMainCursor>
+       
+    
+       
+       <devinforecGMainCursor><![CDATA[
+       select 
+		matricola, 
+		matricola_distributore, 
+		data_installazione,
+		data_rimozione 
+		from sices_pyt.zedm_gas_contatore, sices_pyt.zedm_gas_pdr
+		where sices_pyt.zedm_gas_pdr.pdr (+)= sices_pyt.zedm_gas_contatore.pdr
+		group by
+		matricola, matricola_distributore,data_installazione,data_rimozione, data_inizio_validita
+		order by matricola
+       ]]></devinforecGMainCursor>
+       
+       
+	   
+	   <instmgmtGRegistersDefinition><![CDATA[
+	   select zwgruppe, zwnummer, kenziffe from sices_pyt.z_zedm_registers_g
+	   ]]></instmgmtGRegistersDefinition>	
+	   
+	   <podserviceGMainCursor><![CDATA[
+	   select legacy,datefrom,grid_id,shipper from sices_pyt.zedm_instln_pod_g, sices_pyt.zedm_gas_contratto
+       where to_number(sices_pyt.zedm_instln_pod_g.legacy) = to_number(sices_pyt.zedm_gas_contratto.pdr)
+       group by legacy,datefrom,grid_id,shipper
+       order by legacy
+       ]]></podserviceGMainCursor>
+	
+       <connobjEmigallMainCursor><![CDATA[
+		select sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.tipo,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coeha.legacy as leg2,
+        sices_pyt.zedm_connobj_coadr.tipo,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        from sices_pyt.zedm_connobj_coeha, sices_pyt.zedm_connobj_coadr
+        where sices_pyt.zedm_connobj_coeha.legacy in ('00102400027733','00102400027948','00102400028260','10660005601924','10101000939852',
+		'10101001296864','10101000633182','10101000630118','10101000635298','00102400848035','00108700060849',
+		'10660000611100','10660000610300','10660000601700',
+		'10660000401500','10101000633201','10660004505133','10660090116382','10660000101900','10660000911200')
+        and sices_pyt.zedm_connobj_coeha.legacy = sices_pyt.zedm_connobj_coadr.legacy
+        
+        group by sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.tipo,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coadr.tipo,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        order by legacy
+       ]]></connobjEmigallMainCursor>
+       
+       <connobjAltEmigallMainCursor><![CDATA[
+		select sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        from sices_pyt.zedm_connobj_coeha, sices_pyt.zedm_connobj_coadr
+        where sices_pyt.zedm_connobj_coeha.legacy = sices_pyt.zedm_connobj_coadr.legacy
+        group by sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        order by legacy
+       ]]></connobjAltEmigallMainCursor>
+       
+        
+       
+       <premiseEmigallMainCursor><![CDATA[
+       select * from sices_pyt.zedm_premise_evbsd 
+       where sices_pyt.zedm_premise_evbsd.legacy in ('00102400027733','00102400027948','00102400028260','10660005601924','10101000939852',
+		'10101001296864','10101000633182','10101000630118','10101000635298','00102400848035','00108700060849',
+		'10660000611100','10660000610300','10660000601700',
+		'10660000401500','10101000633201','10660004505133','10660090116382','10660000101900','10660000911200')
+       order by legacy
+       ]]></premiseEmigallMainCursor>
+       
+       
+       
+       <instlnGEmigallMainCursor><![CDATA[
+       select sices_pyt.zedm_instln_key_g.legacy,
+		sices_pyt.zedm_instln_key_g.tipo,
+		sices_pyt.zedm_instln_key_g.anlage,
+		sices_pyt.zedm_instln_data_g.legacy,
+		sices_pyt.zedm_instln_data_g.tipo,
+		sices_pyt.zedm_instln_data_g.sparte,
+		sices_pyt.zedm_instln_data_g.vstelle,
+		sices_pyt.zedm_instln_data_g.ablsperr,
+		sices_pyt.zedm_instln_data_g.bapertyp,
+		sices_pyt.zedm_instln_data_g.spebene,
+		sices_pyt.zedm_instln_data_g.anlart,
+		sices_pyt.zedm_instln_data_g.nodisconct,
+		sices_pyt.zedm_instln_data_g.service,
+		sices_pyt.zedm_instln_data_g.deregstat,
+		sices_pyt.zedm_instln_data_g.ab,
+		sices_pyt.zedm_instln_data_g.tariftyp,
+		sices_pyt.zedm_instln_data_g.branche,
+		sices_pyt.zedm_instln_data_g.aklasse,
+		sices_pyt.zedm_instln_data_g.ableinh,
+		sices_pyt.zedm_instln_data_g.temp_area,
+		sices_pyt.zedm_instln_data_g.etimezone,
+		sices_pyt.zedm_instln_data_g.istype,
+		sices_pyt.zedm_instln_fquan_g.legacy,
+		sices_pyt.zedm_instln_fquan_g.tipo,
+		sices_pyt.zedm_instln_fquan_g.operand,
+		sices_pyt.zedm_instln_fquan_g.saison,
+		sices_pyt.zedm_instln_fquan_g.auto_inser,
+		sices_pyt.zedm_instln_vquan_g.legacy,
+		sices_pyt.zedm_instln_vquan_g.tipo,
+		sices_pyt.zedm_instln_vquan_g.ab,
+		sices_pyt.zedm_instln_vquan_g.bis,
+		sices_pyt.zedm_instln_vquan_g.menge,
+		sices_pyt.zedm_instln_vquan_g.tarifart,
+		sices_pyt.zedm_instln_vquan_g.kondigr,
+		sices_pyt.zedm_instln_fuserdef_g.legacy,
+		sices_pyt.zedm_instln_fuserdef_g.tipo,
+		sices_pyt.zedm_instln_fuserdef_g.operand,
+		sices_pyt.zedm_instln_fuserdef_g.saison,
+		sices_pyt.zedm_instln_vuserdef_g.legacy,
+		sices_pyt.zedm_instln_vuserdef_g.tipo,
+		sices_pyt.zedm_instln_vuserdef_g.ab,
+		sices_pyt.zedm_instln_vuserdef_g.bis,
+		sices_pyt.zedm_instln_vuserdef_g.udefval1,
+		sices_pyt.zedm_instln_vuserdef_g.udefval2,
+		sices_pyt.zedm_instln_vuserdef_g.udefval3,
+		sices_pyt.zedm_instln_vuserdef_g.udefval4,
+		sices_pyt.zedm_instln_vuserdef_g.tarifart,
+		sices_pyt.zedm_instln_vuserdef_g.kondigr,
+		sices_pyt.zedm_instln_pod_g.legacy,
+		sices_pyt.zedm_instln_pod_g.tipo,
+		sices_pyt.zedm_instln_pod_g.datefrom,
+		sices_pyt.zedm_instln_pod_g.timefrom,
+		sices_pyt.zedm_instln_pod_g.euirole_tech,
+		sices_pyt.zedm_instln_pod_g.uitype,
+		sices_pyt.zedm_instln_pod_g.ext_ui,
+		sices_pyt.zedm_instln_pod_g.uistrutyp,
+		sices_pyt.zedm_instln_pod_g.grid_id,
+		sices_pyt.zedm_instln_pod_g.grid_level
+	   from sices_pyt.zedm_instln_key_g,
+		sices_pyt.zedm_instln_data_g,
+		sices_pyt.zedm_instln_fquan_g,
+		sices_pyt.zedm_instln_vquan_g,
+		sices_pyt.zedm_instln_fuserdef_g,
+		sices_pyt.zedm_instln_vuserdef_g,
+		sices_pyt.zedm_instln_pod_g
+		where sices_pyt.zedm_instln_key_g.legacy in ('00102400027733','00102400027948','00102400028260','10660005601924','10101000939852',
+		'10101001296864','10101000633182','10101000630118','10101000635298','00102400848035','00108700060849',
+		'10660000611100','10660000610300','10660000601700',
+		'10660000401500','10101000633201','10660004505133','10660090116382','10660000101900','10660000911200')
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_data_g.legacy
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_pod_g.legacy
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_fquan_g.legacy
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_vquan_g.legacy
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_fuserdef_g.legacy
+	and sices_pyt.zedm_instln_key_g.legacy = sices_pyt.zedm_instln_vuserdef_g.legacy
+	and sices_pyt.zedm_instln_fquan_g.prog = sices_pyt.zedm_instln_vquan_g.prog
+	and sices_pyt.zedm_instln_fuserdef_g.prog = sices_pyt.zedm_instln_vuserdef_g.prog
+	group by sices_pyt.zedm_instln_key_g.legacy,
+		sices_pyt.zedm_instln_key_g.tipo,
+		sices_pyt.zedm_instln_key_g.anlage,
+		sices_pyt.zedm_instln_data_g.legacy,
+		sices_pyt.zedm_instln_data_g.tipo,
+		sices_pyt.zedm_instln_data_g.sparte,
+		sices_pyt.zedm_instln_data_g.vstelle,
+		sices_pyt.zedm_instln_data_g.ablsperr,
+		sices_pyt.zedm_instln_data_g.bapertyp,
+		sices_pyt.zedm_instln_data_g.spebene,
+		sices_pyt.zedm_instln_data_g.anlart,
+		sices_pyt.zedm_instln_data_g.nodisconct,
+		sices_pyt.zedm_instln_data_g.service,
+		sices_pyt.zedm_instln_data_g.deregstat,
+		sices_pyt.zedm_instln_data_g.ab,
+		sices_pyt.zedm_instln_data_g.tariftyp,
+		sices_pyt.zedm_instln_data_g.branche,
+		sices_pyt.zedm_instln_data_g.aklasse,
+		sices_pyt.zedm_instln_data_g.ableinh,
+		sices_pyt.zedm_instln_data_g.temp_area,
+		sices_pyt.zedm_instln_data_g.etimezone,
+		sices_pyt.zedm_instln_data_g.istype,
+		sices_pyt.zedm_instln_fquan_g.legacy,
+		sices_pyt.zedm_instln_fquan_g.tipo,
+		sices_pyt.zedm_instln_fquan_g.operand,
+		sices_pyt.zedm_instln_fquan_g.saison,
+		sices_pyt.zedm_instln_fquan_g.auto_inser,
+		sices_pyt.zedm_instln_vquan_g.legacy,
+		sices_pyt.zedm_instln_vquan_g.tipo,
+		sices_pyt.zedm_instln_vquan_g.ab,
+		sices_pyt.zedm_instln_vquan_g.bis,
+		sices_pyt.zedm_instln_vquan_g.menge,
+		sices_pyt.zedm_instln_vquan_g.tarifart,
+		sices_pyt.zedm_instln_vquan_g.kondigr,
+		sices_pyt.zedm_instln_fuserdef_g.legacy,
+		sices_pyt.zedm_instln_fuserdef_g.tipo,
+		sices_pyt.zedm_instln_fuserdef_g.operand,
+		sices_pyt.zedm_instln_fuserdef_g.saison,
+		sices_pyt.zedm_instln_vuserdef_g.legacy,
+		sices_pyt.zedm_instln_vuserdef_g.tipo,
+		sices_pyt.zedm_instln_vuserdef_g.ab,
+		sices_pyt.zedm_instln_vuserdef_g.bis,
+		sices_pyt.zedm_instln_vuserdef_g.udefval1,
+		sices_pyt.zedm_instln_vuserdef_g.udefval2,
+		sices_pyt.zedm_instln_vuserdef_g.udefval3,
+		sices_pyt.zedm_instln_vuserdef_g.udefval4,
+		sices_pyt.zedm_instln_vuserdef_g.tarifart,
+		sices_pyt.zedm_instln_vuserdef_g.kondigr,
+		sices_pyt.zedm_instln_pod_g.legacy,
+		sices_pyt.zedm_instln_pod_g.tipo,
+		sices_pyt.zedm_instln_pod_g.datefrom,
+		sices_pyt.zedm_instln_pod_g.timefrom,
+		sices_pyt.zedm_instln_pod_g.euirole_tech,
+		sices_pyt.zedm_instln_pod_g.uitype,
+		sices_pyt.zedm_instln_pod_g.ext_ui,
+		sices_pyt.zedm_instln_pod_g.uistrutyp,
+		sices_pyt.zedm_instln_pod_g.grid_id,
+		sices_pyt.zedm_instln_pod_g.grid_level
+		order by sices_pyt.zedm_instln_key_g.legacy
+       ]]></instlnGEmigallMainCursor> 
+       
+       
+       <devinforecGEmigallMainCursor><![CDATA[
+		select sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.tipo,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coeha.legacy as leg2,
+        sices_pyt.zedm_connobj_coadr.tipo,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        from sices_pyt.zedm_connobj_coeha, sices_pyt.zedm_connobj_coadr
+        where sices_pyt.zedm_connobj_coeha.legacy = sices_pyt.zedm_connobj_coadr.legacy
+        group by sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coeha.tipo,
+        sices_pyt.zedm_connobj_coeha.pltxt,
+        sices_pyt.zedm_connobj_coeha.swerk,
+        sices_pyt.zedm_connobj_coeha.legacy,
+        sices_pyt.zedm_connobj_coadr.tipo,
+        sices_pyt.zedm_connobj_coadr.city1,
+        sices_pyt.zedm_connobj_coadr.post_code1,
+        sices_pyt.zedm_connobj_coadr.street,
+        sices_pyt.zedm_connobj_coadr.house_num1,
+        sices_pyt.zedm_connobj_coadr.house_num2,
+        sices_pyt.zedm_connobj_coadr.region,
+        sices_pyt.zedm_connobj_coadr.regiogroup
+        order by legacy
+       ]]></devinforecGEmigallMainCursor>
+       
+       
+       <devinforecGEmigallExtractor><![CDATA[
+		select 
+			zedm_devinforec_dvmint_g.legacy,
+			zedm_devinforec_dvmint_g.tipo,
+			zedm_devinforec_dvmint_g.keydate,
+			zedm_devinforec_dvmint_g.sparte,
+			zedm_devinforec_dvmint_g.matnr,
+			zedm_devinforec_dvmint_g.geraet,
+			zedm_devinforec_dvmdev_g.legacy,
+			zedm_devinforec_dvmdev_g.tipo,
+			zedm_devinforec_dvmdev_g.bis,
+			zedm_devinforec_dvmdev_g.ab,
+			zedm_devinforec_dvmdev_g.geraet,
+			zedm_devinforec_dvmdev_g.zwgruppe,
+			zedm_devinforec_dvmdev_g.matnr,
+			zedm_devinforec_dvmdev_g.egerr_info
+		from zedm_devinforec_dvmint_g, zedm_devinforec_dvmdev_g 
+		where zedm_devinforec_dvmint_g.legacy in (303347,
+								404984)  
+		and zedm_devinforec_dvmdev_g.legacy = zedm_devinforec_dvmint_g.legacy
+       ]]></devinforecGEmigallExtractor>
+       
+		
+		<instmgmtGEmigallExtractor>
+			select sices_pyt.zedm_instmgmt_diint_g.legacy,
+                               sices_pyt.zedm_instmgmt_diint_g.tipo,
+                               sices_pyt.zedm_instmgmt_diint_g.devloc,
+                               sices_pyt.zedm_instmgmt_diint_g.anlage,
+                               sices_pyt.zedm_instmgmt_diint_g.eadat,
+                               sices_pyt.zedm_instmgmt_diint_g.action,
+                               sices_pyt.zedm_instmgmt_dizw_g.legacy,
+                               sices_pyt.zedm_instmgmt_dizw_g.tipo,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnummera,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnummere,
+                               sices_pyt.zedm_instmgmt_dizw_g.kondigre,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwstandca,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwstandce,
+                               sices_pyt.zedm_instmgmt_dizw_g.thgver,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnabr,
+                               sices_pyt.zedm_instmgmt_dizw_g.tarifart,
+                               sices_pyt.zedm_instmgmt_dizw_g.perverbr,
+                               sices_pyt.zedm_instmgmt_dizw_g.gverrech,
+                               sices_pyt.zedm_instmgmt_dizw_g.kenziffe,
+                               sices_pyt.zedm_instmgmt_dizw_g.abrfakte,
+                               sices_pyt.zedm_instmgmt_dizw_g.nablesene,
+                               sices_pyt.zedm_instmgmt_dizw_g.eqnre,
+                               sices_pyt.zedm_instmgmt_dizw_g.eqnra,
+                               sices_pyt.zedm_instmgmt_diger_g.legacy,
+                               sices_pyt.zedm_instmgmt_diger_g.tipo,
+                               sices_pyt.zedm_instmgmt_diger_g.gerwechs,
+                               sices_pyt.zedm_instmgmt_diger_g.eqnrneu,
+                               sices_pyt.zedm_instmgmt_diger_g.trenre,
+                               sices_pyt.zedm_instmgmt_diger_g.wandnre,
+                               sices_pyt.zedm_instmgmt_diger_g.abrfakt,
+                               sices_pyt.zedm_instmgmt_diger_g.drucknre,
+                               sices_pyt.zedm_instmgmt_diger_g.messdrck,
+                               sices_pyt.zedm_instmgmt_diger_g.ausbau,
+                               sices_pyt.zedm_instmgmt_diger_g.gverrechg,
+                               sices_pyt.zedm_instmgmt_diger_g.tarifartg,
+                               sices_pyt.zedm_instmgmt_diger_g.kondigrg,
+                               sices_pyt.zedm_instmgmt_diger_g.primwnr1,
+                               sices_pyt.zedm_instmgmt_dicnt_g.legacy,
+                               sices_pyt.zedm_instmgmt_dicnt_g.tipo,
+                               sices_pyt.zedm_instmgmt_dicnt_g.no_automov           
+                   from sices_pyt.zedm_instmgmt_diint_g,
+                               sices_pyt.zedm_instmgmt_dizw_g,
+                               sices_pyt.zedm_instmgmt_diger_g,
+                               sices_pyt.zedm_instmgmt_dicnt_g
+                				where substr(sices_pyt.zedm_instmgmt_diint_g.legacy,3,14) in ('00102400027733','00102400027948','00102400028260','10660005601924','10101000939852',
+								'10101001296864','10101000633182','10101000630118','10101000635298','00102400848035','00108700060849',
+								'10660000611100','10660000610300','10660000601700',
+								'10660000401500','10101000633201','10660004505133','10660090116382','10660000101900','10660000911200')             
+                and sices_pyt.zedm_instmgmt_diint_g.legacy = sices_pyt.zedm_instmgmt_dizw_g.legacy
+                and sices_pyt.zedm_instmgmt_diint_g.legacy = sices_pyt.zedm_instmgmt_diger_g.legacy
+                and sices_pyt.zedm_instmgmt_diint_g.legacy = sices_pyt.zedm_instmgmt_dicnt_g.legacy
+                
+                group by sices_pyt.zedm_instmgmt_diint_g.legacy,
+                               sices_pyt.zedm_instmgmt_diint_g.tipo,
+                               sices_pyt.zedm_instmgmt_diint_g.devloc,
+                               sices_pyt.zedm_instmgmt_diint_g.anlage,
+                               sices_pyt.zedm_instmgmt_diint_g.eadat,
+                               sices_pyt.zedm_instmgmt_diint_g.action,
+                               sices_pyt.zedm_instmgmt_dizw_g.legacy,
+                               sices_pyt.zedm_instmgmt_dizw_g.tipo,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnummera,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnummere,
+                               sices_pyt.zedm_instmgmt_dizw_g.kondigre,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwstandca,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwstandce,
+                               sices_pyt.zedm_instmgmt_dizw_g.thgver,
+                               sices_pyt.zedm_instmgmt_dizw_g.zwnabr,
+                               sices_pyt.zedm_instmgmt_dizw_g.tarifart,
+                               sices_pyt.zedm_instmgmt_dizw_g.perverbr,
+                               sices_pyt.zedm_instmgmt_dizw_g.gverrech,
+                               sices_pyt.zedm_instmgmt_dizw_g.kenziffe,
+                               sices_pyt.zedm_instmgmt_dizw_g.abrfakte,
+                               sices_pyt.zedm_instmgmt_dizw_g.nablesene,
+                               sices_pyt.zedm_instmgmt_dizw_g.eqnre,
+                               sices_pyt.zedm_instmgmt_dizw_g.eqnra,
+                               sices_pyt.zedm_instmgmt_diger_g.legacy,
+                               sices_pyt.zedm_instmgmt_diger_g.tipo,
+                               sices_pyt.zedm_instmgmt_diger_g.gerwechs,
+                               sices_pyt.zedm_instmgmt_diger_g.eqnrneu,
+                               sices_pyt.zedm_instmgmt_diger_g.trenre,
+                               sices_pyt.zedm_instmgmt_diger_g.wandnre,
+                               sices_pyt.zedm_instmgmt_diger_g.abrfakt,
+                               sices_pyt.zedm_instmgmt_diger_g.drucknre,
+                               sices_pyt.zedm_instmgmt_diger_g.messdrck,
+                               sices_pyt.zedm_instmgmt_diger_g.ausbau,
+                               sices_pyt.zedm_instmgmt_diger_g.gverrechg,
+                               sices_pyt.zedm_instmgmt_diger_g.tarifartg,
+                               sices_pyt.zedm_instmgmt_diger_g.kondigrg,
+                               sices_pyt.zedm_instmgmt_diger_g.primwnr1,
+                               sices_pyt.zedm_instmgmt_dicnt_g.legacy,
+                               sices_pyt.zedm_instmgmt_dicnt_g.tipo,
+                               sices_pyt.zedm_instmgmt_dicnt_g.no_automov
+                  order by sices_pyt.zedm_instmgmt_diint_g.legacy, sices_pyt.zedm_instmgmt_dizw_g.zwnummera
+			
+		</instmgmtGEmigallExtractor>
+		
+		
+		<podserviceGEmigallExtractor>
+		select sices_pyt.zedm_podservice_podsrv_g.legacy,
+        sices_pyt.zedm_podservice_podsrv_g.tipo,
+        sices_pyt.zedm_podservice_podsrv_g.service_start,
+        sices_pyt.zedm_podservice_podsrv_g.service_end,
+        sices_pyt.zedm_podservice_podsrv_g.service,
+        sices_pyt.zedm_podservice_podsrv_g.serviceid,
+        sices_pyt.zedm_podservice_podsrv_g.srvprvref,
+        sices_pyt.zedm_podservice_podsrv_g.servprov_pay,
+        sices_pyt.zedm_podservice_podsrv_g.sparte,
+        sices_pyt.zedm_podservice_podsrv_g.ext_ui,
+        sices_pyt.zedm_podservice_psvsel_g.legacy,
+        sices_pyt.zedm_podservice_psvsel_g.tipo,
+        sices_pyt.zedm_podservice_psvsel_g.oparea,
+        sices_pyt.zedm_podservice_psvsel_g.vkontkl,
+        sices_pyt.zedm_podservice_psvsel_g.servprov_own,
+        sices_pyt.zedm_podservice_psvsel_g.grid_id,
+        sices_pyt.zedm_podservice_psvsel_g.polr
+        from sices_pyt.zedm_podservice_podsrv_g, sices_pyt.zedm_podservice_psvsel_g
+        where zedm_podservice_podsrv_g.legacy in ('00102400027733','00102400027948','00102400028260','10660005601924','10101000939852',
+		'10101001296864','10101000633182','10101000630118','10101000635298','00102400848035','00108700060849',
+		'10660000611100','10660000610300','10660000601700',
+		'10660000401500','10101000633201','10660004505133','10660090116382','10660000101900','10660000911200')
+        and sices_pyt.zedm_podservice_podsrv_g.legacy = sices_pyt.zedm_podservice_psvsel_g.legacy
+        group by sices_pyt.zedm_podservice_podsrv_g.legacy,
+        sices_pyt.zedm_podservice_podsrv_g.tipo,
+        sices_pyt.zedm_podservice_podsrv_g.service_start,
+        sices_pyt.zedm_podservice_podsrv_g.service_end,
+        sices_pyt.zedm_podservice_podsrv_g.service,
+        sices_pyt.zedm_podservice_podsrv_g.serviceid,
+        sices_pyt.zedm_podservice_podsrv_g.srvprvref,
+        sices_pyt.zedm_podservice_podsrv_g.servprov_pay,
+        sices_pyt.zedm_podservice_podsrv_g.sparte,
+        sices_pyt.zedm_podservice_podsrv_g.ext_ui,
+        sices_pyt.zedm_podservice_psvsel_g.legacy,
+        sices_pyt.zedm_podservice_psvsel_g.tipo,
+        sices_pyt.zedm_podservice_psvsel_g.oparea,
+        sices_pyt.zedm_podservice_psvsel_g.vkontkl,
+        sices_pyt.zedm_podservice_psvsel_g.servprov_own,
+        sices_pyt.zedm_podservice_psvsel_g.grid_id,
+        sices_pyt.zedm_podservice_psvsel_g.polr
+        order by sices_pyt.zedm_podservice_podsrv_g.legacy, sices_pyt.zedm_podservice_podsrv_g.service
+		</podserviceGEmigallExtractor>
+
+       <connobjInsertCoeha><![CDATA[
+       INSERT INTO ZEDM_CONNOBJ_COEHA (LEGACY, TIPO, PLTXT) VALUES (:1, 'CO_EHA', 'Punto di connessione')
+       ]]></connobjInsertCoeha>
+       
+       <connobjInsertCoadr><![CDATA[
+       INSERT INTO ZEDM_CONNOBJ_COADR (LEGACY, CITY1, POST_CODE1, STREET, HOUSE_NUM1, TIPO) VALUES (:1, :2, :3, :4, :5, 'CO_ADR')
+       ]]></connobjInsertCoadr>
+       
+      
+        
+       <premiseInsertEvbsd><![CDATA[
+       INSERT INTO ZEDM_PREMISE_EVBSD (LEGACY, HAUS, TIPO) VALUES (:1, :2, 'EVBSD')
+       ]]></premiseInsertEvbsd>
+       
+       
+       
+       <instlnInsertKeyG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_KEY_G (LEGACY, TIPO) VALUES (:1, 'KEY')
+       ]]></instlnInsertKeyG>
+       
+       <instlnInsertDataG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_DATA_G (LEGACY, AB, VSTELLE, SERVICE, SPARTE, TIPO, TARIFTYP, AKLASSE, ABLEINH, ETIMEZONE) VALUES (:1, :2, :3, '01', 'A', 'DATA', 'GAS', 'GAS', 'GAS', 'CET')
+       ]]></instlnInsertDataG>
+       
+       <instlnInsertFquanG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_FQUAN_G (LEGACY, OPERAND, PROG, TIPO, AUTO_INSER) VALUES (:1, :2, :3, 'F_QUAN', 'X')
+       ]]></instlnInsertFquanG>
+       
+       <instlnInsertVquanG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_VQUAN_G (LEGACY, MENGE, PROG, AB, BIS, TIPO) VALUES (:1, :2, :3, :4, '99991231', 'V_QUAN')
+       ]]></instlnInsertVquanG>
+       
+       <instlnInsertFuserdefG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_FUSERDEF_G (LEGACY, OPERAND, PROG, TIPO) VALUES (:1, :2, :3, 'F_UDEF')
+       ]]></instlnInsertFuserdefG>
+       
+       <instlnInsertVuserdefG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_VUSERDEF_G (LEGACY, UDEFVAL1, PROG, AB, BIS, TIPO) VALUES (:1, :2, :3, :4, '99991231', 'V_UDEF')
+       ]]></instlnInsertVuserdefG>
+       
+       <instlnInsertPodG><![CDATA[
+       INSERT INTO ZEDM_INSTLN_POD_G (LEGACY, EXT_UI, DATEFROM, UISTRUTYP, TIPO, GRID_ID) VALUES (:1, :2, :3, '01', 'POD', 'GAS_A2A')
+       ]]></instlnInsertPodG>
+       
+     
+       
+       <devinforecGInsertInt><![CDATA[
+       INSERT INTO ZEDM_DEVINFOREC_DVMINT_G (LEGACY, GERAET, KEYDATE, SPARTE, MATNR, TIPO) VALUES (:1, :2, :3, 'A','GLOADPRO','DVMINT')
+       ]]></devinforecGInsertInt>
+       
+       <devinforecGInsertDev><![CDATA[
+       INSERT INTO ZEDM_DEVINFOREC_DVMDEV_G (LEGACY, BIS, AB, GERAET, EGERR_INFO, TIPO, ZWGRUPPE, MATNR) VALUES (:1, :2, :3, :4, :5, 'DVMDEV', 'GLOADPRO', 'GLOADPRO')
+       ]]></devinforecGInsertDev>
+       
+       <instmgmtGInsertInt><![CDATA[
+       INSERT INTO ZEDM_INSTMGMT_DIINT_G (LEGACY, EADAT, ANLAGE, TIPO, ACTION, SEQUEN) VALUES (:1, :2, :3, 'DI_INT', '04', '1')
+       ]]></instmgmtGInsertInt>
+       
+       <instmgmtGInsertZw><![CDATA[
+       INSERT INTO ZEDM_INSTMGMT_DIZW_G (LEGACY, ZWNUMMERE, KENZIFFE, EQNRE, ZWSTANDCE, ABRFAKTE, TIPO, SEQUEN) VALUES (:1, :2, :3, :4, '0', '1', 'DI_ZW', '1')
+       ]]></instmgmtGInsertZw>
+       
+       <instmgmtGInsertCnt><![CDATA[
+       INSERT INTO ZEDM_INSTMGMT_DICNT_G (LEGACY, NO_AUTOMOV, TIPO, SEQUEN) VALUES (:1, 'X', 'DI_CNT','1')
+       ]]></instmgmtGInsertCnt>
+       
+       <instmgmtGInsertGer><![CDATA[
+       INSERT INTO ZEDM_INSTMGMT_DIGER_G (LEGACY, EQNRNEU, TIPO) VALUES (:1, :2, 'DI_GER')
+       ]]></instmgmtGInsertGer>
+       
+       <podserviceInsertPodsrv><![CDATA[
+       INSERT INTO ZEDM_PODSERVICE_PODSRV_G (LEGACY, EXT_UI, SERVICE_START, SERVICEID, SERVICE, SPARTE, TIPO, SERVICE_END) VALUES (:1, :2, :3, :4, '02','A','PODSRV','99991231')
+       ]]></podserviceInsertPodsrv>
+       
+       <podserviceInsertPodsrvGASD_AGA><![CDATA[
+       INSERT INTO ZEDM_PODSERVICE_PODSRV_G (LEGACY, EXT_UI, SERVICE_START, SERVICEID, SERVICE, SPARTE, TIPO, SERVICE_END) VALUES (:1, :2, :3, 'GASD_AGA', '01','A','PODSRV','99991231')
+       ]]></podserviceInsertPodsrvGASD_AGA>
+       
+       <podserviceInsertPodsrvGASB_AGA><![CDATA[
+       INSERT INTO ZEDM_PODSERVICE_PODSRV_G (LEGACY, EXT_UI, SERVICE_START, SERVICEID, SERVICE, SPARTE, TIPO, SERVICE_END) VALUES (:1, :2, :3, 'GASB_AGA', '05','A','PODSRV','99991231')
+       ]]></podserviceInsertPodsrvGASB_AGA>
+       
+       <podserviceInsertPsvsel><![CDATA[
+       INSERT INTO ZEDM_PODSERVICE_PSVSEL_G (LEGACY, GRID_ID, TIPO) VALUES (:1, :2, 'PSVSEL')
+       ]]></podserviceInsertPsvsel>
+       
+
+       
+       <connobjTruncateCoeha><![CDATA[
+       TRUNCATE TABLE ZEDM_CONNOBJ_COEHA
+       ]]></connobjTruncateCoeha>
+       
+       <connobjTruncateCoadr><![CDATA[
+       TRUNCATE TABLE ZEDM_CONNOBJ_COADR
+       ]]></connobjTruncateCoadr> 
+       
+   
+       
+       <premiseTruncateEvbsd><![CDATA[
+       TRUNCATE TABLE ZEDM_PREMISE_EVBSD
+       ]]></premiseTruncateEvbsd>
+       
+    
+       
+       <instlnTruncateKeyG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_KEY_G
+       ]]></instlnTruncateKeyG>
+       
+       <instlnTruncateDataG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_DATA_G
+       ]]></instlnTruncateDataG>
+       
+       <instlnTruncateFquanG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_FQUAN_G
+       ]]></instlnTruncateFquanG>
+       
+       <instlnTruncateVquanG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_VQUAN_G
+       ]]></instlnTruncateVquanG>
+       
+       <instlnTruncateFuserdefG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_FUSERDEF_G
+       ]]></instlnTruncateFuserdefG>
+       
+       <instlnTruncateVuserdefG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_VUSERDEF_G
+       ]]></instlnTruncateVuserdefG>
+       
+       <instlnTruncatePodG><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTLN_POD_G
+       ]]></instlnTruncatePodG>
+       
+    
+       
+       <devinforecGTruncateInt><![CDATA[
+       TRUNCATE TABLE ZEDM_DEVINFOREC_DVMINT_G
+       ]]></devinforecGTruncateInt>
+       
+       <devinforecGTruncateDev><![CDATA[
+       TRUNCATE TABLE ZEDM_DEVINFOREC_DVMDEV_G
+       ]]></devinforecGTruncateDev>
+       
+       
+       
+       
+       <instmgmtGTruncateInt><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTMGMT_DIINT_G
+       ]]></instmgmtGTruncateInt>
+       
+       <instmgmtGTruncateZw><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTMGMT_DIZW_G
+       ]]></instmgmtGTruncateZw>
+       
+        <instmgmtGTruncateCnt><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTMGMT_DICNT_G
+       ]]></instmgmtGTruncateCnt>
+       
+        <instmgmtGTruncateGer><![CDATA[
+       TRUNCATE TABLE ZEDM_INSTMGMT_DIGER_G
+       ]]></instmgmtGTruncateGer>
+       
+       <podserviceTruncatePodsrv><![CDATA[
+       TRUNCATE TABLE ZEDM_PODSERVICE_PODSRV_G
+       ]]></podserviceTruncatePodsrv>
+       
+       <podserviceTruncatePsvsel><![CDATA[
+       TRUNCATE TABLE ZEDM_PODSERVICE_PSVSEL_G
+       ]]></podserviceTruncatePsvsel>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+       
+       <profheadGMainCursor><![CDATA[
+       select pdr||prog, intsizeid, mass, proftext||'-'||pdr from zedm_gas_pdr, z_zedm_profhead_data_g
+		order by pdr,prog 
+       ]]></profheadGMainCursor>
+        
+       
+	  <profheadGTruncatePhdint><![CDATA[
+	  TRUNCATE TABLE ZEDM_PROFHEAD_PHDINT_G
+	  ]]></profheadGTruncatePhdint>	
+	  
+	  <profheadGTruncatePhddat><![CDATA[
+	  TRUNCATE TABLE ZEDM_PROFHEAD_PHDDAT_G
+	  ]]></profheadGTruncatePhddat>	
+	  
+	  <profheadGInsertPhdint><![CDATA[
+	  INSERT INTO ZEDM_PROFHEAD_PHDINT_G (LEGACY, TIPO) VALUES (:1, 'PHDINT')
+	  ]]></profheadGInsertPhdint>	
+	  
+	  <profheadGInsertPhddat><![CDATA[
+	  INSERT INTO ZEDM_PROFHEAD_PHDDAT_G (LEGACY, INTSIZEID, MASS, PROFTEXT, DATEFROM, DATETO, PROFDECIMALS, PROFOFFSET, PROFTYPE, PROFVALCAT, SPARTE, TIMEFROM, TIMETO, TIPO, FORWARD_ORIENTED) VALUES (:1, :2, :3, :4, '20101101', '99991231', '9', '060000', '02', '01', 'A', '060000','235959', 'PHDDAT', 'X')
+	  ]]></profheadGInsertPhddat>	
+	  
+	  
+	  <profheadGEmigallMainCursor><![CDATA[
+	  select sices_pyt.zedm_profhead_phdint_g.legacy,
+		sices_pyt.zedm_profhead_phdint_g.tipo,
+		sices_pyt.zedm_profhead_phdint_g.profile,
+		sices_pyt.zedm_profhead_phddat_g.legacy,
+		sices_pyt.zedm_profhead_phddat_g.tipo,
+		sices_pyt.zedm_profhead_phddat_g.proftext,
+		sices_pyt.zedm_profhead_phddat_g.sparte,
+		sices_pyt.zedm_profhead_phddat_g.proftype,
+		sices_pyt.zedm_profhead_phddat_g.profvalcat,
+		sices_pyt.zedm_profhead_phddat_g.valuecum,
+		sices_pyt.zedm_profhead_phddat_g.intsizeid,
+		sices_pyt.zedm_profhead_phddat_g.mass,
+		sices_pyt.zedm_profhead_phddat_g.profdecimals,
+		sices_pyt.zedm_profhead_phddat_g.profoffset,
+		sices_pyt.zedm_profhead_phddat_g.forward_oriented,
+		sices_pyt.zedm_profhead_phddat_g.datefrom,
+		sices_pyt.zedm_profhead_phddat_g.timefrom,
+		sices_pyt.zedm_profhead_phddat_g.dateto,
+		sices_pyt.zedm_profhead_phddat_g.timeto,
+		sices_pyt.zedm_profhead_phddat_g.mdus_located,
+		sices_pyt.zedm_profhead_phddat_g.tou_billable
+		from sices_pyt.zedm_profhead_phdint_g, sices_pyt.zedm_profhead_phddat_g
+		where sices_pyt.zedm_profhead_phdint_g.legacy = sices_pyt.zedm_profhead_phddat_g.legacy
+		group by sices_pyt.zedm_profhead_phdint_g.legacy,
+		sices_pyt.zedm_profhead_phdint_g.tipo,
+		sices_pyt.zedm_profhead_phdint_g.profile,
+		sices_pyt.zedm_profhead_phddat_g.legacy,
+		sices_pyt.zedm_profhead_phddat_g.tipo,
+		sices_pyt.zedm_profhead_phddat_g.proftext,
+		sices_pyt.zedm_profhead_phddat_g.sparte,
+		sices_pyt.zedm_profhead_phddat_g.proftype,
+		sices_pyt.zedm_profhead_phddat_g.profvalcat,
+		sices_pyt.zedm_profhead_phddat_g.valuecum,
+		sices_pyt.zedm_profhead_phddat_g.intsizeid,
+		sices_pyt.zedm_profhead_phddat_g.mass,
+		sices_pyt.zedm_profhead_phddat_g.profdecimals,
+		sices_pyt.zedm_profhead_phddat_g.profoffset,
+		sices_pyt.zedm_profhead_phddat_g.forward_oriented,
+		sices_pyt.zedm_profhead_phddat_g.datefrom,
+		sices_pyt.zedm_profhead_phddat_g.timefrom,
+		sices_pyt.zedm_profhead_phddat_g.dateto,
+		sices_pyt.zedm_profhead_phddat_g.timeto,
+		sices_pyt.zedm_profhead_phddat_g.mdus_located,
+		sices_pyt.zedm_profhead_phddat_g.tou_billable
+		order by sices_pyt.zedm_profhead_phdint_g.legacy
+       ]]></profheadGEmigallMainCursor>
+       
+       --------------------------
+       
+       <profassignGMainCursor><![CDATA[
+       select zedm_gas_contatore.matricola, zedm_profhead_phdint_g.legacy, z_zedm_profassign_data_g.zwnummer, z_zedm_profassign_data_g.profrole
+		from zedm_gas_contatore, zedm_profhead_phdint_g, z_zedm_profassign_data_g
+		where zedm_gas_contatore.pdr||z_zedm_profassign_data_g.zwnummer = zedm_profhead_phdint_g.legacy
+		group by zedm_gas_contatore.matricola, zedm_profhead_phdint_g.legacy, z_zedm_profassign_data_g.zwnummer, z_zedm_profassign_data_g.profrole
+		order by matricola
+       ]]></profassignGMainCursor>
+        
+       
+	  <profassignGTruncatePasint><![CDATA[
+	  TRUNCATE TABLE ZEDM_PROFASSIGN_PASINT_G
+	  ]]></profassignGTruncatePasint>	
+	  
+	  <profassignGTruncatePasdat><![CDATA[
+	  TRUNCATE TABLE ZEDM_PROFASSIGN_PASDAT_G
+	  ]]></profassignGTruncatePasdat>	
+	  
+	  <profassignGInsertPasint><![CDATA[
+	  INSERT INTO ZEDM_PROFASSIGN_PASINT_G (LEGACY, EQUNR, ZWNUMMER, PROFILE, TIPO) VALUES (:1, :2, :3, :4, 'PASINT')
+	  ]]></profassignGInsertPasint>
+	  
+	  <profassignGInsertPasdat><![CDATA[
+	  INSERT INTO ZEDM_PROFASSIGN_PASDAT_G (LEGACY, PROFILE, PROFROLE, DATEFROM, DATETO, TIMEFROM, TIMETO, TIPO) VALUES (:1, :2, :3, '20101101', '99991231', '060000','235959', 'PASDAT')
+	  ]]></profassignGInsertPasdat>
+	  
+	  
+	  <profassignGEmigallMainCursor><![CDATA[
+	  select sices_pyt.zedm_profassign_pasint_g.legacy,
+        sices_pyt.zedm_profassign_pasint_g.tipo,
+        sices_pyt.zedm_profassign_pasint_g.equnr,
+        sices_pyt.zedm_profassign_pasint_g.zwnummer,
+        sices_pyt.zedm_profassign_pasint_g.profile,
+        sices_pyt.zedm_profassign_pasdat_g.legacy,
+        sices_pyt.zedm_profassign_pasdat_g.tipo,
+        sices_pyt.zedm_profassign_pasdat_g.profrole,
+        sices_pyt.zedm_profassign_pasdat_g.dateto,
+        sices_pyt.zedm_profassign_pasdat_g.timeto,
+        sices_pyt.zedm_profassign_pasdat_g.roleno,
+        sices_pyt.zedm_profassign_pasdat_g.datefrom,
+        sices_pyt.zedm_profassign_pasdat_g.timefrom,
+        sices_pyt.zedm_profassign_pasdat_g.profile
+	from sices_pyt.zedm_profassign_pasint_g, sices_pyt.zedm_profassign_pasdat_g
+	where sices_pyt.zedm_profassign_pasint_g.legacy = sices_pyt.zedm_profassign_pasdat_g.legacy
+	group by sices_pyt.zedm_profassign_pasint_g.legacy,
+        sices_pyt.zedm_profassign_pasint_g.tipo,
+        sices_pyt.zedm_profassign_pasint_g.equnr,
+        sices_pyt.zedm_profassign_pasint_g.zwnummer,
+        sices_pyt.zedm_profassign_pasint_g.profile,
+        sices_pyt.zedm_profassign_pasdat_g.legacy,
+        sices_pyt.zedm_profassign_pasdat_g.tipo,
+        sices_pyt.zedm_profassign_pasdat_g.profrole,
+        sices_pyt.zedm_profassign_pasdat_g.dateto,
+        sices_pyt.zedm_profassign_pasdat_g.timeto,
+        sices_pyt.zedm_profassign_pasdat_g.roleno,
+        sices_pyt.zedm_profassign_pasdat_g.datefrom,
+        sices_pyt.zedm_profassign_pasdat_g.timefrom,
+        sices_pyt.zedm_profassign_pasdat_g.profile
+	order by sices_pyt.zedm_profassign_pasint_g.legacy
+       ]]></profassignGEmigallMainCursor>
+       
+       <adrcityAggregator>
+		<mainSelect ><![CDATA[
+       select indccom, 
+			indprov, 
+			inddcom, 
+			substr(inddcom,0,25), 
+			substr(inddcom,0,10),
+			dec_temp_area(indzona, indgradi),
+			dec_pr_area(indlevel),
+			dec_regiogroup(indregio)
+			from DBI_USER.ifc_sap_comuni
+			where
+			indccom <> '0'
+		]]></mainSelect>
+		<insertTable name='ADRCITY_CITY' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='CITY' />
+				<field name='CITY_CODE' index='0' />
+				<field name='REGION' index='1' />
+				<field name='CITY_NAME' index='2' />
+				<field name='CITY_SHORT' index='3' />
+				<field name='CITY_SH10' index='4' />
+				<field name='TEMP_AREA' index='5' />
+				<field name='PR_AREA_AI' index='6' />
+				<field name='REGIOGROUP' index='7' />
+		</insertTable>
+	</adrcityAggregator>
+	
+    <adrcityExtractor>
+		<mainSelect ><![CDATA[
+		select 
+		legacy,
+		tipo,
+		city_code,
+		region,
+		regiogroup,
+		temp_area,
+		pr_area_ai,
+		city_name,
+		city_short,
+		city_sh10
+		from adrcity_city
+		order by legacy
+       ]]></mainSelect>
+       	<csvLine line_index='0' last='True' field_start_index='0' field_end_index='10'>
+       	</csvLine>
+		<ende field_index='0' />
+	</adrcityExtractor>
+
+       <adrstreetAggregator>
+		<mainSelect ><![CDATA[
+		select 
+		a.indprog, 
+		indtipo, 
+		d.indccom, 
+		inddcom, 
+		indprov, 
+		indindi||' '||indccvia, 
+		substr(indccvia, 0, 22),
+		substr(indccvia, 0, 15),
+		decode(indindi, 'VIA', '00', '00')
+		from
+		DBI_USER.IFC_SAP_ANAGRINDIRIZZI a,
+		DBI_USER.IFC_SAP_INDIRIZZI b,
+		DBI_USER.IFC_SAP_STRADARIO c,
+		DBI_USER.IFC_SAP_COMUNI d 
+		where
+		a.indtipo = 'FORNITURA'
+		and inddcom <> 'NON DEFINITO'                                                                                                              
+		and a.indprog = b.indprog
+		and B.INDCSTR = C.INDCSTR 
+		and c.INDCCOM = d.INDCCOM 
+		group by
+		a.indprog, 
+		indtipo, 
+		d.indccom, 
+		inddcom, 
+		indprov, 
+		indindi||' '||indccvia, 
+		substr(indccvia, 0, 22),
+		substr(indccvia, 0, 15),
+		decode(indindi, 'VIA', '00', '00')
+		order by indprog
+		]]></mainSelect>
+		<insertTable name='ADRSTREET_STREET' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='STREET' />
+				<field name='STRT_CODE' index='0' />
+				<field name='CITY_CODE' index='2' />
+				<field name='CITYP_CODE' constant_value='' />
+				<field name='STREET' index='5' />
+				<field name='STREET_SHR' index='6' />
+				<field name='STREET_S15' index='7' />
+				<field name='STRTYPEAB' index='8' />
+		</insertTable>
+	</adrstreetAggregator>
+
+       <adrstreetExtractor>
+		<mainSelect ><![CDATA[
+		select 
+		legacy, 
+		tipo, 
+		strt_code, 
+		city_code, 
+		cityp_code, 
+		street, 
+		street_shr, 
+		street_s15, 
+		strtypeab
+		from
+		adrstreet_street
+		order by legacy
+       ]]></mainSelect>
+       	<csvLine line_index='0' last='True' field_start_index='0' field_end_index='8'>
+       	</csvLine>
+		<ende field_index='0' />
+</adrstreetExtractor>
+
+	</queries>
+</root>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

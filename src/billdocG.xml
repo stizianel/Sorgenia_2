@@ -1,0 +1,223 @@
+<root>
+	<queries>
+	<billdoc_ERCH_Aggregator>
+		<mainSelect ><![CDATA[
+       select to_char(t.competenza_dt,'YYYYMMDD')||t.dbi_anubis_id_documento, --0
+       t.cd_entita_fatt,                                        --1
+       t.cd_cliente,                                            --2
+       t.dbi_cd_punto,                                          --3
+       to_char(t.competenza_dt,'YYYYMMDD'),                     --4
+       to_char(last_day(t.competenza_dt),'YYYYMMDD'),           --5
+       t.emissione_num,											--6
+       --decode(v.caliv,'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), -- 7
+       get_iva_from_righe(t.dbi_anubis_id_documento, t.competenza_dt), --7
+       ableinh,                                                      -- 8                                                  
+       dec_ktokl(v.cserv, v.acatc),                                   -- 9
+       to_char(sysdate,'YYYYMMDD'),                                   --10
+       decode(t.fl_conguaglio,'N', '1000', 'S', '4000', '1000'),      --11
+       get_saldoacconto(ableinh, to_char(last_day(t.competenza_dt),'YYYYMMDD')), --12
+       t.dbi_anubis_id_documento_cong,                                            --13
+       e.portion                                                      --14 
+       
+  from dbi_user.ifc_sap_pr_competenza_doc t, v_contratti v, instlng_data z, z_te422 e
+ where t.dbi_cd_punto = 'PR2295834'
+   and t.dbi_cd_punto = v.cncon
+   and t.cd_entita_fatt = v.cflg9
+   and t.dbi_cd_punto = z.legacy
+   and ableinh = e.termschl
+ order by t.competenza_dt desc
+
+        ]]></mainSelect>
+		<insertTable name='BILLDOCG_ERCH' truncate = 'True' break_index='0' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='ERCH' />
+				<field name='BUKRS' constant_value='SORG' />
+				<field name='SPARTE' constant_value='G' />
+				<field name='GPARTNER' index='2' />
+				<field name='VKONT' index='1' />
+				<field name='VERTRAG' index='3' />
+				<field name='BEGABRPE' index='4' />
+				<field name='ENDABRPE' index='5' />
+				<field name='ABRDATS' index='5' />
+				<field name='ADATSOLL' index='5' />
+				<field name='PTERMTDAT' constant_value=' ' />
+				<field name='BELEGDAT' index='10' />
+				<field name='BELNRALT' constant_value=' ' />
+				<field name='ABRVORG' index='12' />
+				<field name='HVORG' constant_value='0100' />
+				<field name='KOFIZ' index='7' />
+				<field name='PORTION' index='14' />
+				<field name='ABLEINH' index='8' />
+				<field name='BACKBI' constant_value='0' />
+				<field name='PERENDBI' constant_value='0' />
+				<field name='ZUORDDAA' index='5' />
+				<field name='KTOKLASSE' index='9' />
+				<field name='NOCANC' constant_value=' ' />
+				<field name='EXBILLDOCNO' constant_value=' ' />
+				<field name='ACTPERIOD' index='11' />
+				<field name='ACTPERORG' index='11' />
+				<field name='BASDYPER' constant_value='1' />
+		</insertTable>
+	</billdoc_ERCH_Aggregator>
+	
+	<billdoc_ERCHP_Aggregator>
+		<mainSelect ><![CDATA[
+			select vertrag,
+       		begabrpe,
+       		endabrpe,
+       		actperorg,
+       		saldo_precedente_gas(vertrag, endabrpe, actperorg, begabrpe),
+       		legacy
+  			from BILLDOCG_ERCH
+		]]></mainSelect>
+		<insertTable name='BILLDOCG_ERCHP' truncate = 'True' break_index='' >
+				<field name='LEGACY'  index='5' />
+				<field name='TIPO'    constant_value='ERCHP' />
+				<field name='PERCREA' constant_value='S' />
+				<field name='AB'      index='4' />
+				<field name='BIS'     constant_value=' ' />
+		</insertTable>
+		<insertTable name='BILLDOCG_ERCHP' truncate = 'False' break_index='' >
+				<field name='LEGACY'  index='5' />
+				<field name='TIPO'    constant_value='ERCHP' />
+				<field name='PERCREA' constant_value='E' />
+				<field name='AB'      index='4' />
+				<field name='BIS'     constant_value=' ' />
+		</insertTable>
+	</billdoc_ERCHP_Aggregator>
+	
+	<billdoc_ERCHZ_Prepare>
+		<mainSelect ><![CDATA[
+			numera_righe_gas
+		]]></mainSelect>
+	</billdoc_ERCHZ_Prepare>
+	
+	<billdoc_ERCHZ_Aggregator>
+		<mainSelect ><![CDATA[
+       select 
+       b.legacy,              --0
+       regexp_replace(a.tipo_riga_sap, '[^[:alnum:]]'),                 --1
+       'G001',                                                          --2
+--       to_char(a.d_mese_comp,'YYYYMMDD'),                               --3
+--       to_char(last_day(a.d_mese_comp),'YYYYMMDD'),                     --4
+       b.begabrpe,
+       b.endabrpe,
+       '2',                                                             --5 giorno o mese ?
+       l.um,                                                            --6
+       a.id_udm_prz,                                                    --7
+       decode(a.id_tp_iva, '21', 'V3', '20', 'V2', '10', 'V1', 'V1'),   --8
+       replace(ltrim(to_char(a.n_imp,'9999999999990D99')),'.',','),     --9
+       replace(ltrim(to_char(a.n_prz,'99999990D99999999')),'.',','),    --10
+       replace(ltrim(to_char(decode(a.n_qta,'0','1',a.n_qta),'99999999999990D99999999999999')),'.',',') as i_abrmenge, --11
+       i.tariftyp,                                                      --12
+       get_tariffa(rtrim(tipo_riga_sap), i.tariftyp),                   --13
+       get_tvorg(rtrim(tipo_riga_sap), i.tariftyp),                     --14
+       get_gegen_tvorg(rtrim(tipo_riga_sap), i.tariftyp),               --15
+       dec_ableser(i.ableinh, to_date(b.begabrpe,'YYYYMMDD')),          --16
+       dec_dyncanc01(b.sparte, i.tariftyp, regexp_replace(a.tipo_riga_sap, '[^[:alnum:]]')) --17
+  from dbi_user.ifc_sap_t_rg_billing   a,
+       billdocg_erch                    b,     
+       instlng_data                     i,
+       billdocg_erch_h                  h,
+       z_massbill                      l
+ where a.id_documento = substr(b.legacy, 9,11)
+   and b.vertrag = 'PR2295834'
+   and i.legacy = b.vertrag
+   and b.vertrag = h.vertrag
+   and a.d_mese_comp >= to_date(h.endabrpe, 'YYYYMMDD')
+   and tipo_riga_sap <> '-1'
+   and get_tariffa(rtrim(tipo_riga_sap), i.tariftyp) is not null
+   and regexp_replace(a.tipo_riga_sap, '[^[:alnum:]]') = l.tipo_riga
+ order by b.legacy
+        ]]></mainSelect>
+		<insertTable name='BILLDOCG_ERCHZ' truncate = 'True' break_index='' >
+		<field name='LEGACY'       index='0' />
+		<field name='TIPO'         constant_value='ERCHZ' />
+		<field name='BELZART'      index='1' />
+		<field name='BUCHREL'      constant_value='X' />
+		<field name='PRINTREL'     constant_value='X' />
+		<field name='AKLASSE'      index='2' />
+		<field name='TVORG'        index='14' />
+		<field name='GEGEN_TVORG'  index='15' />
+		<field name='LINESORT'     constant_value='Z002' />
+		<field name='AB'           index='3' />
+		<field name='BIS'          index='4' />
+		<field name='TIMTYPZA'     index='5' />
+		<field name='MASSBILL'     index='6' />
+		<field name='MWSKZ'        index='8' />
+		<field name='NETTOBTR'     index='9' />
+		<field name='TWAERS'       constant_value='EUR' />
+		<field name='PREISTYP'     constant_value='1' />
+		<field name='PREISBTR'     index='10' />
+		<field name='MNGBASIS'     constant_value='1.00' />
+		<field name='ABLESGR'      index='16' />
+		<field name='TARIFTYP'     index='12' />
+		<field name='TARIFNR'      index='13' />
+		<field name='KONDIGR'      constant_value='000001' />
+		<field name='I_ABRMENGE'   index='11' />
+		<field name='STGRQNT'      constant_value='000001' />
+		<field name='STGRAMT'      constant_value='000001' />
+		<field name='PERTYP'       constant_value='NO' />
+		<field name='TAX_TVORG'    index='14' />
+		<field name='DYNCANC'      constant_value=' ' />
+		<field name='DYNCANC01'    index='17' />
+		</insertTable>
+		</billdoc_ERCHZ_Aggregator>
+		
+		<billdoc_ERDTAX_Aggregator>
+		<mainSelect ><![CDATA[
+			select 	legacy,
+					mwskz,
+					nettobtr,
+					i_abrmenge,
+					belzart,
+					progriga
+			 from billdocg_erchz
+		]]></mainSelect>	
+		<insertTable name='BILLDOCG_ERDTAX' truncate = 'True' break_index='' >
+		<field name='LEGACY'       index='0' />
+		<field name='TIPO'         constant_value='ERDTAX' />	
+		<field name='MWSKZ'        index='1' />
+		<field name='BETRW'        index='2' />
+		<field name='MENGE'        index='3' />
+		<field name='BELZART'      index='4' />
+		<field name='BILLDOCLINE'  index='5' />
+		<field name='LFDNR'        index='5' />
+		</insertTable>
+		</billdoc_ERDTAX_Aggregator>
+		
+	<billdocExtractor>
+		<mainSelect ><![CDATA[
+		select a.*,
+		       b.*,
+		       c.*,
+		       d.legacy,
+           d.tipo,
+           to_char(d.billdocline,'000009'),
+           to_char(d.lfdnr, '000009'),
+           d.mwskz,
+           d.betrw,
+           d.menge,
+           c.legacy||c.tipo||c.percrea
+      from billdocg_erch a,
+      billdocg_erchz b,
+      billdocg_erchp c,
+      billdocg_erdtax d
+      where a.legacy = b.legacy
+        and a.legacy = c.legacy
+        and (b.legacy = d.legacy and b.progriga = d.billdocline)
+     order by a.legacy, b.progriga
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='27'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='' field_start_index='28' field_end_index='72'>
+       	</csvLine>
+       	<csvLine line_index='3' break_index='85' field_start_index='73' field_end_index='77'>
+       	</csvLine>
+       	<csvLine line_index='4' break_index='' field_start_index='78' field_end_index='84'>
+       	</csvLine>
+		<ende field_index='0' />
+	</billdocExtractor>
+	</queries>
+</root>
+

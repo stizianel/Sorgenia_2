@@ -1,0 +1,63 @@
+<root>
+	<queries>
+		<connobjAggregator>
+			<mainSelect ><![CDATA[
+				select cncon,
+				   cncon,
+		           comune_cli_anu,
+		           cap_cli_anu,
+		           toponimo_cli_anu||' '||via_cli_anu,
+		           substr(civico_cli_anu,0,10),
+		           provincia_cli_anu,
+		           dec_regiogroup(regione)
+			       from z_test_contratti t, dbi_user.ifc_delibera_ee a, DBI_USER.source_istat_province p
+			       where note = 'lotto 1' and
+			       t.cncon = a.pr_anu and
+			       a.provincia_cli_anu = p.provincia_targa
+	      ]]></mainSelect>
+			<insertTable name='CONNOBJ_COEHA' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='CO_EHA' />
+					<field name='PLTXT' constant_value='Punto di connessione' />
+					<field name='SWERK' constant_value='' />
+			</insertTable>
+			<insertTable name='CONNOBJ_COADR' truncate = 'True' break_index='0' >
+					<field name='LEGACY' index='0' />
+					<field name='TIPO' constant_value='CO_ADR' />
+					<field name='CITY1' index='2' />
+					<field name='POST_CODE1' index='3' />
+					<field name='STREET' index='4' />
+					<field name='HOUSE_NUM1' index='5' />
+					<field name='HOUSE_NUM2' constant_value='' />
+					<field name='REGION' index='6' />
+					<field name='REGIOGROUP' index='7' />
+			</insertTable>
+		</connobjAggregator>
+		
+		<connobjExtractor>
+		<mainSelect ><![CDATA[
+			select  a.legacy,
+	        a.tipo,
+	        a.pltxt,
+	        a.swerk,
+	        b.legacy,
+	        b.tipo,
+	        b.city1,
+	        b.post_code1,
+	        b.street,
+	        b.house_num1,
+	        b.house_num2,
+	        b.region,
+	        b.regiogroup
+	        from connobj_coeha a, connobj_coadr b
+	        where
+	        a.legacy = b.legacy
+	    ]]></mainSelect>
+       	<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='3'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='' field_start_index='4' field_end_index='12'>
+       	</csvLine>
+		<ende field_index='0' />
+	</connobjExtractor>
+	</queries>
+</root>

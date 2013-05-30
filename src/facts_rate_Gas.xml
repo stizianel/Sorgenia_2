@@ -1,0 +1,88 @@
+<root>
+	<queries>
+	<RateGasAggregator>
+		<mainSelect ><![CDATA[
+       select v.cncon,  --0
+        v.cncon,                                 --1
+        a.operando,                              --2
+        --to_char(v.cdsti,'yyyymmdd'),                            --3
+        '20090701',
+        data_validita_al ,
+       -- CASE WHEN A.OPERANDO='GRSCSPECIA' THEN to_char (add_months(last_day(v.cdsti),12)-1,'yyyymmdd')ELSE data_validita_al END CASE ,                    --4
+        GET_GAS_VALORI_TARIFART(A.OPERANDO,v.ctar1,ee.istat_cliente),--5
+       GET_GAS_PREZZO_KONDIGR(A.OPERANDO,v.ctar1,ee.istat_cliente,v.cdsti),--6
+         b.id_operando --7 
+        from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v,
+              z_prodotto_operando a,
+               z_anagrafica_operandi b,
+             DBI_USER.IFC_delibera_gas ee
+        where a.ctar1=v.ctar1
+       and v.cncon IN(SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+       and  a.operando = b.operando 
+        and ee.pr_anu=v.cncon
+        and v.cncon=ee.pr_anu
+        and tipo = 'RATE TYPE'
+        order by v.cncon
+        ]]></mainSelect>
+		
+		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		     <insertTable name='GAS_FACTS_F_RATE_TYPE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_RATE' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index= '7'/>
+		   </insertTable> 
+		   <insertTable name='GAS_FACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
+		      <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_RATE' />
+		     <field name='AB'   index='3' />
+		     <field name='BIS' index='4' />
+		      <field name='TARIFART' index='5' />
+		     <field name='KONDIGR' index='6' />
+		     <field name='PROG'  index ='7' />
+		     </insertTable> 
+		
+	</RateGasAggregator>
+	<RateGasExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               GAS_FACTS_KEY.LEGACY||GAS_facts_f_rate_type.operand||GAS_facts_v_rate_type.ab,  --0
+               GAS_FACTS_KEY.TIPO,--1
+               GAS_FACTS_KEY.ANLAGE, --2
+               GAS_FACTS_KEY.BIS, --3
+               GAS_facts_f_rate_type.legacy||GAS_facts_f_rate_type.operand||GAS_facts_v_rate_type.ab, --4
+               GAS_facts_f_rate_type.tipo, --5
+               GAS_facts_f_rate_type.operand, --6
+               GAS_facts_f_rate_type.saison, --7
+               GAS_facts_f_rate_type.prog, --8
+               GAS_facts_v_rate_type.legacy||GAS_facts_f_rate_type.operand||GAS_facts_v_rate_type.ab, --9
+               GAS_facts_v_rate_type.tipo, --10
+                GAS_facts_v_rate_type.ab, --11
+               GAS_facts_v_rate_type.bis, --12
+               GAS_facts_v_rate_type.tarifart, --13
+               GAS_facts_v_rate_type.kondigr, --14
+              GAS_facts_v_rate_type.prog --15
+              from GAS_facts_key,fGAS_acts_f_rate_type,GAS_facts_v_rate_type
+              where GAS_facts_key.legacy = GAS_facts_f_rate_type.legacy
+              and GAS_facts_v_rate_type.legacy=GAS_facts_key.legacy
+              and GAS_facts_f_rate_type.legacy=GAS_facts_v_rate_type.legacy
+              and GAS_facts_f_rate_type.prog=GAS_facts_v_rate_type.prog
+              order by GAS_facts_f_rate_type.prog
+           ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='14'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</RateGasExtractor>
+	</queries>
+</root>
+

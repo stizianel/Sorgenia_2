@@ -1,0 +1,136 @@
+<root>
+	<queries>
+	<devinforecAggregator>
+	<mainSelect ><![CDATA[
+		select substr(matricola_misuratore_user, 0, 18) || pr_anu,
+       'G',
+       decode(numero_cifre_contatore_anu, 5, 'GV5', 6, 'GV6', 'GV6'),
+       '20010101',
+       substr(matricola_misuratore_user, 0, 18),
+       e.pr_area_ai,
+       e.temp_area,
+       substr(cabina_remi_anu, -8)
+  from dbi_user.ifc_delibera_gas d, adrcity_city e
+ where pr_anu in (select cncon from z_pr_in_lavorazione_gas) 
+   and d.istat_cliente = e.legacy
+		]]></mainSelect>
+		<insertTable name='DEVINFORECG_INT' truncate = 'True' break_index='0' >
+		<field name='LEGACY' 		index='0' />
+		<field name='TIPO' 			constant_value='DVMINT' />
+		<field name='KEYDATE' 		index='3' />
+		<field name='SPARTE' 		index='1' />
+		<field name='MATNR' 		index='2' />
+		<field name='GERAET' 		index='4' />
+		</insertTable>
+		<insertTable name='DEVINFORECG_DEV' truncate = 'True' break_index='0' >
+		<field name='LEGACY' 		index='0' />
+		<field name='TIPO' 			constant_value='DVMDEV' />
+		<field name='BIS' 			constant_value='99991231' />
+		<field name='AB' 			index='3' />
+		<field name='GERAET' 		index='4' />
+		<field name='ZWGRUPPE' 		constant_value=' ' />
+		<field name='MATNR' 		index='2' />
+		</insertTable>
+		<insertTable name='DEVINFORECG_DFL' truncate = 'True' break_index='0' >
+		<field name='LEGACY' 		index='0' />
+		<field name='TIPO' 			constant_value='DVMDFL' />
+		<field name='BIS' 			constant_value='99991231' />
+		<field name='AB' 			index='3' />
+		<field name='GERAET' 		index='4' />
+		<field name='MATNR' 		index='2' />
+		<field name='ZWGRUPPE' 		constant_value=' ' />
+		<field name='EGERR_INFO'	constant_value=' ' />
+		</insertTable>
+		<insertTable name='DEVINFORECG_REG' truncate = 'True' break_index='0' >
+		<field name='LEGACY' 		index='0' />
+		<field name='TIPO' 			constant_value='DVMREG' />
+		<field name='GERAET' 		index='4' />
+		<field name='MATNR' 		index='2' />
+		<field name='ZWNUMMER' 		constant_value='001' />
+		<field name='BIS' 			constant_value='99991231' />
+		<field name='AB'  			index='3' />
+		<field name='ZWFAKT'  		constant_value=' ' />
+		<field name='TEMP_AREA' 	index='6' />
+		<field name='PR_AREA_AI' 	index='5' />
+		<field name='CALOR_AREA'    index='7' />
+		</insertTable>
+		<insertTable name='DEVINFORECG_RFL' truncate = 'True' break_index='0' >
+		<field name='LEGACY' 		index='0' />
+		<field name='TIPO' 			constant_value='DVMRFL' />
+		<field name='AB'  			index='3' />
+		<field name='BIS' 			constant_value='99991231' />
+		<field name='GERAET' 		index='4' />
+		<field name='MATNR' 		index='2' />
+		<field name='ZWNUMMER' 		constant_value='001' />
+		<field name='ZWFAKT'  		constant_value=' ' />
+		<field name='TEMP_AREA' 	constant_value='X' />
+		<field name='PR_AREA_AI' 	constant_value='X' />
+		<field name='CALOR_AREA'    constant_value='X' />
+		</insertTable>
+	</devinforecAggregator>
+	<devinforecExtractor>
+		<mainSelect ><![CDATA[
+		  select a.legacy,  --0
+          a.tipo,     --1
+          a.keydate,  --2
+          a.sparte,   --3
+          a.matnr,    --4
+          a.geraet,   --5
+          b.legacy,   --6
+          b.tipo,     --7
+          b.bis,      --8
+          b.ab,       --9
+          b.geraet,   --10
+          b.zwgruppe, --11
+          b.matnr,    --12
+          c.legacy,   --13
+          c.tipo,     --14
+          c.geraet,   --15
+          c.matnr,    --16
+          c.zwnummer, --17
+          c.bis,      --18
+          c.ab,       --19
+          c.zwfakt,   --20
+          c.temp_area,--21
+          c.pr_area_ai,--22
+          c.calor_area, --23
+          d.legacy,    --24
+          d.tipo,      --25
+          d.bis,        --26
+          d.ab,       --27
+          d.geraet,    --28
+          d.matnr,     --29
+          d.zwnummer,  --30
+          d.zwfakt,    --31
+          d.temp_area, --32
+          d.pr_area_ai, --33
+          d.calor_area,--34
+          e.legacy,    --35
+          e.tipo,      --36
+          e.bis,        --37
+          e.ab,       --38
+          e.geraet,    --39
+          e.matnr,     --40
+          e.zwgruppe,  --41
+          e.egerr_info --42
+          from DEVINFORECG_INT a, DEVINFORECG_DEV b, DEVINFORECG_REG c, DEVINFORECG_RFL d, DEVINFORECG_DFL e
+          where a.legacy = b.legacy
+          and a.legacy = c.legacy 
+          and a.legacy = d.legacy
+          and a.legacy = e.legacy
+          order by a.legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='5'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='6' field_end_index='12'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='0' field_start_index='35' field_end_index='42'>
+       	</csvLine>
+       	<csvLine line_index='3' break_index='0' field_start_index='13' field_end_index='23'>
+       	</csvLine>
+       	<csvLine line_index='4' break_index='0' field_start_index='24' field_end_index='34'>
+       	</csvLine>	
+       	<ende field_index='0' />
+    </devinforecExtractor>
+	</queries>
+</root>

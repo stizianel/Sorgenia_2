@@ -1,0 +1,28 @@
+<root>
+	<query>
+		<id>A003</id>
+		<descrizione>"Clienti con contratto attivo tipo G senza partita iva"</descrizione>
+		<select>select * from dbi_user.ifc_sap_anagrclienti t
+				where apers  = 'G' and apiva is null
+				and atipoentita = 'CLIENTE'
+				and acdan in (select acdan from v_contratti)
+		</select>
+	</query>
+	<query>
+		<id>A010</id>
+		<descrizione>"Contratti gas con indirizzo COMUNE NON DEFINITO"</descrizione>
+		<select>select cncon,         --0 
+            c.indccom,            --1
+              c.inddcom,            --2
+              c.indcap,            -- 3
+              c.indindi||' '||c.indccvia, --4
+              substr(c.indcivi,0,10),     --5
+              c.indprov,                  --6
+              dec_regiogroup(c.indregio)  --7
+              from DBI_USER.ifc_sap_anagrcontrgas t, DBI_USER.ifc_sap_anagrindirizzi_pr b, v_indirizzi c
+              where t.cncon = b.pr  and
+              b.indprog = c.indprog and
+              inddcom = 'NON DEFINITO'
+		</select>
+	</query>
+</root>

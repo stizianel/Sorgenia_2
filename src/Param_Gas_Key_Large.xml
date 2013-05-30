@@ -1,0 +1,31 @@
+<root>
+	<queries>    
+	<KeyLargeGasAggregator>
+         <mainSelect ><![CDATA[
+         select legacy from PGAS_EMG_FACTS_QUANT
+         union 
+         select legacy from PGAS_FACTS_F_AMOU
+         union 
+         select legacy from PGAS_FACTS_F_FACTOR
+         union
+         select legacy from PGAS_FACTS_F_QPRICE
+         union 
+         select legacy from PGAS_FACTS_F_RATE_TYPE
+         union
+         select legacy from PGAS_FACTS_F_FLAG
+         union
+         select legacy from PGAS_EMG_FACTS_INTEGER
+         union
+         select legacy from PGAS_FACTS_F_UDEF
+       ]]></mainSelect>
+     <insertTable name='PGAS_FACTS_KEY' truncate = 'True' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='0' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		    </KeyLargeGasAggregator>                  
+ </queries>
+</root>     
+	    
+         

@@ -1,0 +1,150 @@
+<root>
+	<queries>
+	<FactorGasLargeAggregator>
+		<mainSelect ><![CDATA[
+        select 
+            C.dbi_original_key_pr,                      --0
+            C.dbi_original_key_pr,                      --1 
+            b.operando,                                 --2
+            case when d.operando='GFTOPSOGLI'  then '20090701' else to_char(a.d_inizio_val,'yyyymmdd')end case,         --3 
+            case when d.operando='GFTOPSOGLI'then '99991231' 
+           when to_char(a.d_fine_val,'yyyymmdd') is null then '99991231' else to_char(a.d_fine_val,'yyyymmdd') end case,              --4
+            b.tipo_tariffa,                             --5
+            gas_parametri_large_factor(b.operando,C.dbi_original_key_pr,c.ctar1,a.d_inizio_val),                           --6
+            d.id_operando                               --7  
+       from  DBI_USER.rpl_anu_t_param_valori_large a,gas_z_param_operando_large b,
+              gas_anagrafica_operandi d,DBI_USER.ifc_sap_anagrcontrgas C
+       where b.cd_parametro=a.cd_parametro_valore_large
+        and c.ctar1=b.ctar1
+        and C.dbi_original_key_pr IN (select c.cncon from Z_pr_in_lavorazione_gas c )
+        and d.operando = b.operando
+        and d.tipo = 'FACTOR'
+        and a.cd_punto=c.dbi_original_key_pr
+        group by 
+           C.dbi_original_key_pr,  
+           C.dbi_original_key_pr,                                    
+           b.operando,                                 
+           to_char(a.d_inizio_val,'yyyymmdd'),--3                            
+           to_char(a.d_fine_val,'yyyymmdd'),   
+         d.operando,'20090701',  
+            d.operando, '99991231' ,                 
+           b.tipo_tariffa,                                        
+           gas_parametri_large_factor(b.operando,C.dbi_original_key_pr,c.ctar1,a.d_inizio_val),                                        
+           d.id_operando     
+        order by b.operando
+        ]]></mainSelect>
+          <insertTable name='PGAS_FACTS_F_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_FACT' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '7' />
+		   </insertTable> 
+		   <insertTable name='PGAS_FACTS_V_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'    index='0' />
+		     <field name='TIPO'       constant_value='V_FACT' />
+		     <field name='TARIFART'   constant_value='' />
+		     <field name='FACTOR'     index='6' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index= '7' /> 
+		     </insertTable> 
+		
+	</FactorGasLargeAggregator>
+	
+	<UDEFGasLargeAggregator>
+         <mainSelect legacy_name='a.cncon' ><![CDATA[
+           select 
+                      v.dbi_original_key_pr,                 --0
+                      v.dbi_original_key_pr,                 --1 
+                      a.operando,                            --2
+                      '20090701',                           --3 
+                     '99991231',                             --4
+                      b.id_operando ,                        --5
+                      case when a.operando='TIPOLOGIAC' then 'A' when a.operando='GI_CATEGOR' then '009' else a.CTAR1 end case 
+                      --then substr(d.CD_PROF_USO,5) else a.CTAR1 end case  --6                               --6
+        from  DBI_USER.ifc_sap_anagrcontrgas v,
+              gas_z_param_operando_large a, 
+              gas_anagrafica_operandi b,
+              dbi_user.ifc_sap_punti_fornitura  d 
+        where  a.ctar1=v.ctar1
+        and v.dbi_original_key_pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and a.operando = b.operando
+        and d.dbi_punto_key =v.dbi_original_key_pr
+        and v.cflg1='ATTIVO'
+        and b.tipo = 'USERDEF'
+        group by 
+                 v.dbi_original_key_pr,  
+                 v.dbi_original_key_pr,                                   
+                 a.operando,                                                      
+                 b.id_operando ,                       
+                 a.CTAR1 ,
+                 d.CD_PROF_USO
+     order by v.dbi_original_key_pr
+       ]]></mainSelect>
+    	   <insertTable name='PGAS_FACTS_F_UDEF' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_UDEF' />
+		     <field name='OPERAND' index = '2' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		   </insertTable> 
+		    <insertTable name='PGAS_FACTS_V_UDEF' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_UDEF' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='UDEFVAL1' index='6' />
+		     <field name='UDEFVAL2' constant_value='' />
+		     <field name='UDEFVAL3' constant_value='' />
+		     <field name='UDEFVAL4' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		    </insertTable> 
+		    </UDEFGasLargeAggregator>
+		  
+		    <UDEFGasExtractor>
+		<mainSelect ><![CDATA[
+		 SELECT
+               GAS_FACTS_KEY.LEGACY,  --0
+               GAS_FACTS_KEY.TIPO,--1
+               GAS_FACTS_KEY.ANLAGE, --2
+               GAS_FACTS_KEY.BIS, --3
+               GAS_FACTS_F_UDEF.LEGACY, --4
+               GAS_FACTS_F_UDEF.TIPO, --5
+               GAS_FACTS_F_UDEF.OPERAND, --6
+               GAS_FACTS_F_UDEF.SAISON,--7
+               GAS_FACTS_F_UDEF.PROG, --8
+               GAS_FACTS_V_UDEF.LEGACY, --9
+               GAS_FACTS_V_UDEF.TIPO,--10
+               GAS_FACTS_V_UDEF.AB, --11
+               GAS_FACTS_V_UDEF.BIS, --12
+               GAS_FACTS_V_UDEF.UDEFVAL1, --13
+               GAS_FACTS_V_UDEF.UDEFVAL2,--14
+               GAS_FACTS_V_UDEF.UDEFVAL3,--15
+               GAS_FACTS_V_UDEF.UDEFVAL4,--16
+               GAS_FACTS_V_UDEF.TARIFART, --17
+               GAS_FACTS_V_UDEF.KONDGIR, --18
+               GAS_FACTS_V_UDEF.PROG --19
+               FROM 
+              GAS_FACTS_KEY,GAS_FACTS_F_UDEF,GAS_FACTS_V_UDEF
+              WHERE
+              GAS_FACTS_KEY.LEGACY = GAS_FACTS_F_UDEF.LEGACY
+          AND GAS_FACTS_F_UDEF.LEGACY = GAS_FACTS_V_UDEF.LEGACY
+          and GAS_FACTS_F_UDEF.PROG = GAS_FACTS_V_UDEF.PROG  
+          order by GAS_FACTS_F_UDEF.prog
+     ]]></mainSelect>
+     <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+         </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='18'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</UDEFGasExtractor>
+              
+	</queries>
+</root>
+

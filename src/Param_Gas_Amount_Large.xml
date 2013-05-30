@@ -1,0 +1,55 @@
+<root>
+	<queries>    
+	<AmountGasLargeAggregator>
+         <mainSelect legacy_name='a.cncon' ><![CDATA[
+         select   
+                 v.DBI_ORIGINAL_KEY_PR,                     --0
+                 v.DBI_ORIGINAL_KEY_PR,                     --1 
+                 a.operando,                                 --2
+                 case when a.operando='GAQVPRILB1' then '20090701' else to_char(D.d_inizio_val,'yyyymmdd') end case,         --3 
+                 case when a.operando='GAQVPRILB1' then '99991231' else to_char(d.d_fine_val,'yyyymmdd')end case ,      
+                 d.n_valore,                                 --5
+                  b.id_operando                              --6
+        from DBI_USER.IFC_SAP_ANAGRCONTRGAS v,
+             gas_z_param_operando_large a,
+             gas_anagrafica_operandi b ,
+            DBI_USER.rpl_anu_t_param_valori_large D
+        where a.ctar1=v.ctar1 
+          and v.DBI_ORIGINAL_KEY_PR IN (select c.cncon from Z_pr_in_lavorazione_gas c)
+          and a.operando = b.operando  
+          and d.cd_punto=v.DBI_ORIGINAL_KEY_PR
+          and a.cd_parametro=d.cd_parametro_valore_large
+          and b.tipo = 'AMOUNT'    
+           group by
+          v.DBI_ORIGINAL_KEY_PR,                     --0
+                 v.DBI_ORIGINAL_KEY_PR,                     --1 
+                 a.operando,                                 --2
+                 to_char(D.d_inizio_val,'yyyymmdd'),         --3 
+                 to_char(d.d_fine_val,'yyyymmdd') ,          --4
+                 d.n_valore,    
+                  a.operando,'20090701','999912321',                             --5
+                  b.id_operando           
+       ]]></mainSelect>
+       <insertTable name='PGAS_FACTS_F_AMOU' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_AMOU' />
+		     <field name='OPERAND' index = '2' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='6' />
+		   </insertTable> 
+		    <insertTable name='PGAS_FACTS_V_AMOU' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_AMOU' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='BETRAG' index='5' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='6' />
+		    </insertTable> 
+		    </AmountGasLargeAggregator>                  
+ </queries>
+</root>     
+	    
+         

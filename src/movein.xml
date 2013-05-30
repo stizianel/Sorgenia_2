@@ -1,0 +1,89 @@
+<root>
+	<queries>
+	<moveinAggregator>
+		<mainSelect ><![CDATA[
+select a.dbi_original_key_pr, --0
+       decode(a.ctipo, '1', 'P', '3', 'G'), --1
+       a.cflg9, --2
+       apers, --3
+       decode(a.caliv,
+              'Aliquota ordinaria',
+              '01',
+              'Aliquota ridotta',
+              '02',
+              'ER'), --4
+       to_char(p.dt_inizio_fornitura, 'YYYYMMDD'), --5
+       dec_serviceid(b.cdist), --6
+       dec_cokey(a.cserv, acatc), --7
+       dec_gsber(k.ktokl, a.ctipo), --8
+       dec_stagruver(b.ctfor), --9
+       dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura)  --10
+  from v_contratti                      a,
+       DBI_USER.ifc_sap_anagrcontrele   b,
+       dbi_user.ifc_sap_punti_fornitura p,
+       dbi_user.ifc_sap_statopunti      t,
+       account_vkp                      k
+--       z_tempsv                         z
+ where a.dbi_original_key_pr = p.dbi_punto_key
+    and a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
+   and a.dbi_original_key_pr = b.dbi_original_key_pr
+   and b.ctipo = 1
+   and a.cflg9 = k.legacy
+   and a.dbi_original_key_pr = t.cd_punto
+   and t.data_cessazione = to_date('31/12/9999', 'dd/mm/yyyy')
+   group by
+   a.dbi_original_key_pr, --0
+       decode(a.ctipo, '1', 'P', '3', 'G'), --1
+       a.cflg9, --2
+       apers, --3
+       decode(a.caliv,
+              'Aliquota ordinaria',
+              '01',
+              'Aliquota ridotta',
+              '02',
+              'ER'), --4
+       to_char(p.dt_inizio_fornitura, 'YYYYMMDD'), --5
+       dec_serviceid(b.cdist), --6
+       dec_cokey(a.cserv, acatc), --7
+       dec_gsber(k.ktokl, a.ctipo), --8
+       dec_stagruver(b.ctfor), --9
+       dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura)  --10
+        ]]></mainSelect>
+		<insertTable name='MOVEIN_EVER' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='EVER' />
+				<field name='BUKRS' constant_value='SORG' />
+				<field name='SPARTE' index='1' />
+				<field name='KOFIZ' index='4' />
+				<field name='GEMFAKT' constant_value='1' />
+				<field name='VBEZ' constant_value=' ' />
+				<field name='VBEGINN' index='5' />
+				<field name='VREFER' index='0' />
+				<field name='ANLAGE' index='0' />
+				<field name='VKONTO' index='2' />
+				<field name='EINZDAT' index='5' />
+				<field name='MAHNV' constant_value='' />
+				<field name='GSBER' index='8' />
+				<field name='STAGRUVER' index='9' />
+				<field name='EINZDAT_ALT' constant_value='' />
+				<field name='SERVICEID' constant_value='EV_0000001' />
+				<field name='COKEY' index='8' />
+				<field name='INVOICING_PARTY' constant_value='EV_0000001' />
+				<field name='CONTRACTCLASS' constant_value='' />
+				<field name='AUSGRUP' index='10' />
+		</insertTable>
+	</moveinAggregator>
+	
+	<moveinExtractor>
+		<mainSelect ><![CDATA[
+		select * 
+		from movein_ever
+		order by legacy
+		]]></mainSelect>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='20'>
+       	</csvLine>
+		<ende field_index='0' />
+	</moveinExtractor>
+	</queries>
+</root>
+

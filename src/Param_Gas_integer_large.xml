@@ -1,0 +1,88 @@
+<root>
+	<queries>
+	<IntegerGasLargeAggregator>
+		<mainSelect ><![CDATA[
+        SELECT A.dbi_original_key_pr,             --0
+               A.dbi_original_key_pr,             --1
+               b.operando,                        --2
+               '20090701',       --3                           
+              '99991231',       --4
+               case when b.operando='GI_PRELIEV' then ' 000001' else b.tipo_tariffa end case,
+               --substr(e.CD_PROF_USO,5) else b.tipo_tariffa end case, --5  
+               b.gruppo_info,                     --6
+               c.id_operando                      --7 
+              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,
+              gas_z_param_operando_large b,gas_anagrafica_operandi c,
+              dbi_user.ifc_sap_punti_fornitura e
+             WHERE b.operando=c.operando
+               and a.dbi_original_key_pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+               and a.ctar1=b.ctar1
+               and e.dbi_punto_key = a.dbi_original_key_pr
+               AND C.TIPO='INTEGER'
+               group by
+               A.dbi_original_key_pr,  --0
+               A.dbi_original_key_pr,        --1
+               b.operando,   --2
+               substr(e.CD_PROF_USO,5),
+               b.tipo_tariffa , --5  
+               b.gruppo_info, --6
+               c.id_operando --7 
+               order by a.dbi_original_key_pr
+        ]]></mainSelect>
+
+		     <insertTable name='PGAS_EMG_FACTS_INTEGER' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_INTE' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index= '7'/>
+		   </insertTable> 
+		   <insertTable name='PGAS_EMG_VALUE_INTEGER' truncate = 'True' break_index='' >
+		      <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_INTE' />
+		     <field name='AB'   index='3' />
+		     <field name='BIS' index='4' />
+		      <field name='INTEGER4' index='5' />
+		      <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='7' />
+		     </insertTable> 		
+	</IntegerGasLargeAggregator>
+	<IntegerExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               EMG_FACTS_INTEGER.legacy, --4
+               EMG_FACTS_INTEGER.tipo, --5
+               EMG_FACTS_INTEGER.operand, --6
+               EMG_FACTS_INTEGER.saison, --7
+               EMG_FACTS_INTEGER.prog, --8
+               EMG_VALUE_INTEGER.legacy, --9
+               EMG_VALUE_INTEGER.tipo, --10
+               EMG_VALUE_INTEGER.ab, --11
+               EMG_VALUE_INTEGER.bis, --12
+               EMG_VALUE_INTEGER.integer4, --13
+               EMG_VALUE_INTEGER.tarifart, --14
+               EMG_VALUE_INTEGER.kondigr, --15
+               EMG_VALUE_INTEGER.prog --16
+              from facts_key,EMG_FACTS_INTEGER,EMG_VALUE_INTEGER
+              where facts_key.legacy = EMG_FACTS_INTEGER.legacy
+              and EMG_VALUE_INTEGER.legacy=facts_key.legacy
+              and EMG_FACTS_INTEGER.legacy=EMG_VALUE_INTEGER.legacy
+              and EMG_FACTS_INTEGER.prog=EMG_VALUE_INTEGER.prog
+              order by EMG_FACTS_INTEGER.prog
+           ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</IntegerExtractor>
+	</queries>
+</root>
+

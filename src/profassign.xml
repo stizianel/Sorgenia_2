@@ -1,0 +1,53 @@
+<root>
+	<queries>
+	
+    <profassignAggregator>
+		<mainSelect ><![CDATA[
+       select cncon || '-' || to_char(b.dt_inizio_fornitura, 'YYYYMMDD') || '-' ||PRNUM, -- 0
+       to_char(b.dt_inizio_fornitura, 'YYYYMMDD'), --1     
+       d.legacy,                                   --2    
+       ltrim(to_char(prnum, '000')),               --3   
+       decode(prnum,1,'PATT',2,'PREA','ERR')       --4                                   
+  from dbi_user.ifc_sap_anagrcontrele   a,
+       devinforec_int d,
+       z_grnum,
+       dbi_user.ifc_sap_punti_fornitura b
+ where substr(legacy, (instr(legacy, 'P'))) = cncon
+   and matnr = cod_gruppo
+   and (a.cncon = b.dbi_punto_key and a.ctipo = b.ptipo)
+   and a.cncon in (select cncon from z_pr_in_lavorazione)
+   and matnr = 'EAR2'
+ order by cncon, prnum
+		]]></mainSelect>
+		<insertTable name='PROFASSIGN_PASINT' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='PASINT' />
+				<field name='EQUNR' index='2' />
+				<field name='ZWNUMMER' index='3' />
+				<field name='PROFILE' index='0' />
+		</insertTable>
+		<insertTable name='PROFASSIGN_PASDAT' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='PASDAT' />
+				<field name='PROFROLE' index='4' />
+				<field name='DATETO' constant_value='99991231' />
+				<field name='ROLENO' constant_value='0001' />
+				<field name='DATEFORM' index='1' />
+				<field name='PROFILE' index='0' />
+		</insertTable>
+	</profassignAggregator>	
+	
+    <profassignExtractor>
+		<mainSelect ><![CDATA[
+		select * from profassign_pasint a, profassign_pasdat b
+		where a.legacy = b.legacy
+		order by a.legacy
+       ]]></mainSelect>
+       		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='4'>
+       		</csvLine>
+       		<csvLine line_index='1' break_index='0' field_start_index='5' field_end_index='11'>
+       		</csvLine>
+			<ende field_index='0' />
+	</profassignExtractor>
+	</queries>
+</root>

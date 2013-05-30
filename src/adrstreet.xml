@@ -1,0 +1,126 @@
+<root>
+	<queries>
+	
+       <adrstreetAggregator>
+		<mainSelect ><![CDATA[
+		select decode(indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT'),
+       idstrada,
+       idlocalita,
+       idfrazione,
+       codice,
+       a.toponimo||' '||strada,
+       substr(a.toponimo||' '||strada, 0, 22),
+       substr(a.toponimo||' '||strada, 0, 15),
+       c.indccom
+  from dbi_user.ifc_sap_geolab_strade a,
+       zstrtype                       b,
+       dbi_user.ifc_sap_comuni        c
+ where a.toponimo = b.descrizione
+   and a.idlocalita = c.idlocalita_geolab
+ group by indnazi,
+          idstrada,
+          a.toponimo||' '||strada,
+          idlocalita,
+          idfrazione,
+          codice,
+          c.indccom
+ order by idstrada
+		]]></mainSelect>
+		<insertTable name='ADRSTREET_STREET' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='1' />
+				<field name='TIPO' constant_value='STREET' />
+				<field name='STRT_CODE' index='1' />
+				<field name='CITY_CODE' index='8' />
+				<field name='CITYP_CODE' index='3' />
+				<field name='STRTYPEAB' index='4' />
+				<field name='STREET'    index='5' />
+				<field name='STREET_SHR' index='6' />
+				<field name='STREET_S15' index='7' />
+				<field name='COUNTRY' index='0' />
+        </insertTable>
+	</adrstreetAggregator>
+
+	<adrstrpartAggregator>
+		<mainSelect ><![CDATA[
+		select
+        idstrada,
+        nvl(a.acivico, '99999'),
+        a.aesponente,
+        nvl(a.dacivico, '1'),
+        a.daesponente,
+        decode(a.tipocivico, 'D', '1', 'P', '2', '0'),
+        a.cap,
+        idfrazione
+  		from dbi_user.ifc_sap_geolab_strade a
+ 		order by idstrada, idfrazione
+		]]></mainSelect>
+		<insertTable name='ADRSTREET_STRSEC' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='STRSEC' />
+				<field name='HOUSENUM_H' index='1' />
+				<field name='HSN_SUPP_H' index='2' />
+				<field name='HOUSENUM_L' index='3' />
+				<field name='HSN_SUPP_L' index='4' />
+				<field name='HSN_IND' index='5' />
+				<field name='POST_CODE' index='6' />
+				<field name='CITYP_CODE' index='7' />
+		</insertTable>
+	</adrstrpartAggregator>
+
+	<adrstrpart2Aggregator>
+		<mainSelect ><![CDATA[
+		select idstrada, idfrazione, max(acivico) + 1, max(cap)
+     	from dbi_user.ifc_sap_geolab_strade a
+     	where acivico is not null
+     	group by idstrada, idfrazione
+     	order by idstrada
+		]]></mainSelect>
+		<insertTable name='ADRSTREET_STRSEC' truncate = '' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='STRSEC' />
+				<field name='HOUSENUM_H' constant_value='99999' />
+				<field name='HSN_SUPP_H' constant_value=' ' />
+				<field name='HOUSENUM_L' index='2' />
+				<field name='HSN_SUPP_L' constant_value=' ' />
+				<field name='HSN_IND'    constant_value='0' />
+				<field name='POST_CODE' index='3' />
+				<field name='CITYP_CODE' index='1' />
+		</insertTable>
+	</adrstrpart2Aggregator>
+
+    <adrstreetExtractor>
+		<mainSelect ><![CDATA[
+		select 
+	    a.legacy,    --0
+	    a.tipo,       
+	    country,
+	    strt_code,   
+	    city_code,
+	    decode(a.cityp_code,'0',' ',a.cityp_code),
+	    strtypeab,
+	    street, 
+	    street_shr, 
+	    street_s15,    --9
+	    b.legacy,     --10
+	    b.tipo,
+	    b.housenum_h,
+	    b.hsn_supp_h,
+	    b.housenum_l,
+	    b.hsn_supp_l,
+	    b.hsn_ind,
+	    b.post_code  --17
+	    from
+	    adrstreet_street a, adrstreet_strsec b
+	    where a.legacy = b.legacy
+	    order by b.legacy, b.housenum_l
+		]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='9'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='' field_start_index='10' field_end_index='17'>
+       	</csvLine>
+		<ende field_index='0' />
+</adrstreetExtractor>
+	
+	</queries>
+</root>
+

@@ -1,0 +1,76 @@
+<root>
+	<queries>
+
+	<premiseAggregator>
+		<mainSelect ><![CDATA[
+			  select        
+              v.cncon,    -- 0
+              b.indprog   -- 1    
+              from v_contratti v, DBI_USER.ifc_sap_anagrindirizzi_pr b, dbi_user.ifc_delibera_gas c
+              where
+              v.cncon = b.Pr
+              and ctipo = '3'
+              and c.pr_user = v.cncon
+              and v.cncon in (select cncon from z_pr_in_lavorazione_gas)
+              group by
+              v.cncon,
+              b.indprog  
+		]]></mainSelect>
+		<insertTable name='PREMISE_EVBSD' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='0' />
+				<field name='TIPO' constant_value='EVBSD' />
+				<field name='HAUS' index='0' />
+				<field name='LGZUSATZ' constant_value='' />
+				<field name='VBSART' constant_value='01' />
+				<field name='FLOOR' constant_value='' />
+				<field name='ROOMNUMBER' constant_value='' />
+				<field name='ZCODAMM' constant_value='' />
+				<field name='ZCODCAT' constant_value='' />
+				<field name='ZSEZURB' constant_value='' />
+				<field name='ZZFOGLIO' constant_value='' />
+				<field name='ZZPARTIC' constant_value='' />
+				<field name='ZZSUBALT' constant_value='' />
+				<field name='ZZPARTAV' constant_value='' />
+				<field name='ZZCRPTAV' constant_value='' />
+				<field name='ZZPORMAT' constant_value='' />
+				<field name='ZZT_U' constant_value='' />
+				<field name='ZZI_P' constant_value='' />
+				<field name='ZZNOACST' constant_value='' />
+				<field name='ZZNOACBL' constant_value='' />
+				<field name='ZZAECAT' constant_value='' />
+		</insertTable>
+	</premiseAggregator>
+	
+	<premiseExtractor>
+		<mainSelect ><![CDATA[
+       	select  a.legacy,
+	        a.tipo,
+	        a.haus,
+	        a.lgzusatz,
+	        a.vbsart,
+	        a.floor,
+	        a.roomnumber,
+	        a.zcodamm,
+	        a.zcodcat,
+	        a.zsezurb,
+	        a.zzfoglio,
+	        a.zzpartic,
+	        a.zzsubalt,
+	        a.zzpartav,
+	        a.zzcrptav,
+	        a.zzpormat,
+	        a.zzt_u,
+	        a.zzi_p,
+	        a.zznoacst,
+	        a.zznoacbl,
+	        a.zzaecat
+        from premise_evbsd a
+        	order by legacy
+       ]]></mainSelect>
+       <csvLine line_index='0' last='True' field_start_index='0' field_end_index='20'>
+       	</csvLine>
+		<ende field_index='0' />
+    </premiseExtractor>
+    
+	</queries>
+</root>

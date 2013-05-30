@@ -1,0 +1,95 @@
+<root>
+	<queries>
+	<QuanAggregator>
+		<mainSelect ><![CDATA[
+        SELECT A.CNCON,  --0
+               A.CNCON,        --1
+               b.operando,   --2
+               -- to_char(a.cdsti,'yyyymmdd'),--3
+               '20090701',
+               b.data_validita_al, --4
+               b.valori, --5  
+               b.prezzo, --6
+               c.id_operando ,  --7
+               nvl(d.volumi_annui_anu,0) --8 --campo menge
+              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,z_prodotto_operando b,z_anagrafica_operandi c,dbi_user.ifc_delibera_gas D
+             WHERE b.operando=c.operando
+               and a.CNCON  in (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+               and b.ctar1=a.ctar1
+                AND d.pr_anu=A.CNCON
+               AND C.TIPO='QUAN'
+               group by a.cncon,
+               A.CNCON,
+               b.operando,
+                to_char(a.cdsti,'yyyymmdd'),--3
+               b.data_validita_al,
+               b.valori,
+               b.prezzo,
+                c.id_operando ,
+               d.volumi_annui_anu 
+               order by a.cncon
+        ]]></mainSelect>
+		
+		<insertTable name='GAS_FACTS_KEY' truncate = 'True' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		     <insertTable name='EMG_FACTS_QUANT' truncate = 'True' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_QUAN' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '7' />
+		   </insertTable> 
+		   <insertTable name='EMG_VALUE_QUANT' truncate = 'True' break_index='' >
+		     <field name='LEGACY'    index='0' />
+		     <field name='TIPO'       constant_value='V_QUAN' />
+		     <field name='MENGE'      index='8' />
+		      <field name='TARIFART'  constant_value='' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index= '7' /> 
+		     </insertTable> 
+		
+	</QuanAggregator>
+	<QuanExtractor>
+		<mainSelect ><![CDATA[
+		SELECT
+               FACTS_KEY.LEGACY,  --0
+               FACTS_KEY.TIPO,--1
+               FACTS_KEY.ANLAGE, --2
+               FACTS_KEY.BIS, --3
+               EMG_FACTS_QUANT.legacy, --4
+               EMG_FACTS_QUANT.tipo, --5
+               EMG_FACTS_QUANT.operand, --6
+               EMG_FACTS_QUANT.saison, --7
+               EMG_FACTS_QUANT.prog, --8
+               EMG_VALUE_QUANT.legacy, --9
+               EMG_VALUE_QUANT.tipo, --10
+               EMG_VALUE_QUANT.ab, --11
+               EMG_VALUE_QUANT.bis, --12
+               EMG_VALUE_QUANT.menge, --13
+               EMG_VALUE_QUANT.tarifart, --14
+               EMG_VALUE_QUANT.kondigr, --15
+               EMG_VALUE_QUANT.prog --16
+              from facts_key,EMG_FACTS_QUANT,EMG_VALUE_QUANT
+              where facts_key.legacy = EMG_FACTS_QUANT.legacy
+              and EMG_VALUE_QUANT.legacy=facts_key.legacy
+              and EMG_FACTS_QUANT.legacy=EMG_VALUE_QUANT.legacy
+              and EMG_FACTS_QUANT.prog=EMG_VALUE_QUANT.prog
+              order by EMG_FACTS_QUANT.prog
+                 ]]></mainSelect>
+         <csvLine line_index='00' break_index='0'  field_start_index='0'  field_end_index='3' >
+          </csvLine>
+         <csvLine line_index='01' break_index=''   field_start_index='4'  field_end_index='7'   >
+         </csvLine>       
+         <csvLine line_index='02' break_index=''   field_start_index='9'  field_end_index='15'  >
+         </csvLine>   
+         <ende field_index='0' />
+	</QuanExtractor>
+	</queries>
+</root>
+

@@ -215,6 +215,7 @@ SELECT ID_SR,
    and s.categoria_1 <> 'N.A.'
    and s.codice_cliente in
        (select oldkey from z_temksv where object = 'PARTNER')
+   and s.tipologia_sr not in ('TBD', 'No S.R.')
  group by ID_SR,
           TIPOLOGIA_SR,
           ID_SR_PADRE,

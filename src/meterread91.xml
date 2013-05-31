@@ -12,7 +12,7 @@
         g.equnrneu, 
         d.matnr, 
         dec_numeratore(d.matnr,lprog,lmari,ltipo), 
-        decode(lmari, 'P', round(t.lline,1), round(t.llet1)) lettura,
+        decode(lmari, 'P', round(t.lline,1), round(t.llet1*t.lkost)) lettura,
         dec_tipolettura(e.cflg4, t.ldall), e.cflg4,
         row_number() over (partition by dbi_cd_punto, lmari, lprog order by ldall) ordine 
         from instmgmt_diint i, dbi_user.ifc_sap_letture_ele_anubis t, instmgmt_diger g, devinforec_int d, dbi_user.ifc_sap_anagrcontrele e

@@ -20,7 +20,25 @@
        e.portion                                                      --14 
        
   from dbi_user.ifc_sap_pr_competenza_doc t, v_contratti v, instln_data z, z_te422 e
- where t.dbi_cd_punto = 'PR313295'
+ where t.dbi_cd_punto in (
+'PR2038144',
+'PR3248833',
+'PR3292979',
+'PR3330042',
+'PR3344254',
+'PR3339892',
+'PR3363231',
+'PR3507415',
+'PR3620627',
+'PR3783822',
+'PR3842874',
+'PR3926981',
+'PR3927294',
+'PR2206897',
+'PR2230358',
+'PR2339884',
+'PR2331983',
+'PR3344647')
    and t.dbi_cd_punto = v.dbi_original_key_pr
    and t.cd_entita_fatt = v.cflg9
    and t.dbi_cd_punto = z.legacy
@@ -283,7 +301,26 @@
        ,f.record_key                --91
         from tmp_billdoc_erch_full f
         where 
-        f.vertrag = 'PR3405131'
+        f.vertrag in
+        ('PR2038144',
+'PR3248833',
+'PR3292979',
+'PR3330042',
+'PR3344254',
+'PR3339892',
+'PR3363231',
+'PR3507415',
+'PR3620627',
+'PR3783822',
+'PR3842874',
+'PR3926981',
+'PR3927294',
+'PR2206897',
+'PR2230358',
+'PR2339884',
+'PR2331983',
+'PR3344647' )
+
         order by begabrpe, f.billdocline
         --f.hashtarget = 3
         --and (f.vertrag = z.oldkey and z.object = 'MOVE_IN')

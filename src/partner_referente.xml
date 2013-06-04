@@ -2,9 +2,9 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-	select k.surrogate_key, -- 8000000000 + 4260000,           --0 
+	select c.row_id -- 8000000000 + 4260000,           --0 
        --b.customer_cd_target,      --1
-       z.oldkey
+       ,z.oldkey
        ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
        c.x_cognome,               --3
        c.x_nome,                  --4
@@ -32,19 +32,17 @@
   from dbi_user.ifc_sap_crm_contatti c
   left outer join dbi_user.ifc_sap_customer_rename b
     on c.id_cliente = b.customer_cd_source, v_indirizzi v,
- dbi_user.wrk_ifc_sap_crm_contatti_keys k,
  z_temksv z
  where tipologia is not null
    and c.indirizzo = v.indprog
-   and c.row_id = k.row_id_contatto
    and b.customer_cd_target is not null
    --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
    and c.tipologia in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
    and (c.id_cliente = z.oldkey and z.object = 'PARTNER')
 union
-select k.surrogate_key, -- 8000000000 + 4260000,           --0 
+select c.row_id -- 8000000000 + 4260000,           --0 
        --b.customer_cd_target,      --1
-       z.oldkey
+       ,z.oldkey
        ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
        c.x_cognome,               --3
        c.x_nome,                  --4
@@ -72,11 +70,9 @@ select k.surrogate_key, -- 8000000000 + 4260000,           --0
   from dbi_user.ifc_sap_crm_contatti c
   left outer join dbi_user.ifc_sap_customer_rename b
     on c.id_cliente = b.customer_cd_source, v_indirizzi v,
- dbi_user.wrk_ifc_sap_crm_contatti_keys k,
  z_temksv z
  where tipologia is not null
    and c.indirizzo = v.indprog
-   and c.row_id = k.row_id_contatto
    and b.customer_cd_target is not null
    --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
    and c.tipologia not in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')

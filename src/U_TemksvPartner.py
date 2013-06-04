@@ -25,7 +25,7 @@ cursor = conn.conn.cursor()
 cur_s1 = conn.conn.cursor()
 cursor.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYYMMDD HH24:MI:SS'")
 #
-sap_conn=pysap.Rfc_connection(conn_file='sapconn.ini',conn_name='SDI_VPN')
+sap_conn=pysap.Rfc_connection(conn_file='sapconn.ini',conn_name='IAQ')
 sap_conn.open()
 #
 campi_temksv = ['mandt', 'firma', 'object','oldkey','newkey']

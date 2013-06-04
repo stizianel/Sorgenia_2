@@ -5,61 +5,36 @@
         select c.DBI_ORIGINAL_KEY_PR,  --0
         c.DBI_ORIGINAL_KEY_PR,                                    --1 
         a.operando,                                 --2
-        CASE WHEN A.OPERANDO='EF_SC_APP' THEN  GET_AB_EF_SC_APP(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
-        ELSE get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita) END CASE,--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+         CASE WHEN A.OPERANDO='EF_SC_APP' THEN  GET_AB_EF_SC_APP(b.operando,a.ctar1,c.d_valido_dal,data_validita)
+        ELSE get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita) END CASE,--3 
+        get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al,data_validita_al),--4
         CASE WHEN A.OPERANDO='EF_RES' THEN DEC_CTFOR(C.CTFOR)when a.operando='EF_SC_APP' then prezzo ELSE valori END CASE,                               --5  
         nvl(prezzo,0) ,                             --6
         b.id_operando,                               --7
         DEC_CTFOR(C.CTFOR)
-        from  z_prodotto_operando a, z_anagrafica_operandi b,DBI_USER.ifc_sap_anagrcontrele C ,DBI_USER.ifc_sap_punti_fornitura d
+        from  z_prodotto_operando a, z_anagrafica_operandi b,
+        DBI_USER.ifc_sap_anagrcontrele C ,
+        DBI_USER.ifc_sap_punti_fornitura d
         where
        a.acquisizione= c.cfreq
          and d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
          and a.ctar1=c.ctar1
-        and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-        and a.operando = b.operando
+        and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+        and a.operando = b.operando 
         and tipo = 'FACTOR'
-        and a.prodotto='STD_TANDEM'
+            and c.d_valido_dal=d.valid_from
+      and c.d_valido_al=d.valid_until
         group by 
         c.DBI_ORIGINAL_KEY_PR, 
         c.DBI_ORIGINAL_KEY_PR, 
         a.operando, prezzo,
-         GET_AB_EF_SC_APP(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),
-         get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita) ,--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4   
-        valori, 
+         GET_AB_EF_SC_APP(b.operando,a.ctar1,c.d_valido_dal,data_validita),
+         get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita) ,--3 
+        get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al,data_validita_al),--4   
+        valori, c.d_valido_dal,
         nvl(prezzo,0),
         b.id_operando ,DEC_CTFOR(C.CTFOR)
-        UNION
-         select c.DBI_ORIGINAL_KEY_PR,  --0
-        c.DBI_ORIGINAL_KEY_PR,                                    --1 
-        a.operando,                                 --2
-        CASE WHEN A.OPERANDO='EF_SC_APP' THEN  GET_AB_EF_SC_APP(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
-        ELSE get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita) END CASE,--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        CASE WHEN A.OPERANDO='EF_RES' THEN DEC_CTFOR(C.CTFOR)when a.operando='EF_SC_APP' then prezzo ELSE valori END CASE,                             --5  
-        nvl(prezzo,0) ,                             --6
-        b.id_operando,                               --7
-        DEC_CTFOR(C.CTFOR)
-        from  z_prodotto_operando a, z_anagrafica_operandi b,DBI_USER.ifc_sap_anagrcontrele C ,DBI_USER.ifc_sap_punti_fornitura d
-        where d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
-         and a.ctar1=c.ctar1
-        and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-        and a.operando = b.operando
-        and tipo = 'FACTOR'
-              and a.prodotto='STD_TANDEM'
-        group by 
-        c.DBI_ORIGINAL_KEY_PR, 
-        c.DBI_ORIGINAL_KEY_PR, 
-        a.operando, prezzo,
-         GET_AB_EF_SC_APP(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),    
-       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        valori, 
-        nvl(prezzo,0),
-        b.id_operando ,DEC_CTFOR(C.CTFOR)
-    
+        order by c.d_valido_dal  
         ]]></mainSelect>
 		
 		     <insertTable name='FACTS_F_FACTOR' truncate = 'True' break_index='' >

@@ -3,10 +3,10 @@
 
 	<FactDemaAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
-         select a.DBI_ORIGINAL_KEY_PR,  --0
-        a.DBI_ORIGINAL_KEY_PR ,                              -- 1
-      get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+          select a.DBI_ORIGINAL_KEY_PR,  --0
+                 a.DBI_ORIGINAL_KEY_PR,  --1
+                get_ab2(b.operando,a.ctar1,a.d_valido_dal,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al),--4
        c.operando,                             --4
        decode (c.operando,'ED_LIM_BOP',B.VALORI,'EDPOTDIS00',cast(a.cpota as varchar2(10)),'EDPOTCIMP0',cast(a.cpot1 as varchar2(10)),cast(a.cpot1 as varchar2(10))), -- 5
        cast(a.cpota as varchar2(10)),                    -- 6
@@ -15,42 +15,16 @@
        c.id_operando                                          --9
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d
-    where c.tipo='DEMA' 
-     and a.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-    and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
+       
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 30')
+    and c.tipo='DEMA'
+    and b.ctar1=a.ctar1 
+    and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
     and b.acquisizione= a.cfreq   
       and c.operando=b.operando
-      and b.prodotto='STD_TANDEM'
-            union 
-      select a.DBI_ORIGINAL_KEY_PR,  --0
-        a.DBI_ORIGINAL_KEY_PR ,                              -- 1
-      get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-      get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-       c.operando,                             --4
-       decode (c.operando,'ED_LIM_BOP',B.VALORI,'EDPOTDIS00',cast(a.cpota as varchar2(10)),'EDPOTCIMP0',cast(a.cpot1 as varchar2(10)),cast(a.cpot1 as varchar2(10))), -- 5
-       cast(a.cpota as varchar2(10)),                    -- 6
-       b.valori,                                             --7
-       b.prezzo,                                              --8
-       c.id_operando                                          --9
-       from z_anagrafica_operandi c,z_prodotto_operando b, 
-       DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d
-    where c.tipo='DEMA' 
-     and a.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-    and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
-    and c.operando=b.operando
-          and b.prodotto='STD_TANDEM'
-        group by 
-        a.DBI_ORIGINAL_KEY_PR,  --0
-        a.DBI_ORIGINAL_KEY_PR ,                              -- 1
-      get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-       c.operando,                             --4
-       decode (c.operando,'ED_LIM_BOP',B.VALORI,'EDPOTDIS00',cast(a.cpota as varchar2(10)),'EDPOTCIMP0',cast(a.cpot1 as varchar2(10)),cast(a.cpot1 as varchar2(10))), -- 5
-       cast(a.cpota as varchar2(10)),                    -- 6
-       b.valori,                                             --7
-       b.prezzo,                                              --8
-       c.id_operando  
-       
+      and a.d_valido_dal=d.valid_from
+      and a.d_valido_al=d.valid_until
+             
        ]]></mainSelect>
      
 		   <insertTable name='FACTS_F_DEMA' truncate = 'True' break_index=''  >
@@ -115,42 +89,25 @@
 	
 	<UDEFAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
-          select v.DBI_ORIGINAL_KEY_PR,                           --0
-                 v.DBI_ORIGINAL_KEY_PR,                           --1 
-                 a.operando,                                      --2
-                 get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-                 get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-                 b.id_operando ,                       --5
+                   select a.DBI_ORIGINAL_KEY_PR,                           --0
+                 a.DBI_ORIGINAL_KEY_PR,                           --1 
+                 b.operando,                                      --2
+                  get_ab2(b.operando,a.ctar1,a.d_valido_dal,data_validita),--3 
+                  get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al),--4
+                 c.id_operando ,                       --5
                  substr(a.ctar1, 0,10) ,               --6
                  substr( a.ctar1, 11) ,(length (a.ctar1)),  --7
-                 a.acquisizione               --6
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, 
-             z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
-        where a.ctar1=v.ctar1  
-          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-          and a.operando = b.operando 
-          and tipo = 'USERDEF'  
-          and a.acquisizione= v.cfreq
-           and a.prodotto='STD_TANDEM'
-        UNION
-          select  v.DBI_ORIGINAL_KEY_PR,  --0
-                  v.DBI_ORIGINAL_KEY_PR,                                    --1 
-                  a.operando,                                 --2
-                  get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-                  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-                  b.id_operando ,                       --5
-                  substr(a.ctar1, 0,10) ,               --6
-                  substr( a.ctar1, 11) ,(length (a.ctar1)),  --7
-                  a.acquisizione               --6
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
-             z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
-        where  a.ctar1=v.ctar1  
-          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-          and a.operando = b.operando 
-          and tipo = 'USERDEF'  
-           and a.prodotto='STD_TANDEM'  
+                 b.acquisizione                                         --9
+       from z_anagrafica_operandi c,z_prodotto_operando b, 
+       DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d 
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 30')
+    and c.tipo='USERDEF'    
+      and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
+    and b.acquisizione= a.cfreq   
+      and c.operando=b.operando
+      and a.d_valido_dal=d.valid_from
+      and a.d_valido_al=d.valid_until
+             
        ]]></mainSelect>
      		   <insertTable name='FACTS_F_UDEF' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
@@ -165,7 +122,7 @@
 		     <field name='AB' index='3' />
 		     <field name='BIS' index='4' />
 		     <field name='UDEFVAL1' index='6' />
-		     <field name='UDEFVAL2' constant_value='7' />
+		     <field name='UDEFVAL2' index='7' />
 		     <field name='UDEFVAL3' constant_value='' />
 		     <field name='UDEFVAL4' constant_value='' />
 		     <field name='TARIFART' constant_value='' />

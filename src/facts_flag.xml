@@ -5,53 +5,28 @@
        select v.DBI_ORIGINAL_KEY_PR,    --0
         v.DBI_ORIGINAL_KEY_PR,                                       --1
         a.operando,                                    --2    
-       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4                      
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4                      
         valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
         tipo                                         --8          
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
+        z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
        where v.ctar1 = a.ctar1 
          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
+         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
          and a.operando = b.operando
+         and v.DBI_ORIGINAL_KEY_PR='PR3208025'
          and tipo ='FLAG'
-         and a.prodotto='STD_TANDEM'
-        group by 
+         group by 
         v.DBI_ORIGINAL_KEY_PR,
         v.DBI_ORIGINAL_KEY_PR, 
         a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4   
+        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4  
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
-        UNION
-      select v.DBI_ORIGINAL_KEY_PR,    --0
-        v.DBI_ORIGINAL_KEY_PR,                                       --1
-        a.operando,                                    --2    
-       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        valori,                                        --5
-        nvl(prezzo,0),                                 --6
-        b.id_operando ,                                 --7  
-        tipo                                         --8          
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
-       where v.ctar1 = a.ctar1 
-         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR 
-        and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
-        and a.operando = b.operando
-        and tipo ='FLAG'
-        AND A.ACQUISIZIONE=V.CFREQ
-        and a.prodotto='STD_TANDEM'
-        group by 
-        v.DBI_ORIGINAL_KEY_PR,
-        v.DBI_ORIGINAL_KEY_PR, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4  
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo       
         ]]></mainSelect>
 		
 		   <insertTable name='FACTS_F_FLAG' truncate = 'True' break_index='' >

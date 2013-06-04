@@ -2,15 +2,16 @@
 	<queries>
 	<qpriAggregator>
 		<mainSelect ><![CDATA[
-        select  v.DBI_ORIGINAL_KEY_PR,                       --0
+ select
+v.DBI_ORIGINAL_KEY_PR,                       --0
          v.DBI_ORIGINAL_KEY_PR,                              --1
-        a.operando,                                          --2         
-       case when a.operando='EPB_A_43' then A.DATA_VALIDITA
-           when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita)
-           when to_char(d.dt_inizio_fornitura,'yyyymmdd') is null then  get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
-           else to_char(d.dt_inizio_fornitura,'yyyymmdd') end case,--3 
-        CASE WHEN a.operando='EPB_A_43' then A.DATA_VALIDITA_AL
-            ELSE get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al) END CASE,---4
+        a.operando,                                 --2         
+       case when a.operando='EPB_A_43' then to_char(v.cdsti,'yyyymmdd')
+           when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita)
+           when to_char(v.cdsti,'yyyymmdd') is null then  get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
+           else to_char(v.cdsti,'yyyymmdd') end case,--3 
+        CASE WHEN a.operando='EPB_A_43' then to_char(v.cdces,'yyyymmdd')
+            ELSE get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al) END CASE,---4
         valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
@@ -19,66 +20,26 @@
         from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
         where 
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
-          and a.acquisizione= v.cfreq
+          and a.acquisizione= v.cfreq 
           and a.ctar1=v.ctar1 
-          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
           and a.operando = b.operando 
-          and tipo ='QPRICE'
-          and a.prodotto='STD_TANDEM'
-            AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-   And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-        GROUP BY 
+           and tipo ='QPRICE'
+           GROUP BY 
          v.DBI_ORIGINAL_KEY_PR,    --0
          v.DBI_ORIGINAL_KEY_PR,                                       --1
-        a.operando,                                    --2         
-        to_char(d.dt_inizio_fornitura,'yyyymmdd'),                                 --3 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita),
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),---4
+        a.operando,     A.DATA_VALIDITA,                               --2         
+        v.cdsti,                                 --3 
+        get_ab2(b.operando,a.ctar1,v.cdsti,data_validita),
+       get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita),
+       get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al),
         valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
-        tipo ,                                        --8      
+        tipo , v.cdces,                                       --8      
         v.DBI_ORIGINAL_KEY_PR||a.operando ,
         A.DATA_VALIDITA,A.DATA_VALIDITA_AL
-    UNION
-           select  v.DBI_ORIGINAL_KEY_PR,    --0
-            v.DBI_ORIGINAL_KEY_PR,                                       --1
-            a.operando,                                    --2         
-           case when a.operando='EPB_A_43' then A.DATA_VALIDITA
-                when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita)
-                when to_char(d.dt_inizio_fornitura,'yyyymmdd') is null then  get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita)
-                else to_char(d.dt_inizio_fornitura,'yyyymmdd') end case,--3 
-          CASE WHEN a.operando='EPB_A_43' then A.DATA_VALIDITA_AL
-               ELSE get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al) END CASE,---4
-          valori,                                        --5
-          nvl(prezzo,0),                                 --6
-          b.id_operando ,                                 --7  
-          tipo ,                                        --8      
-          v.DBI_ORIGINAL_KEY_PR||a.operando                         --9    
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
-        where  d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
-          and a.ctar1=v.ctar1 
-          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-          and a.operando = b.operando
-          and tipo ='QPRICE'
-            AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-         And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-          and a.prodotto='STD_TANDEM'
-        GROUP BY 
-         v.DBI_ORIGINAL_KEY_PR,    --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
-        a.operando,                                    --2         
- to_char(d.dt_inizio_fornitura,'yyyymmdd'),                                 --3 
- get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
- get_ab_ef_sc_app(a.operando,a.ctar1,d.dt_inizio_fornitura,a.data_validita),
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),---4
-       valori,                                        --5
-        nvl(prezzo,0),                                 --6
-        b.id_operando ,                                 --7  
-        tipo ,                                        --8      
-         v.DBI_ORIGINAL_KEY_PR||a.operando ,
-         A.DATA_VALIDITA,A.DATA_VALIDITA_AL
+   ORDER BY v.cdsti
          ]]></mainSelect>
 		
 		     <insertTable name='FACTS_F_QPRICE' truncate = 'True' break_index='9' >
@@ -145,8 +106,8 @@
 		select  v.DBI_ORIGINAL_KEY_PR,     --0
          v.DBI_ORIGINAL_KEY_PR,                                       --1
         a.operando,                                    --2    
-       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-       get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4                
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4                
         valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
@@ -156,26 +117,23 @@
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
          and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
-           AND to_char(d.valid_from,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-   And to_char(d.valid_until,'yyyymmdd')=to_char(v.d_valido_dal,'yyyymmdd')
-        and a.operando = b.operando
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+         and a.operando = b.operando
         and tipo ='LPRICE'
-              and a.prodotto='STD_TANDEM'
-        group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+            group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(v.d_valido_dal,'yyyymmdd'), 
          v.DBI_ORIGINAL_KEY_PR, 
         a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
         UNION
         	select  v.DBI_ORIGINAL_KEY_PR,     --0
          v.DBI_ORIGINAL_KEY_PR,                                       --1
         a.operando,                                    --2    
-       get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
          valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
@@ -184,16 +142,15 @@
         where 
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
           and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
         and a.operando = b.operando
         and tipo ='LPRICE'
-              and a.prodotto='STD_TANDEM'
         group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(v.d_valido_dal,'yyyymmdd'), 
          v.DBI_ORIGINAL_KEY_PR, 
         a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
        
@@ -258,8 +215,8 @@
 		select  v.DBI_ORIGINAL_KEY_PR,     --0
          v.DBI_ORIGINAL_KEY_PR,                                       --1
         a.operando,                                    --2    
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
          valori ,     --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
@@ -268,24 +225,23 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
         and a.operando = b.operando
         and tipo ='TPRICE'
-              and a.prodotto='STD_TANDEM'
-        group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
          v.DBI_ORIGINAL_KEY_PR, 
         a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
         UNION
         	select  v.DBI_ORIGINAL_KEY_PR,     --0
          v.DBI_ORIGINAL_KEY_PR,                                       --1
         a.operando,                                    --2    
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
          valori ,     --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
@@ -294,16 +250,15 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 24')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
         and a.operando = b.operando
         and tipo ='TPRICE'
-              and a.prodotto='STD_TANDEM'
-        group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(d.dt_inizio_fornitura,'yyyymmdd'), 
+         group by 
+         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
          v.DBI_ORIGINAL_KEY_PR, 
         a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
       

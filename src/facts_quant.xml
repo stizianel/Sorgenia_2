@@ -15,10 +15,11 @@
         where v.ctar1 = a.ctar1  
         and a.acquisizione= v.cfreq
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
+       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
        and a.operando = b.operando
        and tipo = 'TQUANT'
-             and a.prodotto='STD_TANDEM'
+           and v.d_valido_dal=d.valid_from
+      and v.d_valido_al=d.valid_until
         group by 
         v.DBI_ORIGINAL_KEY_PR, 
         v.DBI_ORIGINAL_KEY_PR, 
@@ -41,10 +42,12 @@
          z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
          where v.ctar1 = a.ctar1  
        and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 24')
+       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
              and a.prodotto='STD_TANDEM'
        and a.operando = b.operando
        and tipo = 'TQUANT'
+           and v.d_valido_dal=d.valid_from
+      and v.d_valido_al=d.valid_until
         group by 
         v.DBI_ORIGINAL_KEY_PR, 
         v.DBI_ORIGINAL_KEY_PR, 

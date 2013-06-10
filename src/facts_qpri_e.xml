@@ -4,7 +4,7 @@
 		<mainSelect ><![CDATA[
  select
 v.DBI_ORIGINAL_KEY_PR,                       --0
-         v.DBI_ORIGINAL_KEY_PR,                              --1
+         v.CPOD,                              --1
         a.operando,                                 --2         
        case when a.operando='EPB_A_43' then to_char(v.cdsti,'yyyymmdd')
            when a.operando='ESQP_01_FT' then get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita)
@@ -22,12 +22,13 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
           and a.acquisizione= v.cfreq 
           and a.ctar1=v.ctar1 
-          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+         -- and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti) --where note = 'lotto 30')
           and a.operando = b.operando 
+          and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
            and tipo ='QPRICE'
            GROUP BY 
          v.DBI_ORIGINAL_KEY_PR,    --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
+         v.CPOD,                                       --1
         a.operando,     A.DATA_VALIDITA,                               --2         
         v.cdsti,                                 --3 
         get_ab2(b.operando,a.ctar1,v.cdsti,data_validita),
@@ -48,6 +49,7 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index='7' />
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_QPRICE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -59,7 +61,8 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 		     <field name='WAERS' constant_value='' />
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDGIR' constant_value='' />
-		     <field name='PROG'    index='7' />   
+		     <field name='PROG'    index='7' />  
+		     <field name='CPOD'   index= '1'/> 
 		     </insertTable> 
 		
 	</qpriAggregator>
@@ -104,7 +107,7 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 	<LPriceAggregator>
 		<mainSelect ><![CDATA[
 		select  v.DBI_ORIGINAL_KEY_PR,     --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
+         v.CPOD,                                       --1
         a.operando,                                    --2    
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
        get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4                
@@ -117,20 +120,23 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
          and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+        -- and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti )--where --note = 'lotto 30')
          and a.operando = b.operando
+         and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
         and tipo ='LPRICE'
             group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(v.d_valido_dal,'yyyymmdd'), 
-         v.DBI_ORIGINAL_KEY_PR, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo
+        v.DBI_ORIGINAL_KEY_PR,     --0
+         v.CPOD,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+       get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4                
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                                         --8     
         UNION
         	select  v.DBI_ORIGINAL_KEY_PR,     --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
+         v.cpod,                                       --1
         a.operando,                                    --2    
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
   get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
@@ -142,17 +148,21 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
         where 
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
           and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+        -- and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti)
+          --where note = 'lotto 30')
+          and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
         and a.operando = b.operando
         and tipo ='LPRICE'
         group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando|| to_char(v.d_valido_dal,'yyyymmdd'), 
-         v.DBI_ORIGINAL_KEY_PR, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
+         v.DBI_ORIGINAL_KEY_PR,     --0
+         v.cpod,                                       --1
+        a.operando,                                    --2    
+       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
   get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo
+         valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                       
        
          ]]></mainSelect>
 		
@@ -162,6 +172,7 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index='7' />
+		      <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_LPRICE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -172,6 +183,7 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 		     <field name='TARIFART' index='6' />
 		     <field name='KONDGIR' constant_value='' />
 		     <field name='PROG'    index='7' />   
+		      <field name='CPOD'   index= '1'/>
 		     </insertTable> 
 		    </LPriceAggregator>
 		    
@@ -213,7 +225,7 @@ v.DBI_ORIGINAL_KEY_PR,                       --0
 		    <TPriceAggregator>
 		<mainSelect ><![CDATA[
 		select  v.DBI_ORIGINAL_KEY_PR,     --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
+         v.cpod,                                       --1
         a.operando,                                    --2    
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
   get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
@@ -225,42 +237,19 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+       --  and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti) --where note = 'lotto 30')
         and a.operando = b.operando
         and tipo ='TPRICE'
+        and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
          group by 
          v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
-         v.DBI_ORIGINAL_KEY_PR, 
+         v.cpod, 
         a.operando, 
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
   get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
         valori, 
         nvl(prezzo,0),b.id_operando,tipo
-        UNION
-        	select  v.DBI_ORIGINAL_KEY_PR,     --0
-         v.DBI_ORIGINAL_KEY_PR,                                       --1
-        a.operando,                                    --2    
-       get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
-         valori ,     --5
-        nvl(prezzo,0),                                 --6
-        b.id_operando ,                                 --7  
-        tipo                                         --8   
-from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_operandi b, DBI_USER.ifc_sap_punti_fornitura d
-        where
-         d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-        and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
-        and a.operando = b.operando
-        and tipo ='TPRICE'
-         group by 
-         v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
-         v.DBI_ORIGINAL_KEY_PR, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
-  get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo
+       
       
          ]]></mainSelect>
 		
@@ -270,6 +259,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index='7' />
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_TPRICE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -281,7 +271,8 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
 		     <field name='WAERS' constant_value='' />
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDGIR' constant_value='' />
-		     <field name='PROG'    index='7' />   
+		     <field name='PROG'    index='7' /> 
+		     <field name='CPOD'   index= '1'/>  
 		     </insertTable> 
 		    </TPriceAggregator>
 		        

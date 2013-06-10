@@ -4,35 +4,36 @@
 		<mainSelect ><![CDATA[
         SELECT /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
        v.Dbi_Original_Key_Pr , --0
-       v.Dbi_Original_Key_Pr, --1
+       v.CPOD, --1
        a.Operando,
        Get_Ab2(b.Operando, a.Ctar1, v.cdsti, Data_Validita)        , --3
        Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) , --4
       Get_Param_Valori_Tarifart(a.Operando,a.Ctar1,Dec_Stagruver(v.Ctfor),Dec_Spebene(v.Crete, d.Tensione),TRIM(TO_CHAR(d.potenza_impegnata)),DEC_CTFOR(v.CTFOR),l.Indprov,l.Indccom,d.Cd_Tariffa_Distr,A.ACQUISIZIONE)  , --5
        Get_Param_Prezzo_Kondigr(a.Operando,a.Ctar1,Dec_Stagruver(v.Ctfor),Dec_Spebene(v.Crete, d.Tensione),TRIM(TO_CHAR(d.potenza_impegnata)),DEC_CTFOR(v.CTFOR),l.Indprov,l.Indccom,d.Cd_Tariffa_Distr,A.ACQUISIZIONE,v.d_valido_dal) , --6
        b.Id_Operando
-  FROM z_Test_Contratti                     i
-     , Dbi_User.Ifc_Sap_Anagrcontrele       v
+  FROM --z_Test_Contratti                     i
+      Dbi_User.Ifc_Sap_Anagrcontrele       v
      , Dbi_User.Ifc_Sap_Punti_Fornitura     d
      , z_Prodotto_Operando                  a
      , z_Anagrafica_Operandi                b
      , Dbi_User.Ifc_Sap_Anagrindirizzi_pr   g
      , v_Indirizzi                          l
-WHERE i.Note = 'lotto 30'
-   AND v.Dbi_Original_Key_Pr = i.Cncon
-   AND v.Dbi_Original_Key_Pr=g.pr
+WHERE --i.Note = 'lotto 30'
+  --v.Dbi_Original_Key_Pr = i.Cncon
+    v.Dbi_Original_Key_Pr=g.pr
    AND a.Acquisizione = v.Cfreq
    AND a.Ctar1 = v.Ctar1
    AND a.Operando = b.Operando
    AND b.Tipo = 'RATE TYPE'
    AND d.Dbi_Punto_Key = v.Dbi_Original_Key_Pr
+   and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
    AND d.valid_from=v.d_valido_dal
    And d.valid_until=v.d_valido_al
    AND d.Frequenza_Misura = v.Cfreq
    AND l.Indprog = g.Indprog
    --AND a.Prodotto = 'STD_TANDEM'
 GROUP BY v.Dbi_Original_Key_Pr , --0
-       v.Dbi_Original_Key_Pr, --1
+       v.CPOD, --1
        a.Operando,v.cdsti,
       Get_Ab2(b.Operando, a.Ctar1, v.cdsti, Data_Validita), --3
       Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) , --4
@@ -48,6 +49,7 @@ GROUP BY v.Dbi_Original_Key_Pr , --0
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index= '7'/>
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
@@ -57,6 +59,7 @@ GROUP BY v.Dbi_Original_Key_Pr , --0
 		      <field name='TARIFART' index='5' />
 		     <field name='KONDIGR' index='6' />
 		     <field name='PROG'  index ='7' />
+		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 
 		
 	</RateAggregator>

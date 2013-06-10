@@ -3,7 +3,7 @@
 	<FlagAggregator>
 		<mainSelect ><![CDATA[
        select v.DBI_ORIGINAL_KEY_PR,    --0
-        v.DBI_ORIGINAL_KEY_PR,                                       --1
+        v.cpod,                                       --1
         a.operando,                                    --2    
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
        get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4                      
@@ -15,13 +15,13 @@
         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
        where v.ctar1 = a.ctar1 
          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
+         --and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti) --where note = 'lotto 30')
          and a.operando = b.operando
-         and v.DBI_ORIGINAL_KEY_PR='PR3208025'
+          and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
          and tipo ='FLAG'
          group by 
         v.DBI_ORIGINAL_KEY_PR,
-        v.DBI_ORIGINAL_KEY_PR, 
+        v.cpod, 
         a.operando, 
         get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
        get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4  
@@ -35,6 +35,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index= '7'/>
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_FLAG' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
@@ -45,6 +46,7 @@
 		      <field name='TARIFART' constant_value='' />
 		     <field name='KONDIGR' constant_value='' />
 		     <field name='PROG'  index ='7' />
+		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 		
 	</FlagAggregator>
 	<FlagExtractor>

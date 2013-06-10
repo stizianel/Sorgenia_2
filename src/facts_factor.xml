@@ -3,7 +3,7 @@
 	<FactorAggregator>
 		<mainSelect ><![CDATA[
         select c.DBI_ORIGINAL_KEY_PR,  --0
-        c.DBI_ORIGINAL_KEY_PR,                                    --1 
+        c.cpod,                                    --1 
         a.operando,                                 --2
          CASE WHEN A.OPERANDO='EF_SC_APP' THEN  GET_AB_EF_SC_APP(b.operando,a.ctar1,c.d_valido_dal,data_validita)
         ELSE get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita) END CASE,--3 
@@ -19,14 +19,15 @@
        a.acquisizione= c.cfreq
          and d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
          and a.ctar1=c.ctar1
-        and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 30')
+        --and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti)-- where note = 'lotto 30')
         and a.operando = b.operando 
+        and C.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
         and tipo = 'FACTOR'
             and c.d_valido_dal=d.valid_from
       and c.d_valido_al=d.valid_until
         group by 
         c.DBI_ORIGINAL_KEY_PR, 
-        c.DBI_ORIGINAL_KEY_PR, 
+        c.cpod, 
         a.operando, prezzo,
          GET_AB_EF_SC_APP(b.operando,a.ctar1,c.d_valido_dal,data_validita),
          get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita) ,--3 
@@ -43,6 +44,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON'  constant_value='' />
 		     <field name='PROG'    index= '7' />
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_FACTOR' truncate = 'True' break_index='' >
 		     <field name='LEGACY'    index='0' />
@@ -53,6 +55,7 @@
 		     <field name='AB'         index='3' />
 		     <field name='BIS'        index='4' />
 		     <field name='PROG'       index= '7' /> 
+		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 
 		
 	</FactorAggregator>

@@ -2,28 +2,28 @@
 	<queries>    
 	<KeyMMAggregator>
          <mainSelect ><![CDATA[
-         select legacy from facts_f_dema
+         select legacy,cpod from facts_f_dema
          union 
-         select legacy from facts_f_tqua
+         select legacy,cpod from facts_f_tqua
          union 
-         select legacy from facts_f_factor
+         select legacy,cpod from facts_f_factor
          union
-         select legacy from facts_f_qprice
+         select legacy,cpod from facts_f_qprice
          union 
-         select legacy from facts_f_rate_type
+         select legacy,cpod from facts_f_rate_type
          union
-         select legacy from facts_f_lpri
+         select legacy,cpod from facts_f_lpri
          union
-         select legacy from facts_f_tpri
+         select legacy,cpod from facts_f_tpri
          union
-         select legacy from facts_f_udef
+         select legacy,cpod from facts_f_udef
          union
-         select legacy from facts_f_flag
+         select legacy,cpod from facts_f_flag
        ]]></mainSelect>
      <insertTable name='FACTS_KEY' truncate = 'True' break_index='0'    >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='0' />
+		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
 		   </insertTable> 
 		    </KeyMMAggregator>                  

@@ -16,7 +16,7 @@ connstr = "SAP_USER" + '/' + "sap_user" + '@' + "192.168.0.177" + ':' + "1521" +
 conn = cx_Oracle.connect(connstr)
 
 stat_finale = '''
-SELECT P.OFFERTE_KEY,
+SELECT cod_proposta,
        COD_CONTO_CONTRATTUALE,
        COD_PRODOTTO,
        MERCATO_PROVENIENZA,
@@ -68,11 +68,12 @@ SELECT P.OFFERTE_KEY,
        PREMIO_SOTTOSCR,
        OPZ_LAST_CALL
   from dbi_user.ifc_sap_crm_off_posizione p,
-       dbi_user.ifc_sap_crm_off_prodotti  r,
+       --dbi_user.ifc_sap_crm_off_prodotti  r,
        z_temksv                           z
- where p.offerte_key = r.offerte_key
-   and (p.cod_cliente = z.oldkey and z.object = 'PARTNER')
- group by P.OFFERTE_KEY,
+ where --p.offerte_key = r.offerte_key
+       --and 
+       (p.cod_cliente = z.oldkey and z.object = 'PARTNER')
+ group by cod_proposta,
           COD_CONTO_CONTRATTUALE,
           COD_PRODOTTO,
           MERCATO_PROVENIENZA,

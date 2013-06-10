@@ -3,7 +3,7 @@
 	<TquaAggregator>
 		<mainSelect ><![CDATA[
         select v.DBI_ORIGINAL_KEY_PR,   --0
-        v.DBI_ORIGINAL_KEY_PR,                                     --1
+        v.cpod,                                     --1
         a.operando,                                  --2
         get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
          get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
@@ -15,48 +15,22 @@
         where v.ctar1 = a.ctar1  
         and a.acquisizione= v.cfreq
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
+       --and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti) --where note = 'lotto 30')
        and a.operando = b.operando
        and tipo = 'TQUANT'
            and v.d_valido_dal=d.valid_from
+           and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
       and v.d_valido_al=d.valid_until
         group by 
         v.DBI_ORIGINAL_KEY_PR, 
-        v.DBI_ORIGINAL_KEY_PR, 
+        v.cpod, 
         a.operando, 
         get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
          get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
         valori, 
         DECODE( B.OPERANDO,'EQT_EAC' , nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),     
         b.id_operando 
- 	UNION
- 	select v.DBI_ORIGINAL_KEY_PR,   --0
-        v.DBI_ORIGINAL_KEY_PR,                                     --1
-        a.operando,                                  --2
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        valori,                                      --5
-      DECODE( B.OPERANDO,'EQT_EAC' ,  nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),                                        --6
-        b.id_operando                                --7
-        from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
-         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
-         where v.ctar1 = a.ctar1  
-       and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 30')
-             and a.prodotto='STD_TANDEM'
-       and a.operando = b.operando
-       and tipo = 'TQUANT'
-           and v.d_valido_dal=d.valid_from
-      and v.d_valido_al=d.valid_until
-        group by 
-        v.DBI_ORIGINAL_KEY_PR, 
-        v.DBI_ORIGINAL_KEY_PR, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-        get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        valori, 
-        DECODE( B.OPERANDO,'EQT_EAC' ,  nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),   
-        b.id_operando 
+ 	
         ]]></mainSelect>
 	     <insertTable name='FACTS_F_TQUA' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -66,6 +40,7 @@
 		     <field name='TIMBASIS' constant_value='365' />
 		     <field name='TIMTYP'  constant_value='2' />
 		     <field name='PROG'   index='7'/>
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_TQUA' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -76,6 +51,7 @@
 		     <field name='TARIFART' constant_value = ''/>
 		     <field name='KONDIGR' constant_value = ''/>
 		     <field name='PROG'    index='7' />   
+		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 
 		
 	</TquaAggregator>

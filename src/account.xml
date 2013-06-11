@@ -3,44 +3,46 @@
 	
 	<accountAggregator>
 		<mainSelect ><![CDATA[
-        select  cflg9,          --0
-        a.acdan,                --1
-        indprog,                --2
-        a.delprog,              --3
-        apers,                  --4
-        acatc,                  --5
-        ' ',                    --6
-        substr(arags,0,35),     --7
-        dec_ezawe(a.delprog),   --8
-        dec_ikey(acatc),        --9
-        dec_togru(acatc),       --10
-        dec_ktokl(cserv, acatc), --11
-        dec_mahnv(cserv, acatc), --12
-        dec_azawe(cserv, acatc, deliban),  --13
-        decode(dec_azawe(cserv, acatc, deliban), 'C', a.delprog, ' '), --14
-        dec_ausgrup_in(segmento_cliente_sap, cserv)                    --15
-        from v_contratti a left outer join dbi_user.ifc_sap_anagrbanche b on (cflg9 = delef and a.delprog = b.delprog),
-        dbi_user.ifc_sap_anagrindirizzi i
-        where 
-        a.cflg9 = i.indcli
-        and  a.acdan in (select legacy from partner_but020)
-        group by
-        cflg9, 
-        acdan, 
-        indprog, 
-        a.delprog,
-        apers, 
-        acatc, 
-        substr(a.arags,0,35), 
-        dec_ezawe(a.delprog), 
-        dec_ikey(a.acatc),
-        dec_togru(a.acatc),
-        dec_ktokl(cserv, a.acatc),
-        dec_mahnv(cserv, a.acatc),
-        dec_azawe(cserv, a.acatc, deliban),
-        decode(dec_azawe(cserv, a.acatc, deliban), 'C', a.delprog, ' '),
-        dec_ausgrup_in(a.segmento_cliente_sap, cserv)
-    order by cflg9, acdan, indprog desc, a.delprog
+        select cflg9, --0
+       a.acdan, --1
+       indprog, --2
+       a.delprog, --3
+       apers, --4
+       acatc, --5
+       ' ', --6
+       substr(arags, 0, 35), --7
+       dec_ezawe(a.delprog), --8
+       dec_ikey(acatc), --9
+       dec_togru(acatc), --10
+       dec_ktokl(cserv, acatc), --11
+       dec_mahnv(cserv, acatc), --12
+       dec_azawe(cserv, acatc, deliban), --13
+       decode(dec_azawe(cserv, acatc, deliban), 'C', a.delprog, ' '), --14
+       dec_ausgrup_in(segmento_cliente_sap, cserv) --15
+  from v_contratti a
+  left outer join dbi_user.ifc_sap_anagrbanche b
+    on (cflg9 = delef and a.delprog = b.delprog),
+ dbi_user.ifc_sap_anagrindirizzi i,
+ z_pr_in_lavorazione pr
+ where a.cflg9 = i.indcli
+   and a.acdan in (select legacy from partner_but020)
+   and a.cncon = pr.cncon
+ group by cflg9,
+          acdan,
+          indprog,
+          a.delprog,
+          apers,
+          acatc,
+          substr(a.arags, 0, 35),
+          dec_ezawe(a.delprog),
+          dec_ikey(a.acatc),
+          dec_togru(a.acatc),
+          dec_ktokl(cserv, a.acatc),
+          dec_mahnv(cserv, a.acatc),
+          dec_azawe(cserv, a.acatc, deliban),
+          decode(dec_azawe(cserv, a.acatc, deliban), 'C', a.delprog, ' '),
+          dec_ausgrup_in(a.segmento_cliente_sap, cserv)
+ 		  order by cflg9, acdan, indprog desc, a.delprog
         ]]></mainSelect>
 		<insertTable name='ACCOUNT_INIT' truncate = 'True' break_index='0' >
 				<field name='LEGACY' index='0' />

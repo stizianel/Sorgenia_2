@@ -9,7 +9,7 @@
        TO_CHAR(c.due_date, 'YYYYMMDD'), --4
        amount, --5
        c.cash_receipt_id, --6
-       c.receipt_number,
+       c.receipt_number,  --7
        b.trx_date,
        b.due_date,
        b.document_status,
@@ -37,7 +37,9 @@
 		     <field name='BLDAT' index='1' />
 		     <field name='BUDAT' index='2' /> 
 		     <field name='HERKF' constant_value='RZ' /> 
-		     <field name='AUGRD' constant_value='01' />
+		     <field name='AUGRD' constant_value='01' />'
+		     <field name='ZINCRID' index='07' />'
+		     
 	</insertTable> 
  <insertTable name='EMIG_PAY_FKKOPK' truncate = 'True' break_index='0' >
  			 <field name='LEGACY' index='6' />
@@ -60,21 +62,22 @@
 		   EMIG_PAY_FKKKO.BUDAT, --4
 		   EMIG_PAY_FKKKO.OIBEL, --5
 		   EMIG_PAY_FKKKO.AUGRD, --6
-		   EMIG_PAY_FKKOPK.LEGACY, --7
-		   EMIG_PAY_FKKOPK.TIPO, --8
-		   EMIG_PAY_FKKOPK.BUKRS, --9
-		   EMIG_PAY_FKKOPK.HKONT, --10
-		   EMIG_PAY_FKKOPK.VALUT, --11
-		   EMIG_PAY_FKKOPK.BETRW, --12
-		   EMIG_PAY_FKKOPK.SGTXT --13
+		   EMIG_PAY_FKKKO.ZINCRID, -7
+		   EMIG_PAY_FKKOPK.LEGACY, --8
+		   EMIG_PAY_FKKOPK.TIPO, --9
+		   EMIG_PAY_FKKOPK.BUKRS, --10
+		   EMIG_PAY_FKKOPK.HKONT, --11
+		   EMIG_PAY_FKKOPK.VALUT, --12
+		   EMIG_PAY_FKKOPK.BETRW, --13
+		   EMIG_PAY_FKKOPK.SGTXT --14
 		  FROM EMIG_PAY_FKKKO,
 		       EMIG_PAY_FKKOPK
 		   WHERE EMIG_PAY_FKKKO.LEGACY=EMIG_PAY_FKKOPK.LEGACY
 		 ORDER BY EMIG_PAY_FKKKO.LEGACY
 		 ]]></mainSelect>
-         <csvLine line_index='00' break_index='0' field_start_index='0' field_end_index='6' >
+         <csvLine line_index='00' break_index='0' field_start_index='0' field_end_index='7' >
          </csvLine>
-         <csvLine line_index='01' break_index='' field_start_index='7' field_end_index='13' >
+         <csvLine line_index='01' break_index='' field_start_index='8' field_end_index='14' >
          </csvLine>  
          <ende field_index='0' />
 	</PaymentExtractor>     

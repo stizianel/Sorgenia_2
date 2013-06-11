@@ -15,44 +15,47 @@ import cx_Oracle
 connstr = "SAP_USER" + '/' + "sap_user" + '@' + "192.168.0.177" + ':' + "1521" + '/' + "SINPROD"
 conn = cx_Oracle.connect(connstr)
 
-stat_finale = '''
- SELECT                                                                                                 
-COD_PROPOSTA                                              
-,COD_AGENZIA                                               
-,COD_AGENTE                                                
-,SOCIETA_VENDITA                                           
-,DIPENDENTE_RESPONSABILE                                   
-,REFERENTE_CONTRATTUALE                                    
-,REFERENTE_CONTABILE                                       
-,VENDITORE_USCENTE                                         
-,COD_CLIENTE                                               
-,COD_CONTO_CONTRATTUALE                                    
-,TIPOLOGIA_CONTRATTO                                       
-,CANALE                                                    
-,SERVIZIO                                                  
-,FLAG_CCQ                                                  
-,FLAG_AGEV_ESEN                                            
-,to_char(DATA_FIRMA, 'yyyymmddhh24miss')                   
-,to_char(DATA_ACCETTAZIONE, 'yyyymmddhh24miss')            
-,to_char(DATA_CCQ, 'yyyymmddhh24miss')                     
-,to_char(DATA_CARICAMENTO, 'yyyymmddhh24miss')             
-,to_char(DATA_INVIO_CONTR_TSELLER, 'yyyymmddhh24miss')     
-,to_char(DATA_INVIO_PRE_BENV, 'yyyymmddhh24miss')          
-,to_char(DATA_CREAZIONE_OFFERTA, 'yyyymmddhh24miss')       
-,to_char(DATA_ESITO_RIASCOLTO, 'yyyymmddhh24miss')         
-,ESITO_RIASCOLTO                                           
-,FLAG_ESITO_RIASCOLTO                                      
-,STATO_OFFERTA                                             
-,MOTIVO_SOSP_RIF                                           
-,FLAG_SWITCH_VOLTURA                                       
-,NOME_INTEST                                               
-,COGNOME_INTEST                                            
-,CODICE_FISCALE                                            
-,RAGIONE_SOCIALE                                           
-,PARTITA_IVA                                               
-,ASSOCIAZIONE_CONSORZIO                                    
-,CAMPAGNA                                                  
-,UFFICIO                                                   
+stat_finale = '''                                                                                          
+SELECT
+      Cod_Proposta                        
+    , Cod_Agente                         
+    , Cod_Agenzia                        
+    , Societa_Vendita                
+    , Dipendente_Responsabile        
+    , Referente_Contrattuale        
+    , Intestatario_Contratto        
+    , Referente                            
+    , Referente_Contabile            
+    , Venditore_Uscente                
+    , Cod_Cliente                        
+    , Cod_Conto_Contrattuale        
+    , Tipologia_Contratto            
+    , Canale                
+    , Descrizione                        
+    , Servizio                            
+    , Flag_CCQ                            
+    , Flag_Agev_Esen                    
+    , TO_CHAR(Data_Firma,'yyyymmddhh24miss')                        
+    , TO_CHAR(Data_Accettazione,'yyyymmddhh24miss')                
+    , TO_CHAR(Data_CCQ,'yyyymmddhh24miss')                            
+    , TO_CHAR(Data_Caricamento,'yyyymmddhh24miss')                
+    , TO_CHAR(Data_Invio_Contr_Tseller,'yyyymmddhh24miss')        
+    , TO_CHAR(Data_Invio_Pre_Benv,'yyyymmddhh24miss')            
+    , TO_CHAR(Data_Creazione_Offerta,'yyyymmddhh24miss')        
+    , TO_CHAR(Data_Esito_Riascolto,'yyyymmddhh24miss')            
+    , Esito_Riascolto                    
+    , Flag_Esito_Riascolto            
+    , Stato_Offerta                    
+    , Motivo_Sosp_Rif                
+    , Flag_Switch_Voltura            
+    , Nome_Intest                        
+    , Cognome_Intest                
+    , Codice_Fiscale                    
+    , Ragione_Sociale                    
+    , Partita_IVA                        
+    , Associazione_Consorzio        
+    , Campagna                        
+    , Ufficio                                    
 FROM DBI_USER.IFC_SAP_CRM_OFF_TESTATA o, Z_TEMKSV z
 where o.cod_cliente = z.oldkey and z.object = 'PARTNER'      
 '''

@@ -243,12 +243,15 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         and v.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
          group by 
          v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
-         v.cpod, 
-        a.operando, 
+        v.DBI_ORIGINAL_KEY_PR,     --0
+         v.cpod,                                       --1
+        a.operando,                                    --2    
        get_ab2(b.operando,a.ctar1,v.d_valido_dal,data_validita),--3 
   get_bis2(b.operando,a.ctar1,v.d_valido_dal,v.d_valido_al,data_validita_al),--4
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo
+         valori ,     --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo                   
        
       
          ]]></mainSelect>

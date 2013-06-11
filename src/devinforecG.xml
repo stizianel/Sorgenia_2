@@ -2,17 +2,26 @@
 	<queries>
 	<devinforecAggregator>
 	<mainSelect ><![CDATA[
-		select substr(matricola_misuratore_user, 0, 18) || pr_anu,
+		select substr(matricola_misuratore, 0, 18) || d.cncon as legacy,
        'G',
-       decode(numero_cifre_contatore_anu, 5, 'GV5', 6, 'GV6', 'GV6'),
+       decode(numero_cifre, 5, 'GV5', 6, 'GV6', 'GV6'),
        '20010101',
-       substr(matricola_misuratore_user, 0, 18),
+       decode(substr(matricola_misuratore, 0, 18), '', d.cncon, substr(matricola_misuratore, 0, 18)) as matr,
        e.pr_area_ai,
        e.temp_area,
-       substr(cabina_remi_anu, -8)
-  from dbi_user.ifc_delibera_gas d, adrcity_city e
- where pr_anu in (select cncon from z_pr_in_lavorazione_gas) 
-   and d.istat_cliente = e.legacy
+       substr(fg.cd_remi, -8)
+  from v_contratti                           d,
+       adrcity_city                          e,
+       dbi_user.ifc_sap_anagrindirizzi_pr    ip,
+       v_indirizzi                           vi,
+       dbi_user.ifc_sap_fornitura_gas_config fg
+ where d.cncon in (select cncon from z_pr_in_lavorazione)
+   and vi.indccom = e.legacy
+   and d.ctipo = 3
+   and d.cncon = ip.Pr
+   and ip.Indprog = vi.indprog
+   and fg.dbi_punto_key = d.cncon
+   order by 1
 		]]></mainSelect>
 		<insertTable name='DEVINFORECG_INT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' 		index='0' />

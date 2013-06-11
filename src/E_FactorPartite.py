@@ -11,16 +11,25 @@ from it_eutile_utils_log.LogManager import LogManager
 from it_eutile_utils_csvmanager.CsvManager import CsvManager
 #
 stat_finale = '''
-select gpart, trx_number, z2.newkey, docuemnt_type, importo_ceduto, data_cessione, z3.newkey
-  from dbi_user.rpl_oa_xxene_factor_cess_all a,
-       dbi_user.wrk_oa_documents             b left outer join z_temksv z3 on (z3.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID and z3.object = 'PAYMENT'),
-       z_fkkvkp                              p,
-       z_temksv                              z,
-       z_temksv                              z2
-       where a.customer_trx_id = b.customer_trx_id
- and b.cd_entita_fatt = z.oldkey and z.object = 'ACCOUNT'
- and z2.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID and z2.object = 'DOCUMENT'
- and z.newkey = p.vkont
+select gpart,
+       trx_number,
+       z2.newkey as document,
+       docuemnt_type,
+       importo_ceduto,
+       data_cessione,
+       z3.newkey as payment
+  from dbi_user.rpl_oa_xxene_factor_cess_all a, dbi_user.wrk_oa_documents b
+  left outer join sapsr3.temksv@sap_iaq z3
+    on (z3.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID and z3.object = 'PAYMENT'), 
+       sapsr3.fkkvkp@sap_iaq p, 
+       sapsr3.temksv@sap_iaq z, 
+       sapsr3.temksv@sap_iaq z2
+ where a.customer_trx_id = b.customer_trx_id
+   and b.cd_entita_fatt = z.oldkey
+   and z.object = 'ACCOUNT'
+   and z2.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID
+   and z2.object = 'DOCUMENT'
+   and z.newkey = p.vkont
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

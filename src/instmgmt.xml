@@ -13,7 +13,8 @@ select dbi_original_key_pr, -- 0
        get_perverbr_ee(a.cpod, tiptar), -- 7
        legacy, -- 8
        tpnum, -- 9
-       b.fattore_trasformazione -- 10
+       b.fattore_trasformazione, -- 10
+       cpod   --11          
   from dbi_user.ifc_sap_anagrcontrele   a,
        devinforec_int,
        z_grnum,
@@ -22,14 +23,13 @@ select dbi_original_key_pr, -- 0
    and matnr = cod_gruppo
    and (a.dbi_original_key_pr = b.dbi_punto_key and a.ctipo = b.ptipo)
    and a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
-   --and a.dbi_original_key_pr = 'PR3763199'
  order by dbi_original_key_pr, prnum
 		]]></mainSelect>
 		<insertTable name='INSTMGMT_DIINT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' index='0' />
 		<field name='TIPO' constant_value='DI_INT' />
 		<field name='DEVLOC' constant_value=' ' />
-		<field name='ANLAGE' index='0' />
+		<field name='ANLAGE' index='11' />
 		<field name='EADAT'  index='1' />
 		<field name='ACTION' index='2' />
 		</insertTable>

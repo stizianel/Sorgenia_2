@@ -4,25 +4,32 @@
 	<instlnAggregator>
 		<mainSelect ><![CDATA[
 		  select v.cncon,
-          v.ctar1,
-          decode(v.ctipo, '3','G','1','P','P'),
-          decode(v.ctipo, '3', '02', '1', '04', '04'),
-          decode(v.ctipo, '3', 'GCTMMRES00', '1', 'ECTMMRES00', 'ERRORE'),
-          decode(v.ctipo, '3', 'G001', '1', 'P001', 'ERR'),
-          REGEXP_SUBSTR(v.cncon,'[[:digit:]]+'),
-          v.cpod,
-          substr(substr(dec_rete_gas(b.ds_distributore),-2)||a.cabina_remi_anu,0,10),
-          decode(v.ctipo, '3', 'GAS', '1', '30', 'ER'),
-          decode(v.ctipo, '3', ' ', '1', '01', 'ER'),
-          dec_branche(' '),
-          ulettura
-          from v_contratti v, DBI_USER.ifc_delibera_gas a, dbi_user.rpl_anu_t_distributori b, z_temp_ulettura_gas z
-          where 
-          v.cncon = a.pr_anu
-          and v.cncon in (select cncon from z_pr_in_lavorazione_gas)
-          and v.ctipo = 3
-          and a.codice_distributore_anu = b.cd_distributore
-          and v.cncon = z.cncon
+       v.ctar1,
+       decode(v.ctipo, '3', 'G', '1', 'P', 'P'),
+       decode(v.ctipo, '3', '02', '1', '04', '04'),
+       decode(a.mercato_versione, 'LARGE', 'GCTLGRES00', '1', 'GCTMMRES00', 'ERRORE'),
+       decode(v.ctipo, '3', 'G001', '1', 'P001', 'ERR'),
+       REGEXP_SUBSTR(v.cncon, '[[:digit:]]+'),
+       a.s_pdr,
+       substr(substr(dec_rete_gas(b.ds_distributore), -2) ||
+              a.cd_remi,
+              0,
+              10),
+       decode(v.ctipo, '3', 'GAS', '1', '30', 'ER'),
+       decode(v.ctipo, '3', ' ', '1', '01', 'ER'),
+       dec_branche(' '),
+       ulettura
+  from v_contratti                     v,
+       DBI_USER.Ifc_Sap_Fornitura_Gas_Config       a,
+       dbi_user.rpl_anu_t_distributori b,
+       z_temp_ulettura_gas             z,
+       z_pr_in_lavorazione             pr
+ where v.cncon = a.dbi_punto_key
+   and v.cncon in (select cncon from z_pr_in_lavorazione_gas)
+   and v.ctipo = '3'
+   and nvl(to_char(a.id_distributore),0) = b.id_distributore
+   and v.cncon = z.cncon
+   and v.cncon = pr.cncon
 		]]></mainSelect>
 		<insertTable name='INSTLNG_KEY' truncate = 'True' break_index='0' >
 				<field name='LEGACY' index='0' />

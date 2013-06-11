@@ -36,6 +36,7 @@
           dec_segcli(a.segmento_cliente_sap),                   --29
           decode(fl_non_disattivabile, 'S', 'X', 'N', ' ', 'X') --30
           from v_clienti a left outer join dbi_user.ifc_sap_anagrclientifactor b on (a.acdan = b.acdan)
+          where a.acdan in (select acdan from z_clienti_in_lavorazione)
 	]]></mainSelect>
 			<insertTable name='PARTNER_INIT' truncate = 'True' break_index=''  condition_index='5' condition_value = 'G' condition_type='.eq.' >
 					<field name='LEGACY' index='0' />
@@ -132,7 +133,7 @@
 	<partnerAggregatorBanche>
 		<mainSelect ><![CDATA[
           select 
-          delcli,                            --0
+          a.acdan,                           --0
           a.delprog,                         --1
           delabi,                            --2
           delabi||delcab,                    --3
@@ -145,7 +146,7 @@
           where -- a.atipoentita = 'CLIENTE'
           a.acdan in (select partner from partner_init)
           group by
- 		  delcli,                            --0
+ 		  a.acdan,                            --0
           a.delprog,                         --1
           delabi,                            --2
           delabi||delcab,                    --3
@@ -154,7 +155,7 @@
           substr(deliban,-12),               --6
           substr(delint,0,60),                --7
           substr(deliban,0,2)                 --8
-           order by delcli
+          order by a.acdan
 		]]></mainSelect>
 		<insertTable name='PARTNER_BUT0BK' truncate = 'True' break_index='1' >
 					<field name='LEGACY' index='0' />
@@ -170,36 +171,36 @@
 	</partnerAggregatorBanche>
 	<partnerAggregatorIndi>
 		<mainSelect ><![CDATA[
-			select    c.ccdan, 
-		      a.indprog,
-		      indccom, 
-		      inddcom, 
-		      indindi||' '||indccvia, 
-		      substr(indcivi,0,10),
-		      indest,
-		      indcap,
-		      indprov,
-		      decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'),
-		      indregio
-		      from v_clienti_entita c,
-          	  DBI_USER.ifc_sap_anagrindirizzi a, v_indirizzi v
-		      where 
+		  select    c.ccdan_new, 
+          a.indprog,
+          indccom, 
+          inddcom, 
+          indindi||' '||indccvia, 
+          substr(indcivi,0,10),
+          indest,
+          indcap,
+          indprov,
+          decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'),
+          indregio
+          from v_clienti_entita c,
+              DBI_USER.ifc_sap_anagrindirizzi a, v_indirizzi v
+          where 
               (indcli = c.ccdan or indcli = c.cflg9)
-		      and a.indprog = v.indprog
-		      and c.ccdan in (select partner from partner_init)
+          and a.indprog = v.indprog
+          and c.ccdan_new in (select partner from partner_init)
           group by
-          	  c.ccdan,
-		      a.indprog, 
-		      indccom, 
-		      inddcom, 
-		      indindi||' '||indccvia, 
-		      substr(indcivi,0,10),
-		      indest,
-		      indcap,
-		      indprov,
-		      decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'),
-		      indregio
-          order by c.ccdan, indprog
+              c.ccdan_new,
+          a.indprog, 
+          indccom, 
+          inddcom, 
+          indindi||' '||indccvia, 
+          substr(indcivi,0,10),
+          indest,
+          indcap,
+          indprov,
+          decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'),
+          indregio
+          order by c.ccdan_new, indprog
 		]]></mainSelect>
 		<insertTable name='PARTNER_BUT020' truncate = 'True' break_index='' >
 					<field name='LEGACY' index='0' />
@@ -221,7 +222,7 @@
 	
 	<partnerAggregatorUtindi>
 		<mainSelect ><![CDATA[
-		  select /*+ ORDERED */   c.ccdan, 
+		  select /*+ ORDERED */   c.ccdan_new, 
           a.indprog,
           decode(indtipo, 'LEGALE', 'Z000000001', 'FORNITURA', 'Z000000002','OPERATIVA', 'Z000000005', 'INVIO', 'Z000000007', 'CONTATTO', 'Z000000006','Z000000003')
           from   v_clienti_entita c,
@@ -229,9 +230,9 @@
           where 
           (a.indcli = c.ccdan or a.indcli = c.cflg9)
           and a.indprog = v.indprog
-          and c.ccdan in (select partner from partner_init)
-          group by c.ccdan, a.indprog, decode(indtipo, 'LEGALE', 'Z000000001', 'FORNITURA', 'Z000000002','OPERATIVA', 'Z000000005', 'INVIO', 'Z000000007', 'CONTATTO', 'Z000000006','Z000000003')
-          order by c.ccdan
+          and c.ccdan_new in (select partner from partner_init)
+          group by c.ccdan_new, a.indprog, decode(indtipo, 'LEGALE', 'Z000000001', 'FORNITURA', 'Z000000002','OPERATIVA', 'Z000000005', 'INVIO', 'Z000000007', 'CONTATTO', 'Z000000006','Z000000003')
+          order by c.ccdan_new
 		]]></mainSelect>
 			<insertTable name='PARTNER_BUT021' truncate = 'True' break_index='' >
 					<field name='LEGACY' index='0' />
@@ -245,14 +246,14 @@
 		<partnerAggregatorTax>
 			<mainSelect ><![CDATA[
 				select acdan,                                                --0 
-				       apiva,                                                --1
-				       acdfi,                                                --2
-				       LENGTH(TRIM(TRANSLATE(acdfi, ' +-.0123456789',' '))), --3
-				       'IT'||apiva,                                          --4
-				       decode(length(acdfi),11,'FN',16,'CF','ER')            --5
-      			from DBI_USER.ifc_sap_anagrclienti a
-      			where a.atipoentita = 'CLIENTE'
-      			and a.acdan in (select partner from partner_init)
+               apiva,                                                --1
+               acdfi,                                                --2
+               LENGTH(TRIM(TRANSLATE(acdfi, ' +-.0123456789',' '))), --3
+               'IT'||apiva,                                          --4
+               decode(length(acdfi),11,'FN',16,'CF','ER')            --5
+            from v_clienti a
+            where a.atipoentita = 'CLIENTE'
+            and a.acdan in (select partner from partner_init)
 			]]></mainSelect>
 			<insertTable name='PARTNER_TAXNUM' truncate = 'True' break_index='' condition_index='5' condition_value = 'CF' condition_type='.eq.' >
 					<field name='LEGACY' index='0' />

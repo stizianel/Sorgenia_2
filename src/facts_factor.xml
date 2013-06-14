@@ -19,11 +19,10 @@
        a.acquisizione= c.cfreq
          and d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
          and a.ctar1=c.ctar1
-        --and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti)-- where note = 'lotto 30')
+        and c.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti  where note = 'lotto 31')
         and a.operando = b.operando 
-        and C.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
         and tipo = 'FACTOR'
-            and c.d_valido_dal=d.valid_from
+         and c.d_valido_dal=d.valid_from
       and c.d_valido_al=d.valid_until
         group by 
         c.DBI_ORIGINAL_KEY_PR, 

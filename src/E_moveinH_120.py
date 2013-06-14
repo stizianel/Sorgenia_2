@@ -1,9 +1,9 @@
 '''
-Created on 12/lug/2012
+Created on 01/Oct/2012
 
 @author: Stefano Tizianel E-Utile
 '''
 from it_eutile_utils_extractor.ExtractorManager import ExtractorManager
 
-ExtractorManager('meterread2G','meterreadExtractor',filename='meterread96G_temp.xml') 
+ExtractorManager('moveinH','moveinExtractor',filename='moveinh.xml') 
 

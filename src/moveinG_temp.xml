@@ -12,7 +12,7 @@
                else to_char(p.dt_inizio_fornitura,'YYYYMMDD') end, -- 1                                                   -- 0
             dec_serviceid(b.cdist),                                                     --6
             dec_cokey(a.cserv, acatc),                                                  --7
-            dec_gsber(k.ktokl, a.ctipo),                                                --8
+            dec_gsber(k.ktokl),                                                --8
             a.cserv,
             acatc,
             dec_stagruver_gas(acatc)                                                    --11

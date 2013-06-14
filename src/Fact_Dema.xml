@@ -16,10 +16,9 @@
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d
        
-    where --a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti)-- where note = 'lotto 30')
-     c.tipo='DEMA'
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 31')
+    and  c.tipo='DEMA'
     and b.ctar1=a.ctar1 
-    and A.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
     and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
     and b.acquisizione= a.cfreq   
       and c.operando=b.operando
@@ -103,12 +102,11 @@
                  b.acquisizione                                         --9
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d 
-    where --a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti)-- where note = 'lotto 30')
-    c.tipo='USERDEF'    
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 31')
+    and c.tipo='USERDEF'    
       and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
     and b.acquisizione= a.cfreq   
-    and A.Dbi_Original_Key_Pr in ('PR2208613','PR3433147')
-      and c.operando=b.operando
+       and c.operando=b.operando
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
              

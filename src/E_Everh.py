@@ -4,7 +4,7 @@ Created on 15/gen/2013
 @author: Stefano Tizianel
 '''
 import datetime
-import pysap
+#import pysap
 import csv
 from it_eutile_utils_properties.Constants import Constants
 from it_eutile_utils_database.ConnectionManager import ConnectionManager
@@ -12,32 +12,35 @@ from it_eutile_utils_log.LogManager import LogManager
 from it_eutile_utils_csvmanager.CsvManager import CsvManager
 #
 stat_finale = '''
-select vrefer,
-       vertrag,
-       einzdat,
-       auszdat,
-       p.cd_prodotto,
-       v.ctar1,
-       v.acdan
-  from 
-       z_ever                           b,
-       v_contratti                      v,
-       dbi_user.rpl_anu_t_vers_prodotti c,
-       dbi_user.rpl_anu_t_prodotti      p
- where 
-       v.ctar1 = c.cd_versione
-   and c.id_prodotto = p.id_prodotto
-   and b.vrefer = v.cncon
-   and v.ordine_reverse = 1
- group by 
-       vrefer,
-       vertrag,
-       einzdat,
-       auszdat,
-       p.cd_prodotto,
-       v.ctar1,
-       v.acdan
- order by vrefer
+    SELECT
+            vrefer,
+            vertrag,
+            TO_CHAR(v.d_valido_dal,'yyyymmdd') AS einzdat,
+            TO_CHAR(v.d_valido_al,'yyyymmdd')  AS auszdat,
+            p.cd_prodotto,
+            v.ctar1,
+            v.acdan
+        FROM
+            sapsr3.ever@sap_iaq b,
+            v_contratti v,
+            dbi_user.rpl_anu_t_vers_prodotti c,
+            dbi_user.rpl_anu_t_prodotti p
+        WHERE
+            v.ctar1 = c.cd_versione
+        AND c.id_prodotto = p.id_prodotto
+        AND b.vrefer = v.cncon
+        GROUP BY
+            vrefer,
+            vertrag,
+            TO_CHAR(v.d_valido_dal,'yyyymmdd'),
+            TO_CHAR(v.d_valido_al,'yyyymmdd'),
+            p.cd_prodotto,
+            v.ctar1,
+            v.acdan
+        ORDER BY
+            vrefer desc,
+            acdan desc,
+            TO_CHAR(v.d_valido_al,'yyyymmdd')
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()
@@ -54,8 +57,8 @@ cursor = conn.conn.cursor()
 cur_s1 = conn.conn.cursor()
 cursor.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYYMMDD HH24:MI:SS'")
 #
-sap_conn=pysap.Rfc_connection(conn_file='sapconn.ini',conn_name='INT2')
-sap_conn.open()
+#sap_conn=pysap.Rfc_connection(conn_file='sapconn.ini',conn_name='INT2')
+#sap_conn.open()
 #
 campi_temksv = ['mandt', 'firma', 'object','oldkey','newkey']
 #

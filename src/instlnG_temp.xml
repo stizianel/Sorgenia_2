@@ -3,14 +3,15 @@
 
 	<instlnAggregator>
 		<mainSelect ><![CDATA[
-		  select v.cncon,
+	   select 
+	   decode(a.s_pdr, '', v.cncon, a.s_pdr),
        v.ctar1,
        decode(v.ctipo, '3', 'G', '1', 'P', 'P'),
        decode(v.ctipo, '3', '02', '1', '04', '04'),
        decode(a.mercato_versione, 'LARGE', 'GCTLGRES00', '1', 'GCTMMRES00', 'ERRORE'),
        decode(v.ctipo, '3', 'G001', '1', 'P001', 'ERR'),
        REGEXP_SUBSTR(v.cncon, '[[:digit:]]+'),
-       a.s_pdr,
+       decode(a.s_pdr, '', v.cncon, a.s_pdr),
        substr(substr(dec_rete_gas(b.ds_distributore), -2) ||
               a.cd_remi,
               0,
@@ -18,7 +19,8 @@
        decode(v.ctipo, '3', 'GAS', '1', '30', 'ER'),
        decode(v.ctipo, '3', ' ', '1', '01', 'ER'),
        dec_branche(' '),
-       ulettura
+       ulettura,
+       v.cncon
   from v_contratti                     v,
        DBI_USER.Ifc_Sap_Fornitura_Gas_Config       a,
        dbi_user.rpl_anu_t_distributori b,
@@ -40,7 +42,7 @@
 				<field name='LEGACY' index='0' />
 				<field name='TIPO' constant_value='DATA' />
 				<field name='SPARTE' index='2' />
-				<field name='VSTELLE' index='0' />
+				<field name='VSTELLE' index='13' />
 				<field name='BAPERTYP' constant_value='X' />
 				<field name='SPEBENE' index='10' />
 				<field name='ANLART' index='9' />

@@ -3,27 +3,39 @@
 	<instmgmtAggregator>
 		<mainSelect ><![CDATA[
 -- Provvisorio
-select dbi_original_key_pr, -- 0
-       to_char(b.dt_inizio_fornitura, 'YYYYMMDD'), -- 1
-       '04', -- 2
-       prnum, -- 3
-       'E0000', -- 4
-       '0', -- 5
-       tiptar, -- 6
-       get_perverbr_ee(a.cpod, tiptar), -- 7
-       legacy, -- 8
-       tpnum, -- 9
-       b.fattore_trasformazione, -- 10
-       cpod   --11          
-  from dbi_user.ifc_sap_anagrcontrele   a,
-       devinforec_int,
-       z_grnum,
-       dbi_user.ifc_sap_punti_fornitura b
- where substr(legacy, (instr(legacy, 'P'))) = a.dbi_original_key_pr
-   and matnr = cod_gruppo
-   and (a.dbi_original_key_pr = b.dbi_punto_key and a.ctipo = b.ptipo)
-   and a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
- order by dbi_original_key_pr, prnum
+SELECT
+    dbi_original_key_pr, -- 0
+    TO_CHAR(b.dt_inizio_fornitura, 'YYYYMMDD'), -- 1
+    '04', -- 2
+    prnum, -- 3
+    'E0000', -- 4
+    '0', -- 5
+    tiptar, -- 6
+    get_perverbr_ee(a.cpod, tiptar), -- 7
+    legacy, -- 8
+    tpnum, -- 9
+    b.fattore_trasformazione, -- 10
+    cpod --11
+FROM
+    dbi_user.ifc_sap_anagrcontrele a,
+    devinforec_int,
+    z_grnum,
+    dbi_user.ifc_sap_punti_fornitura b
+WHERE
+    SUBSTR(legacy, (instr(legacy, 'P'))) = a.dbi_original_key_pr
+AND matnr = cod_gruppo
+AND (
+        a.dbi_original_key_pr = b.dbi_punto_key
+    AND a.ctipo = b.ptipo)
+AND a.dbi_original_key_pr IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione)
+ORDER BY
+    dbi_original_key_pr,
+    prnum
 		]]></mainSelect>
 		<insertTable name='INSTMGMT_DIINT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' index='0' />

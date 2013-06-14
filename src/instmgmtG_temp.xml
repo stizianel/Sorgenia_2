@@ -14,36 +14,41 @@
        prnum, -- 3
        '000001', -- 4
        '0', -- 5
-       'G_' || tipo_profilo_utilizzo_anu, -- 6
-       d.volumi_annui_anu, -- 7
+       'G_' || d.cd_profilo_gas, -- 6
+       decode(d.consumo_distributore,'', d.consumo_cliente, d.consumo_distributore), -- 7
        i.legacy, -- 8
        tpnum, -- 9
        substr(b.cabina_remi,-8), -- 10
        e.pr_area_ai,  -- 11
-       e.temp_area    -- 12
+       e.temp_area,    -- 12
+       b.pdr --13
   from dbi_user.ifc_sap_anagrcontrgas   a,
        devinforecg_int i,
        z_grnum,
        dbi_user.ifc_sap_punti_fornitura b,
-       dbi_user.ifc_delibera_gas        d,
-       adrcity_city e
+       dbi_user.ifc_sap_fornitura_gas_config d,
+       adrcity_city e,
+       dbi_user.ifc_sap_anagrindirizzi_pr ai,
+       v_indirizzi vi
  where cncon in (select cncon from z_pr_in_lavorazione_gas)
    and substr(i.legacy, (instr(i.legacy, 'P'))) = cncon
    and matnr = cod_gruppo
    and (a.cncon = b.dbi_punto_key and a.ctipo = b.ptipo)
-   and cncon = d.pr_anu
-   and d.istat_cliente = e.legacy
+   and cncon = d.dbi_punto_key
+   and b.dbi_punto_key = ai.Pr
+   and ai.Indprog = vi.indprog
+   and vi.indccom = e.legacy
  order by cncon, prnum
 		]]></mainSelect>
 		<insertTable name='INSTMGMTG_DIINT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' index='0' />
 		<field name='TIPO' constant_value='DI_INT' />
 		<field name='DEVLOC' constant_value=' ' />
-		<field name='ANLAGE' index='0' />
+		<field name='ANLAGE' index='13' />
 		<field name='EADAT'  index='1' />
 		<field name='ACTION' index='2' />
 		</insertTable>
-		<insertTable name='INSTMGMTG_DIZW' truncate = 'True' break_index='' >
+		<insertTable name='INSTMGMTG_DIZW' truncate = 'True' break_index='0' >
 		<field name='LEGACY' index='0' />
 		<field name='TIPO' constant_value='DI_ZW' />
 		<field name='ZWNUMMERA' constant_value=' ' />

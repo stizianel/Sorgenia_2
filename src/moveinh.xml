@@ -4,7 +4,7 @@
 		<mainSelect ><![CDATA[
 SELECT
     a.dbi_original_key_pr                                            AS Contratto, --0
-    DECODE(a.ctipo, '1', 'P', '3', 'G')                                         AS SPARTE, --1
+    DECODE(a.ctipo, '1', 'P', '3', 'G')                                         AS tipo_contr, --1
     p.Account                                                                   AS Account, --2
     apers                                                                       AS tipo_bp, --3
     DECODE(a.caliv, 'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER') AS tipo_iva, --4
@@ -13,7 +13,8 @@ SELECT
     dec_cokey(a.cserv, acatc)                                                   AS cokey, --7
     dec_gsber(k.ktokl)                                                          AS gsber, --8
     dec_stagruver(b.ctfor)                                                      AS stagruver, --9
-    dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura)                        AS ausgrup, --10    
+    dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura)                        AS ausgrup , --10
+    TO_CHAR(p.valid_until, 'YYYYMMDD')                                             AS AUSZDAT,
     p.pod                                                      AS pod
 FROM
     v_contratti a,
@@ -51,9 +52,8 @@ AND a.dbi_original_key_pr = b.dbi_original_key_pr
 AND b.ctipo = 1
 AND a.cflg9 = k.legacy
 AND a.dbi_original_key_pr = t.cd_punto
-AND t.data_cessazione = to_date('31/12/9999', 'dd/mm/yyyy')
+AND t.data_cessazione != to_date('31/12/9999', 'dd/mm/yyyy')
 GROUP BY
-    p.pod,
     a.dbi_original_key_pr, --0
     DECODE(a.ctipo, '1', 'P', '3', 'G'), --1
     p.Account, --2
@@ -64,11 +64,12 @@ GROUP BY
     dec_cokey(a.cserv, acatc), --7
     dec_gsber(k.ktokl), --8
     dec_stagruver(b.ctfor), --9
-    dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura) , --10    
-    p.pod                                                 
+    dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura), --10
+    TO_CHAR(p.valid_until, 'YYYYMMDD'),
+    p.pod
         ]]></mainSelect>
-		<insertTable name='MOVEIN_EVER' truncate = 'True' break_index='' >
-				<field name='LEGACY' index='11' />
+		<insertTable name='MOVEINH_EVER' truncate = 'True' break_index='' >
+				<field name='LEGACY' index='12' />
 				<field name='TIPO' constant_value='EVER' />
 				<field name='BUKRS' constant_value='SORG' />
 				<field name='SPARTE' index='1' />
@@ -77,9 +78,10 @@ GROUP BY
 				<field name='VBEZ' constant_value=' ' />
 				<field name='VBEGINN' index='5' />
 				<field name='VREFER' index='0' />
-				<field name='ANLAGE' index='11' />
+				<field name='ANLAGE' index='12' />
 				<field name='VKONTO' index='2' />
 				<field name='EINZDAT' index='5' />
+				<field name='AUSZDAT' index='11' />
 				<field name='MAHNV' constant_value='' />
 				<field name='GSBER' index='8' />
 				<field name='STAGRUVER' index='9' />
@@ -97,11 +99,11 @@ GROUP BY
 SELECT
     *
 FROM
-    movein_ever
+    moveinh_ever
 ORDER BY
     legacy
 		]]></mainSelect>
-		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='20'>
+		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='21'>
        	</csvLine>
 		<ende field_index='0' />
 	</moveinExtractor>

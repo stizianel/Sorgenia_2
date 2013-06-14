@@ -2,33 +2,33 @@
 	<queries>
     <PaymentAggregator>
          <mainSelect ><![CDATA[
-       select b.cd_entita_fatt||'-'|| B.CUSTOMER_TRX_ID --0
-       ,to_char(c.gl_date, 'YYYYMMDD'), --1
+       select doc.cd_entita_fatt||'-'|| doc.CUSTOMER_TRX_ID --0
+       ,to_char(pay.gl_date, 'YYYYMMDD'), --1
        TO_CHAR(SYSDATE, 'YYYYMMDD'), --2 
-       b.amount_due_original,        --3
-       TO_CHAR(c.due_date, 'YYYYMMDD'), --4
+       doc.amount_due_original,        --3
+       TO_CHAR(pay.due_date, 'YYYYMMDD'), --4
        amount, --5
-       c.cash_receipt_id, --6
-       c.receipt_number,  --7
-       b.trx_date,
-       b.due_date,
-       b.document_status,
-       b.competence_date,
-       b.amount_due_original,
-       b.amount_due_remaining,
-       c.receipt_date,
-       c.status,
-       c.confirmed_flag,
-       c.amount_applied
+       pay.cash_receipt_id, --6
+       pay.receipt_number,  --7
+       doc.trx_date,
+       doc.due_date,
+       doc.document_status,
+       doc.competence_date,
+       doc.amount_due_original,
+       doc.amount_due_remaining,
+       pay.receipt_date,
+       pay.status,
+       pay.confirmed_flag,
+       pay.amount_applied
   from 
-       dbi_user.wrk_oa_documents b,
-       dbi_user.wrk_oa_payments  c,
-       document_fkkko k
+       dbi_user.wrk_oa_documents doc,
+       dbi_user.wrk_oa_payments  pay,
+       account_vkp ca
  where 
-   b.account_number = c.account_number
-   and b.customer_trx_id = c.customer_trx_id
-   and b.cd_entita_fatt||'-'|| B.CUSTOMER_TRX_ID = k.legacy
-   order by b.account_number, b.customer_trx_id
+   ca.legacy = doc.cd_entita_fatt
+   and doc.account_number = pay.account_number
+   and doc.customer_trx_id = pay.customer_trx_id
+   order by doc.account_number, doc.customer_trx_id
      ]]></mainSelect>
     <insertTable name='EMIG_PAY_FKKKO' truncate = 'True' break_index='0' >
              <field name='OIBEL'  index='0' />
@@ -62,7 +62,7 @@
 		   EMIG_PAY_FKKKO.BUDAT, --4
 		   EMIG_PAY_FKKKO.OIBEL, --5
 		   EMIG_PAY_FKKKO.AUGRD, --6
-		   EMIG_PAY_FKKKO.ZINCRID, -7
+		   EMIG_PAY_FKKKO.ZINCRID, --7
 		   EMIG_PAY_FKKOPK.LEGACY, --8
 		   EMIG_PAY_FKKOPK.TIPO, --9
 		   EMIG_PAY_FKKOPK.BUKRS, --10

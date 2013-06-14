@@ -22,8 +22,10 @@
  where a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
    and a.dbi_original_key_pr = b.cncon
    and s.cd_punto = a.dbi_original_key_pr
+   /*
    and s.stato_punto_dbi = 'ATTIVO'
    and a.d_valido_al = to_date('31/12/9999', 'dd/mm/yyyy')
+   */
  order by a.cpod
 		]]></mainSelect>
 		<insertTable name='INSTLN_KEY' truncate = 'True' break_index='7' >

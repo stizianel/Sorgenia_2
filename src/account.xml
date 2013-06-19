@@ -3,46 +3,95 @@
 	
 	<accountAggregator>
 		<mainSelect ><![CDATA[
-        select cflg9, --0
-       a.acdan, --1
-       indprog, --2
-       a.delprog, --3
-       apers, --4
-       acatc, --5
-       ' ', --6
-       substr(arags, 0, 35), --7
-       dec_ezawe(a.delprog), --8
-       dec_ikey(acatc), --9
-       dec_togru(acatc), --10
-       dec_ktokl(cserv, acatc), --11
-       dec_mahnv(cserv, acatc), --12
-       dec_azawe(cserv, acatc, deliban), --13
-       decode(dec_azawe(cserv, acatc, deliban), 'C', a.delprog, ' '), --14
-       dec_ausgrup_in(segmento_cliente_sap, cserv) --15
-  from v_contratti a
-  left outer join dbi_user.ifc_sap_anagrbanche b
-    on (cflg9 = delef and a.delprog = b.delprog),
- dbi_user.ifc_sap_anagrindirizzi i,
- z_pr_in_lavorazione pr
- where a.cflg9 = i.indcli
-   and a.acdan in (select legacy from partner_but020)
-   and a.cncon = pr.cncon
- group by cflg9,
-          acdan,
-          indprog,
-          a.delprog,
-          apers,
-          acatc,
-          substr(a.arags, 0, 35),
-          dec_ezawe(a.delprog),
-          dec_ikey(a.acatc),
-          dec_togru(a.acatc),
-          dec_ktokl(cserv, a.acatc),
-          dec_mahnv(cserv, a.acatc),
-          dec_azawe(cserv, a.acatc, deliban),
-          decode(dec_azawe(cserv, a.acatc, deliban), 'C', a.delprog, ' '),
-          dec_ausgrup_in(a.segmento_cliente_sap, cserv)
- 		  order by cflg9, acdan, indprog desc, a.delprog
+SELECT
+    a.cflg9, --0
+    a.acdan, --1
+    a.indprog, --2
+    a.delprog, --3
+    a.apers, --4
+    a.acatc, --5
+    a.spaz, --6
+    a.arags, --7
+    dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) AS ezawe, --8
+    dec_ikey(a.acatc)             AS ikey, --9
+    dec_togru(a.acatc)            AS togru, --10
+    a.ktokl, --11
+    a.mahnv, --12
+    CASE
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) = 'P'
+        THEN 'A'
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) = 'R'
+        THEN 'C'
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) = 'T'
+        THEN 'C'
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) = 'S'
+        THEN 'C'
+        ELSE 'C'
+    END AS azawe , --13
+    CASE
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) IN ('R','F','T','S') 
+        THEN a.delprog
+        ELSE ''
+    END AS ABVTY_EXT, --14
+    a.ausgrup_in--15
+FROM
+    (
+        SELECT
+            cflg9, --0
+            a.acdan, --1
+            indprog, --2
+            a.delprog, --3
+            apers, --4
+            acatc, --5
+            ' '                     AS spaz, --6
+            SUBSTR(arags, 0, 35)    AS arags,
+            dec_ktokl(cserv, acatc) AS ktokl, --11
+            dec_mahnv(cserv, acatc) AS mahnv,
+            dec_ausgrup_in(segmento_cliente_sap, cserv) AS ausgrup_in,--15
+            b.delabi,
+            a.mercato_versione
+        FROM
+            v_contratti2 a
+        LEFT OUTER JOIN
+            dbi_user.ifc_sap_anagrbanche b
+        ON
+            (
+                cflg9 = delef
+            AND a.delprog = b.delprog),
+            dbi_user.ifc_sap_anagrindirizzi i,
+            z_pr_in_lavorazione pr
+        WHERE
+            a.cflg9 = i.indcli
+        AND a.acdan IN
+            (
+                SELECT
+                    legacy
+                FROM
+                    partner_but020)
+        AND a.cncon = pr.cncon
+        GROUP BY
+            cflg9, --0
+            a.acdan, --1
+            indprog, --2
+            a.delprog, --3
+            apers, --4
+            acatc, --5
+            ' ', --6
+            SUBSTR(arags, 0, 35) , --7
+            dec_ktokl(cserv, acatc) , --11
+            dec_mahnv(cserv, acatc) , --12
+            dec_ausgrup_in(segmento_cliente_sap, cserv),--15
+            b.delabi,
+            a.mercato_versione ) a
+LEFT OUTER JOIN
+    dbi_user.IFC_SAP_ANAGRCLIENTIFACTOR k
+ON
+    k.acdan = a.acdan
+ORDER BY
+    a.cflg9,
+    a.acdan,
+    a.indprog DESC,
+    a.delprog
         ]]></mainSelect>
 		<insertTable name='ACCOUNT_INIT' truncate = 'True' break_index='0' >
 				<field name='LEGACY' index='0' />
@@ -131,9 +180,9 @@
 		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='4'>
        	</csvLine>
        	<csvLine line_index='1' break_index='' field_start_index='5' field_end_index='7'>
-       	</csvLine>
-       	<csvLine line_index='2' break_index='' field_start_index='8' field_end_index='32'>
-       	</csvLine>
+       	</csvLine>       	
+       	<csvLine line_index='2' break_index='' field_start_index='8' field_end_index='32'>       	
+       	</csvLine>       	
 		<ende field_index='0' />
 	</accountExtractor>
 	

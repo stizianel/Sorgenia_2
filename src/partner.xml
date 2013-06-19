@@ -34,7 +34,12 @@
           to_char(b.data_cessione, 'YYYYMMDD'),                 --27
           dec_segcred(a.segmento_credito_sap),                  --28
           dec_segcli(a.segmento_cliente_sap),                   --29
-          decode(fl_non_disattivabile, 'S', 'X', 'N', ' ', 'X') --30
+          decode(fl_non_disattivabile, 'S', 'X', 'N', ' ', 'X'), --30
+          case stato
+            when 'O' then 'IMI'
+            when 'C' then 'IFI'
+            else ''
+          end                                                    --31
           from v_clienti a left outer join dbi_user.ifc_sap_anagrclientifactor b on (a.acdan = b.acdan)
           where a.acdan in (select acdan from z_clienti_in_lavorazione)
 	]]></mainSelect>
@@ -72,7 +77,7 @@
 					<field name='NAME_GRP2' constant_value='' />
 					<field name='BU_SORT1' index='12' />
 					<field name='BU_SORT2' index='12' />
-					<field name='ZZFACTOR' constant_value='IFI' />
+					<field name='ZZFACTOR' index='31' />
 					<field name='ZZPOOL' index='14' />,                             
 			        <field name='ZZSTATO' index='15' />,                    
 			        <field name='ZZAEDAT' index='16' />        
@@ -106,6 +111,7 @@
 					<field name='NAME_GRP2' constant_value='' />
 					<field name='BU_SORT1' index='26' />
 					<field name='BU_SORT2' index='26' />
+					<field name='ZZFACTOR' index='31' />
 					<field name='ZZPOOL' index='14' />,                             
 			        <field name='ZZSTATO' index='15' />,                    
 			        <field name='ZZAEDAT' index='16' />        

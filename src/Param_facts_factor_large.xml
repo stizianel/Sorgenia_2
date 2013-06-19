@@ -3,7 +3,7 @@
 	<FactorLargeAggregator>
 		<mainSelect ><![CDATA[
         select C.DBI_ORIGINAL_KEY_PR,  --0
-        C.DBI_ORIGINAL_KEY_PR,                                    --1 
+        C.cpod,                                    --1 
         a.operando,                                 --2
         to_char(d.d_inizio_val, 'yyyymmdd') ,  --3
        case when  to_char(d.d_fine_val, 'yyyymmdd')  is null then '99991231'
@@ -18,18 +18,17 @@
        a.TIPO= c.cfreq
          AND    d.cd_punto= c.DBI_ORIGINAL_KEY_PR
          and a.ctar1=c.ctar1 
-         and c.ctar1 ='STD_GDS1'
          and a.cd_parametro=d.cd_parametro_valore_large
-         and C.DBI_ORIGINAL_KEY_PR IN (select c.cncon from z_test_contratti c where c.note='lotto 21' )
+         and C.DBI_ORIGINAL_KEY_PR IN (select c.cncon from z_test_contratti c where c.note='lotto 31' )
          and a.operando = b.operando 
          and b.tipo = 'FACTOR'
+         --and to_char(d.d_fine_val, 'yyyymmdd') > '20080401'
         group by 
            C.DBI_ORIGINAL_KEY_PR, 
-           C.DBI_ORIGINAL_KEY_PR, 
+           C.cpod, 
            a.operando, 
            to_char(d.d_inizio_val, 'yyyymmdd') ,  --3
-                    --  nvl(n_valore,0) , 
-           b.id_operando , 
+             b.id_operando , 
             to_char(d.d_fine_val, 'yyyymmdd'),
           PARAMETRI_LARGE_FACTOR(A.OPERANDO,c.DBI_ORIGINAL_KEY_PR,c.ctar1,d.d_inizio_val)
         order by a.operando
@@ -40,6 +39,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON'  constant_value='' />
 		     <field name='PROG'    index= '6' />
+		      <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		   <insertTable name='PFACTS_V_FACTOR' truncate = 'True' break_index='' >
 		     <field name='LEGACY'    index='0' />
@@ -50,6 +50,7 @@
 		     <field name='AB'         index='3' />
 		     <field name='BIS'        index='4' />
 		     <field name='PROG'       index= '6' /> 
+		      <field name='CPOD'    index= '1' />
 		     </insertTable> 
 		
 	</FactorLargeAggregator>

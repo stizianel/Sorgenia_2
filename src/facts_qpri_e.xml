@@ -3,14 +3,15 @@
 	<qpriAggregator>
 		<mainSelect ><![CDATA[
 SELECT
+ /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
     v.DBI_ORIGINAL_KEY_PR, --0
-    v.DBI_ORIGINAL_KEY_PR, --1
+    v.cpod, --1
     a.operando,
     CASE
         WHEN a.operando='EPB_A_43'
         THEN TO_CHAR(v.cdsti,'yyyymmdd')
         WHEN a.operando='ESQP_01_FT'
-        THEN get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita)
+        THEN GET_AB_EF_SC_APP(a.operando,a.ctar1,v.cdsti,a.data_validita)
         WHEN TO_CHAR(v.cdsti,'yyyymmdd') IS NULL
         THEN get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
         ELSE TO_CHAR(v.cdsti,'yyyymmdd')
@@ -29,17 +30,18 @@ SELECT
                     NVL(prezzo,0), --6
                     b.id_operando , --7
                     tipo , --8
-                    v.DBI_ORIGINAL_KEY_PR||a.operando, --9
-                    V.CDSTI --10
+                    v.DBI_ORIGINAL_KEY_PR||a.operando --9
+                    --V.CDSTI --10
                 FROM
                     DBI_USER.ifc_sap_anagrcontrele v,
+                    DBI_USER.ifc_sap_punti_fornitura d,
                     z_prodotto_operando a,
-                    z_anagrafica_operandi b ,
-                    DBI_USER.ifc_sap_punti_fornitura d
+                    z_anagrafica_operandi b      
                 WHERE
                     d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
                 AND a.acquisizione= v.cfreq
-                --AND v.Dbi_Original_Key_Pr = 'PR480639'
+                  AND d.Frequenza_Misura = v.Cfreq
+                --AND v.Dbi_Original_Key_Pr = 'PR2011209'
                 AND a.ctar1=v.ctar1
                 AND v.DBI_ORIGINAL_KEY_PR IN
                     (
@@ -56,7 +58,7 @@ SELECT
                         WHEN a.operando='EPB_A_43'
                         THEN TO_CHAR(v.cdsti,'yyyymmdd')
                         WHEN a.operando='ESQP_01_FT'
-                        THEN get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita)
+                        THEN GET_AB_EF_SC_APP(a.operando,a.ctar1,v.cdsti,a.data_validita)
                         WHEN TO_CHAR(v.cdsti,'yyyymmdd') IS NULL
                         THEN get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
                         ELSE TO_CHAR(v.cdsti,'yyyymmdd')
@@ -71,12 +73,14 @@ SELECT
                         WHEN a.operando='EPB_A_43'
                         THEN TO_CHAR(v.cdsti,'yyyymmdd')
                         WHEN a.operando='ESQP_01_FT'
-                        THEN get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita)
+                        THEN GET_AB_EF_SC_APP(a.operando,a.ctar1,v.cdsti,a.data_validita)
                         WHEN TO_CHAR(v.cdsti,'yyyymmdd') IS NULL
                         THEN get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
                         ELSE TO_CHAR(v.cdsti,'yyyymmdd')
                     END <= TO_CHAR(V.CDCES, 'YYYYMMDD')
                 AND a.operando!='EPB_A_43'
+                and a.operando='ESQP_01_FT'
+                 AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
                 GROUP BY
                     v.DBI_ORIGINAL_KEY_PR, --0
                     v.DBI_ORIGINAL_KEY_PR, --1
@@ -84,24 +88,27 @@ SELECT
                     A.DATA_VALIDITA, --2
                     v.cdsti, --3
                     get_ab2(b.operando,a.ctar1,v.cdsti,data_validita),
-                    get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita),
+                    GET_AB_EF_SC_APP(a.operando,a.ctar1,v.cdsti,a.data_validita),
                     get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al),
+                    GET_AB_ESQP_01_FT(a.operando,a.ctar1,v.cdsti,a.data_validita),
                     valori, --5
                     NVL(prezzo,0), --6
-                    b.id_operando , --7
-                    tipo ,
+                   b.id_operando , --7
+                    tipo ,v.cpod,
                     v.cdces, --8
                     v.DBI_ORIGINAL_KEY_PR||a.operando ,
                     A.DATA_VALIDITA,
                     A.DATA_VALIDITA_AL
-                /*ORDER BY
-                v.cdsti*/
-                UNION ALL
-                SELECT
+                     UNION ALL
+               SELECT
+                 /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
                     v.DBI_ORIGINAL_KEY_PR, --0
-                    v.DBI_ORIGINAL_KEY_PR, --1
+                    v.cpod, --1
                     a.operando,
-                    CASE
+                    cASE
+                        WHEN a.operando='EPB_A_43'
+                        and A.DATA_VALIDITA = 'EINZDAT'
+                        then TO_CHAR(v.cdsti,'yyyymmdd')
                         WHEN a.operando='EPB_A_43'
                         AND A.DATA_VALIDITA > TO_CHAR(v.cdsti,'yyyymmdd')
                         THEN A.DATA_VALIDITA
@@ -110,16 +117,17 @@ SELECT
                     CASE,--3
                             CASE
                                 WHEN a.operando='EPB_A_43'
-                                THEN TO_CHAR(v.cdces,'yyyymmdd')
-                                ELSE get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al)
-                            END
+                                AND A.DATA_VALIDITA_al < TO_CHAR(v.cdces,'yyyymmdd')
+                                THEN A.DATA_VALIDITA_al
+                                ELSE TO_CHAR(v.cdces,'yyyymmdd')
+                               END
                             CASE ,---4
                                     valori, --5
                                     NVL(prezzo,0), --6
                                     b.id_operando , --7
                                     tipo , --8
-                                    v.DBI_ORIGINAL_KEY_PR||a.operando, --9
-                                    V.CDSTI --10
+                                    v.DBI_ORIGINAL_KEY_PR||a.operando --9
+                                   -- V.CDSTI --10
                                 FROM
                                     DBI_USER.ifc_sap_anagrcontrele v,
                                     z_prodotto_operando a,
@@ -128,10 +136,8 @@ SELECT
                                 WHERE
                                     d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
                                 AND a.acquisizione= v.cfreq
-                                AND TO_CHAR(v.cdces,'yyyymmdd') BETWEEN A.DATA_VALIDITA AND
-                                    A.DATA_VALIDITA_AL
-                                --AND v.Dbi_Original_Key_Pr = 'PR480639'
                                 AND a.ctar1=v.ctar1
+                                AND d.Frequenza_Misura = v.Cfreq
                                 AND v.DBI_ORIGINAL_KEY_PR IN
                                     (
                                         SELECT
@@ -146,31 +152,35 @@ SELECT
                                     CASE
                                         WHEN a.operando='EPB_A_43'
                                         THEN TO_CHAR(v.cdsti,'yyyymmdd')
-                                        WHEN a.operando='ESQP_01_FT'
-                                        THEN get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,
-                                            a.data_validita)
-                                        WHEN TO_CHAR(v.cdsti,'yyyymmdd') IS NULL
-                                        THEN get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
                                         ELSE TO_CHAR(v.cdsti,'yyyymmdd')
-                                    END <=
-                                    CASE
-                                        WHEN a.operando='EPB_A_43'
-                                        THEN TO_CHAR(v.cdces,'yyyymmdd')
-                                        ELSE get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,
-                                            data_validita_al)
-                                    END
+                                    END <=                                   
+                                     TO_CHAR(v.cdces,'yyyymmdd')
+                                      
                                 AND
-                                    CASE
-                                        WHEN a.operando='EPB_A_43'
-                                        THEN TO_CHAR(v.cdsti,'yyyymmdd')
-                                        WHEN a.operando='ESQP_01_FT'
-                                        THEN get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,
-                                            a.data_validita)
-                                        WHEN TO_CHAR(v.cdsti,'yyyymmdd') IS NULL
-                                        THEN get_ab2(b.operando,a.ctar1,v.cdsti,data_validita)
-                                        ELSE TO_CHAR(v.cdsti,'yyyymmdd')
-                                    END <= TO_CHAR(V.CDCES, 'YYYYMMDD')
+                                  ( CASE
+                        WHEN a.operando='EPB_A_43'
+                        and A.DATA_VALIDITA = 'EINZDAT'
+                        then TO_CHAR(v.cdsti,'yyyymmdd')
+                        WHEN a.operando='EPB_A_43'
+                        AND A.DATA_VALIDITA > TO_CHAR(v.cdsti,'yyyymmdd')
+                        THEN A.DATA_VALIDITA
+                        ELSE TO_CHAR(v.cdsti,'yyyymmdd')
+                    END) <=  (CASE
+                                WHEN a.operando='EPB_A_43'
+                                AND A.DATA_VALIDITA_al < TO_CHAR(v.cdces,'yyyymmdd')
+                                THEN A.DATA_VALIDITA_al
+                                ELSE TO_CHAR(v.cdces,'yyyymmdd')
+                               END)
                                 AND a.operando='EPB_A_43'
+                                 AND 
+                                (CASE
+                                WHEN a.operando='EPB_A_43'
+                                AND A.DATA_VALIDITA_al < TO_CHAR(v.cdces,'yyyymmdd')
+                                THEN A.DATA_VALIDITA_al
+                                ELSE TO_CHAR(v.cdces,'yyyymmdd')
+                                    --ELSE get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,
+                                    -- data_validita_al)
+                            END) > '20080401'
                                 GROUP BY
                                     v.DBI_ORIGINAL_KEY_PR, --0
                                     v.DBI_ORIGINAL_KEY_PR, --1
@@ -181,6 +191,7 @@ SELECT
                                     get_ab_ef_sc_app(a.operando,a.ctar1,v.cdsti,a.data_validita),
                                     get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al),
                                     valori, --5
+                                    v.cpod,
                                     NVL(prezzo,0), --6
                                     b.id_operando , --7
                                     tipo ,
@@ -188,8 +199,8 @@ SELECT
                                     v.DBI_ORIGINAL_KEY_PR||a.operando ,
                                     A.DATA_VALIDITA,
                                     A.DATA_VALIDITA_AL
-                                ORDER BY
-                                    cdsti
+                               -- ORDER BY
+                                  --  cdsti
          ]]></mainSelect>
 		
 		     <insertTable name='FACTS_F_QPRICE' truncate = 'True' break_index='9' >
@@ -272,6 +283,7 @@ SELECT
          and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
          and a.operando = b.operando
          and tipo ='LPRICE'
+          AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
             group by 
         v.DBI_ORIGINAL_KEY_PR,     --0
          v.CPOD,                                       --1
@@ -299,6 +311,7 @@ SELECT
         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
         and a.operando = b.operando
         and tipo ='LPRICE'
+         AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
         group by 
          v.DBI_ORIGINAL_KEY_PR,     --0
          v.cpod,                                       --1
@@ -386,6 +399,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
         and a.operando = b.operando
         and tipo ='TPRICE'
+         AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
          group by 
          v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
         v.DBI_ORIGINAL_KEY_PR,     --0

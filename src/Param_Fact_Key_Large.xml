@@ -2,22 +2,22 @@
 	<queries>    
 	<KeyLargeAggregator>
          <mainSelect ><![CDATA[
-         select legacy from PEMG_FACTS_QUANT
+         select legacy,CPOD from PEMG_FACTS_QUANT
          union 
-         select legacy from pfacts_f_amou
+         select legacy, cpod from pfacts_f_amou
          union 
-         select legacy from pfacts_f_factor
+         select legacy,cpod from pfacts_f_factor
          union
-         select legacy from pfacts_f_qprice
+         select legacy ,cpod from pfacts_f_qprice
          union 
-         select legacy from pfacts_f_rate_type
+         select legacy,cpod  from pfacts_f_rate_type
          union
-         select legacy from pfacts_f_udef
+         select legacy ,cpod from pfacts_f_udef
        ]]></mainSelect>
      <insertTable name='PFACTS_KEY' truncate = 'True' break_index='0'    >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='0' />
+		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
 		   </insertTable> 
 		    </KeyLargeAggregator>                  

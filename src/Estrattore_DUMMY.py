@@ -11,5 +11,5 @@ from it_eutile_utils_extractor.ExtractorManager import ExtractorManager
 from it_eutile_utils_aggregator.AggregatorManager import AggregatorManagerExMny
 
 
-AggregatorManagerExMny('movein_aggregator',1000,'moveinAggregator', filename='movein.xml')
-ExtractorManager('movein','moveinExtractor',filename='movein.xml',maxRows=10000) 
+AggregatorManagerExMny('accountAggregator',1000,'accountAggregator', filename='account.xml')
+ExtractorManager('accountExtractor','accountExtractor',filename='account.xml',maxRows=10000) 

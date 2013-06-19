@@ -3,11 +3,11 @@
 	<TquaLargeAggregator>
 		<mainSelect ><![CDATA[
  select v.DBI_ORIGINAL_KEY_PR,   --0
-        v.DBI_ORIGINAL_KEY_PR,                                     --1
+        v.CPOD,                                     --1
         a.operando,                                  --2
         TO_CHAR(C.d_inizio_val,'YYYYMMDD')  ,   --3
-       case when  to_char(C.d_fine_val, 'yyyymmdd') is null THEN DATA_FINE_VAL(c.cd_punto,a.OPERANDO,v.ctar1,c.d_inizio_val,c.d_fine_val)else to_char(C.d_fine_val, 'yyyymmdd') end case ,--4
-       PARAMetri_large_KONDIGR(a.OPERANDO,c.CD_PUNTO,v.ctar1,C.d_inizio_val),--5
+       case when  to_char(C.d_fine_val, 'yyyymmdd') is null THEN DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,a.OPERANDO,v.ctar1,c.d_inizio_val,c.d_fine_val)else to_char(C.d_fine_val, 'yyyymmdd') end case ,--4
+       PARAMetri_large_KONDIGR(a.OPERANDO,v.DBI_ORIGINAL_KEY_PR,v.ctar1,C.d_inizio_val),--5
         b.id_operando --6
             from 
         DBI_USER.rpl_anu_t_param_valori_large  C,
@@ -21,18 +21,17 @@
         and f.dbi_punto_key=v.DBI_ORIGINAL_KEY_PR
         AND C.CD_PUNTO=f.dbi_punto_key
         and c.cd_parametro_valore_large=a.cd_parametro
-        and v.DBI_ORIGINAL_KEY_PR IN(select g.cncon from z_test_contratti g where g.note='lotto 21' and g.cncon=c.cd_punto )
+        and v.DBI_ORIGINAL_KEY_PR IN(select g.cncon from z_test_contratti g where g.note='lotto 31' )
         and a.operando = b.operando
         and B.tipo = 'TQUANT'   
-        and v.ctar1 ='STD_GDS1'
-        group by 
+           group by 
         v.DBI_ORIGINAL_KEY_PR, 
-        v.DBI_ORIGINAL_KEY_PR, 
+        v.CPOD, 
         a.operando, 
         C.d_inizio_val,     --3
         C.d_fine_val,--4
-        PARAMetri_large_KONDIGR(a.OPERANDO,c.CD_PUNTO,v.ctar1,C.d_inizio_val),--8
-          DATA_FINE_VAL(c.cd_punto,a.OPERANDO,v.ctar1,c.d_inizio_val,c.d_fine_val) ,--4
+        PARAMetri_large_KONDIGR(a.OPERANDO,v.DBI_ORIGINAL_KEY_PR,v.ctar1,C.d_inizio_val),--8
+          DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,a.OPERANDO,v.ctar1,c.d_inizio_val,c.d_fine_val) ,--4
         b.id_operando
         order by a.operando,v.DBI_ORIGINAL_KEY_PR  
         ]]></mainSelect>
@@ -43,6 +42,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON'  constant_value='' />
 		     <field name='PROG'    index= '6' />
+		     <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		   <insertTable name='PEMG_VALUE_QUANT' truncate = 'True' break_index='' >
 		     <field name='LEGACY'    index='0' />
@@ -53,6 +53,7 @@
 		     <field name='AB'         index='3' />
 		     <field name='BIS'        index='4' />
 		     <field name='PROG'       index= '6' /> 
+		        <field name='CPOD'    index= '1' />
 		     </insertTable> 
 	</TquaLargeAggregator>
 	</queries>

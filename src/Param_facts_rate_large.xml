@@ -2,11 +2,13 @@
 	<queries>
 	<ParamRateLargeAggregator>
 		<mainSelect ><![CDATA[
-     select b.cd_punto, --0
-      b.cd_punto, --1
+    select  /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d c b) */
+ b.cd_punto, --0
+     V.CPOD, --1
         c.operando, --2
        d.tipo,--3
-       b.n_valore,--4
+       b.n_valore,--4  
+       b.cd_parametro_valore_large,c.cd_parametro,
        to_char(b.d_inizio_val, 'yyyymmdd'), --5
         CASE WHEN to_char(b.d_fine_val, 'yyyymmdd')IS NULL THEN  DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val)ELSE to_char(b.d_fine_val, 'yyyymmdd')END CASE  ,--6
         case when c.tipo_tariffa is null then PARAM_LARGE_VALORI_TARIFART(c.OPERANDO,b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,v.ctar1, f.n_tensione,dec_spebene(V.crete,f.n_tensione),CAST(f.n_potenza_imp AS VARCHAR2(10)),'0',h.indprov,h.indccom,null,b.d_inizio_val)else c.tipo_tariffa end case ,--7
@@ -21,20 +23,20 @@
        DBI_USER.ifc_sap_fornitura_ee_config             f,
     DBI_USER.ifc_sap_anagrindirizzi_pr g,
     v_indirizzi h
-  where b.cd_parametro_valore_large = c.cd_parametro
- and b.cd_punto=e.cncon
+ 		 where e.note='lotto 31'
+		  and v.Dbi_Original_Key_Pr =e.cncon
+		AND b.cd_parametro_valore_large = c.cd_parametro
   and c.operando =d.operando
-  and f.dbi_punto_key=g.pr
+  and v.DBI_ORIGINAL_KEY_PR=g.pr
   and h.indprog=g.indprog
     and f.dbi_punto_key=v.DBI_ORIGINAL_KEY_PR
    and v.ctar1=c.ctar1
     and c.tipo=v.cfreq
-    and e.note='lotto 21'
    and b.cd_punto=v.DBI_ORIGINAL_KEY_PR
    and d.tipo='RATE TYPE'
-   and v.ctar1 ='STD_GDS1'
+ AND  DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val)> '20080401'
     AND B.CD_PUNTO=F.dbi_punto_key
-     group by b.cd_punto,
+     group by b.cd_punto, V.CPOD,b.cd_parametro_valore_large,c.cd_parametro,
      c.operando, --2
        d.tipo,--3
        b.n_valore,--4
@@ -54,6 +56,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index= '10'/>
+		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='PFACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
@@ -63,6 +66,7 @@
 		      <field name='TARIFART' index='7' />
 		     <field name='KONDIGR' index='8' />
 		     <field name='PROG'   index= '10'/>
+		     <field name='CPOD'   index= '1'/>
 		      </insertTable> 
 		
 	</ParamRateLargeAggregator>

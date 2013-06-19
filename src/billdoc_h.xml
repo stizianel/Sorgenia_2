@@ -18,11 +18,11 @@
         row_number() over (partition by t.dbi_cd_punto, lmari, lprog order by ldall) ordine 
         from instmgmt_diint i, dbi_user.ifc_sap_letture_ele_anubis t, v_contratti e, dbi_user.ifc_sap_punti_fornitura f,
              instln_data z
-        where i.anlage = t.dbi_cd_punto
---        and e.cncon in (select cncon from z_pr_in_lavorazione)
-        and e.dbi_original_key_pr in ('PR313295')
+        where i.anlage = e.cpod
+        and e.cncon in (select cncon from z_pr_in_lavorazione)
+--       and e.dbi_original_key_pr in ('PR313295')
         and t.dbi_cd_punto = e.dbi_original_key_pr
-        and t.dbi_cd_punto = z.legacy
+        and t.dbi_cd_punto = z.vstelle
         and t.dbi_cd_punto = f.dbi_punto_key
         and t.ldall > to_date(i.eadat, 'YYYYMMDD')
         and ldall is not null) where ordine = 1
@@ -87,7 +87,7 @@
 		,   '4000'
 		,   '4000'
 		,   '1'
-		from tmp_billdoc_erch_h
+		from billdoc_erch_h
 		order by legacy
 		]]></mainSelect>
 		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='25'>

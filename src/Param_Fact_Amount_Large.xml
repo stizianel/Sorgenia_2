@@ -3,7 +3,7 @@
 	<AmountLargeAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
       select v.DBI_ORIGINAL_KEY_PR,  --0
-           v.DBI_ORIGINAL_KEY_PR,                                    --1 
+           v.CPOD,                                    --1 
            a.operando,                                 --2
           to_char(d.d_inizio_val, 'yyyymmdd') ,  --3 
           case when to_char(d.d_fine_val,'yyyymmdd') is null then '99991231'ELSE  to_char(d.d_fine_val,'yyyymmdd') end case,--4
@@ -16,18 +16,17 @@
         DBI_USER.rpl_anu_t_param_valori_large  d
         where 
         a.ctar1=v.ctar1 
-        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 21' )
+        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31' )
         and a.operando = b.operando  
         and v.ccontratto=d.cd_contratto
        and d.cd_punto=v.DBI_ORIGINAL_KEY_PR
-       --and v.DBI_ORIGINAL_KEY_PR='PR4703470'
+      --and to_char(d.d_fine_val,'yyyymmdd')>'20080401'
       and a.cd_parametro=d.cd_parametro_valore_large
         and b.tipo = 'AMOUNT'  
         and a.tipo= v.cfreq
-        and v.ctar1 ='STD_GDS1'
-       group by 
+             group by 
        v.DBI_ORIGINAL_KEY_PR,  --0
-           v.DBI_ORIGINAL_KEY_PR,                                    --1 
+           v.CPOD,                                    --1 
            a.operando,  d.n_valore,   
             to_char(d.d_inizio_val, 'yyyymmdd') ,
             to_char(d.d_fine_val,'yyyymmdd') ,
@@ -41,6 +40,7 @@
 		     <field name='OPERAND' index = '2' />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'  index ='6' />
+		       <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		    <insertTable name='PFACTS_V_AMOU' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
@@ -52,6 +52,7 @@
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDIGR' constant_value='' />
 		     <field name='PROG'  index ='6' />
+		     <field name='CPOD'  index ='1' />
 		    </insertTable> 
 		    </AmountLargeAggregator>                  
  </queries>

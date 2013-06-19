@@ -2,12 +2,13 @@
 	<queries>
 	<qpriLargeAggregator>
 		<mainSelect ><![CDATA[
-      select b.cd_punto, --0
-        b.cd_punto, --1
-        c.operando, --2
-        to_char(b.d_inizio_val, 'yyyymmdd'), --3
-         case when to_char(b.d_fine_val, 'yyyymmdd') is null then data_fine_val(b.cd_punto,c.operando,v.ctar1,b.d_inizio_val, b.d_fine_val) else to_char(b.d_fine_val, 'yyyymmdd') end case,
-        case when c.tipo_tariffa is null then parametri_large (b.cd_parametro_valore_large,B.CD_PUNTO,b.d_inizio_val)else c.tipo_tariffa end case, --5
+      select   /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d c b) */
+            v.DBI_ORIGINAL_KEY_PR, --0
+            v.cpod, --1
+            c.operando, --2
+           to_char(b.d_inizio_val, 'yyyymmdd'), --3
+         case when to_char(b.d_fine_val, 'yyyymmdd') is null then data_fine_val(v.DBI_ORIGINAL_KEY_PR,c.operando,v.ctar1,b.d_inizio_val, b.d_fine_val) else to_char(b.d_fine_val, 'yyyymmdd') end case,
+        case when c.tipo_tariffa is null then parametri_large (b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,b.d_inizio_val)else c.tipo_tariffa end case, --5
         b.n_valore,--6
         d.id_operando, --7
         d.tipo--8  
@@ -23,22 +24,22 @@
       and v.ctar1=c.ctar1
     and b.cd_punto=v.DBI_ORIGINAL_KEY_PR
       and e.cncon=v.DBI_ORIGINAL_KEY_PR
-     and v.ctar1 ='STD_GDS1'
-    and d.tipo='QPRICE'
+      and d.tipo='QPRICE'
     and v.cfreq=c.tipo
-    and e.note = 'lotto 21'
+    and e.note = 'lotto 31'
+     and data_fine_val(v.DBI_ORIGINAL_KEY_PR,c.operando,v.ctar1,b.d_inizio_val, b.d_fine_val) >'20080401'
      --and v.ccontratto=b.cd_contratto
-        group by b.cd_punto, --0
-        b.cd_punto, --1
+        group by v.DBI_ORIGINAL_KEY_PR, --0
+       v.cpod, --1 --1
         c.operando, --2
        to_char(b.d_inizio_val, 'yyyymmdd'), --3
-         to_char(b.d_fine_val, 'yyyymmdd'), b.cd_punto,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val ,--4
-         b.cd_parametro_valore_large,B.CD_PUNTO,
+         to_char(b.d_fine_val, 'yyyymmdd'),  v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val ,--4
+         b.cd_parametro_valore_large, v.DBI_ORIGINAL_KEY_PR,
        c.tipo_tariffa , --5,
         b.n_valore,--6
         d.id_operando, --8
         d.tipo
-        order by  b.cd_punto  
+        order by  v.DBI_ORIGINAL_KEY_PR 
   ]]></mainSelect>
 		
 	     <insertTable name='PFACTS_F_QPRICE' truncate = 'True' break_index='' >
@@ -47,6 +48,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index='7' />
+		     <field name='CPOD'   index='1' />
 		   </insertTable> 
 		   <insertTable name='PFACTS_V_QPRICE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -58,7 +60,8 @@
 		     <field name='WAERS' constant_value='' />
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDIGR' constant_value='' />
-		     <field name='PROG'    index='7' />   
+		     <field name='PROG'    index='7' />  
+		     <field name='CPOD'   index='1' /> 
 		     </insertTable> 
 		
 	</qpriLargeAggregator>

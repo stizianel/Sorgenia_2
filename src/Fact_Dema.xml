@@ -24,7 +24,7 @@
       and c.operando=b.operando
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
-             
+     and get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al)> '20080401'
        ]]></mainSelect>
      
 		   <insertTable name='FACTS_F_DEMA' truncate = 'True' break_index=''  >
@@ -109,6 +109,7 @@
        and c.operando=b.operando
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
+       AND get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al) > '20080401'
              
        ]]></mainSelect>
      		   <insertTable name='FACTS_F_UDEF' truncate = 'True' break_index=''  >

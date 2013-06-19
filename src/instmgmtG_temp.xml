@@ -14,14 +14,14 @@
        prnum, -- 3
        '000001', -- 4
        '0', -- 5
-       'G_' || d.cd_profilo_gas, -- 6
-       decode(d.consumo_distributore,'', d.consumo_cliente, d.consumo_distributore), -- 7
+       'G_' || decode(d.cd_profilo_gas,'', '001X1', d.cd_profilo_gas), -- 6
+       nvl(decode(d.consumo_distributore,'', d.consumo_cliente, d.consumo_distributore),0), -- 7
        i.legacy, -- 8
        tpnum, -- 9
        substr(b.cabina_remi,-8), -- 10
        e.pr_area_ai,  -- 11
        e.temp_area,    -- 12
-       b.pdr --13
+       decode(b.pdr,'',cncon, b.pdr) --13
   from dbi_user.ifc_sap_anagrcontrgas   a,
        devinforecg_int i,
        z_grnum,

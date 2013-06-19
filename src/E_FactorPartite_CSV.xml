@@ -1,0 +1,41 @@
+<root>
+    <queries>
+    
+    <PaymentExtractor>
+        <mainSelect ><![CDATA[
+SELECT
+    gpart,
+    trx_number,
+    z2.newkey AS document,
+    docuemnt_type,
+    importo_ceduto,
+    data_cessione,
+    '\n'      AS rott,
+    nvl(z3.newkey,' ') AS payment
+FROM
+    dbi_user.rpl_oa_xxene_factor_cess_all a,
+    dbi_user.wrk_oa_documents b
+LEFT OUTER JOIN
+    sapsr3.temksv@sap_iaq z3
+ON
+    (
+        z3.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID
+    AND z3.object = 'PAYMENT'),
+    sapsr3.fkkvkp@sap_iaq p,
+    sapsr3.temksv@sap_iaq z,
+    sapsr3.temksv@sap_iaq z2
+WHERE
+    a.customer_trx_id = b.customer_trx_id
+AND b.cd_entita_fatt = z.oldkey
+AND z.object = 'ACCOUNT'
+AND z2.oldkey = b.cd_entita_fatt || '-' || B.CUSTOMER_TRX_ID
+AND z2.object = 'DOCUMENT'
+AND z.newkey = p.vkont
+]]></mainSelect>
+           <csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='7'>
+           </csvLine>
+        <ende field_index='0' />
+    </PaymentExtractor>
+
+    </queries>
+</root>

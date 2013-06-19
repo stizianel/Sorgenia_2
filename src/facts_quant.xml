@@ -20,6 +20,7 @@
        and tipo = 'TQUANT'
            and v.d_valido_dal=d.valid_from
              and v.d_valido_al=d.valid_until
+             AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
         group by 
         v.DBI_ORIGINAL_KEY_PR, 
         v.cpod, 

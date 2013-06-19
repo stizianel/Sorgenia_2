@@ -8,7 +8,7 @@
        v.ctar1,
        decode(v.ctipo, '3', 'G', '1', 'P', 'P'),
        decode(v.ctipo, '3', '02', '1', '04', '04'),
-       decode(a.mercato_versione, 'LARGE', 'GCTLGRES00', '1', 'GCTMMRES00', 'ERRORE'),
+       decode(a.mercato_versione, 'LARGE', 'GCTLGRES00', 'GCTMMRES00'),
        decode(v.ctipo, '3', 'G001', '1', 'P001', 'ERR'),
        REGEXP_SUBSTR(v.cncon, '[[:digit:]]+'),
        decode(a.s_pdr, '', v.cncon, a.s_pdr),

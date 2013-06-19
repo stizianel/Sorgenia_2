@@ -3,7 +3,7 @@
 	<UDEFLargeAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
          select v.DBI_ORIGINAL_KEY_PR,  --0
-           v.DBI_ORIGINAL_KEY_PR,                                    --1 
+           v.CPOD,                                    --1 
            a.operando,                                 --2
           to_char(d.dt_inizio_fornitura, 'yyyymmdd') ,  --3 
           case when to_char(d.dt_fine_fornitura,'yyyymmdd') is null then '99991231'ELSE  to_char(d.dt_fine_fornitura,'yyyymmdd') end case,--4
@@ -15,22 +15,21 @@
         DBI_USER.ifc_sap_punti_fornitura d
         where 
         a.ctar1=v.ctar1 
-        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 21' )
+        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31' )
         and a.operando = b.operando  
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       --  and a.cd_parametro=e.cd_parametro_valore_large
+        --and a.cd_parametro=e.cd_parametro_valore_large
         and b.tipo = 'USERDEF'  
         and a.tipo= v.cfreq
-        and v.ctar1 ='STD_GDS1'
+        AND  to_char(d.dt_fine_fornitura,'yyyymmdd')>'20080401'
        group by 
        v.DBI_ORIGINAL_KEY_PR,  --0
-           v.DBI_ORIGINAL_KEY_PR,                                    --1 
+           v.CPOD,                                    --1 
            a.operando,                                 --2
           to_char(d.dt_inizio_fornitura, 'yyyymmdd') ,  --3 
           to_char(d.dt_fine_fornitura,'yyyymmdd'),
           b.id_operando ,                       --5
            a.CTAR1      ,a.tipo 
-
        ]]></mainSelect>
     	   <insertTable name='PFACTS_F_UDEF' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
@@ -38,6 +37,7 @@
 		     <field name='OPERAND' index = '2' />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'  index ='5' />
+		     <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		    <insertTable name='PFACTS_V_UDEF' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
@@ -51,6 +51,7 @@
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDGIR' constant_value='' />
 		     <field name='PROG'  index ='5' />
+		     <field name='CPOD'  index ='1' />
 		    </insertTable> 
 		    </UDEFLargeAggregator>
 	<UDEFExtractor>

@@ -18,6 +18,7 @@
          and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 31')
          and a.operando = b.operando
          and tipo ='FLAG'
+          AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
          group by 
         v.DBI_ORIGINAL_KEY_PR,
         v.cpod, 

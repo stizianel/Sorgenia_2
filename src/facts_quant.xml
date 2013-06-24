@@ -15,7 +15,7 @@
         where v.ctar1 = a.ctar1  
         and a.acquisizione= v.cfreq
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 31')
+       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 40')
        and a.operando = b.operando
        and tipo = 'TQUANT'
            and v.d_valido_dal=d.valid_from

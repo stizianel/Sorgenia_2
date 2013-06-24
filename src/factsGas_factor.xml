@@ -2,25 +2,26 @@
 	<queries>
 	<FactorGasAggregator>
 		<mainSelect ><![CDATA[
-       select C.cncon,  --0
-        C.cncon,                                    --1 
+       select C.Dbi_Original_Key_Pr,  --0
+        C.CPOD,                                    --1 
         a.operando,                                 --2
         --to_char(c.cdsti,'yyyymmdd'),                             --3
         '20090701',
         data_validita_al,                           --4
-        case when a.operando='GFCORR1590' then GET_GFCORR1590(A.OPERANDO,C.CNCON) ELSE to_number(valori)  END CASE,                                      --5
+        case when a.operando='GFCORR1590' then GET_GFCORR1590(A.OPERANDO,C.Dbi_Original_Key_Pr) ELSE to_number(valori)  END CASE,                                      --5
         nvl(prezzo,0) ,                             --6
         b.id_operando                            --7
-        from  z_prodotto_operando a, z_anagrafica_operandi b,DBI_USER.ifc_sap_anagrcontrgas C,DBI_USER.ifc_sap_punti_fornitura d
+        from  GAS_prodotto_operando a, GAS_anagrafica_operandi b,
+        DBI_USER.ifc_sap_anagrcontrgas C,DBI_USER.ifc_sap_punti_fornitura d
         where c.ctar1=a.ctar1
-        and C.cncon IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and C.Dbi_Original_Key_Pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
         and a.operando = b.operando
         and tipo = 'FACTOR'
-        and c.cncon=d.dbi_punto_key
+        and c.Dbi_Original_Key_Pr=d.dbi_punto_key
         --AND c.cdsti IS NOT NULL
         group by 
-        C.cncon, 
-        C.cncon, 
+        C.Dbi_Original_Key_Pr, 
+        C.CPOD, 
         a.operando, 
         to_char(c.cdsti,'yyyymmdd'),
         data_validita_al, 
@@ -30,18 +31,14 @@
         order by a.operando
         ]]></mainSelect>
 		
-		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='1' />
-		     <field name='BIS' constant_value='99991231' />
-		   </insertTable> 
+		  </insertTable> 
 		     <insertTable name='GAS_FACTS_F_FACTOR' truncate = 'True' break_index='' >
 		     <field name='LEGACY'  index='0' />
 		     <field name='TIPO'    constant_value='F_FACT' />
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON'  constant_value='' />
 		     <field name='PROG'    index= '7' />
+		     <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		   <insertTable name='GAS_FACTS_V_FACTOR' truncate = 'True' break_index='' >
 		     <field name='LEGACY'    index='0' />
@@ -52,6 +49,7 @@
 		     <field name='AB'         index='3' />
 		     <field name='BIS'        index='4' />
 		     <field name='PROG'       index= '7' /> 
+		     <field name='CPOD'    index= '1' />
 		     </insertTable> 
 		
 	</FactorGasAggregator>

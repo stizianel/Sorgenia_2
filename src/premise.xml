@@ -18,7 +18,7 @@
   left outer join v_dati_arcata y
     on v.cncon = cd_pt, DBI_USER.ifc_sap_anagrindirizzi_pr b
  where v.cncon = b.Pr
-   and v.cncon in (select cncon from z_pr_in_lavorazione)
+   and v.cncon in (select cncon from z_pr_in_lavorazione union all select cncon from z_pr_in_lavorazione_gas)
  group by v.cncon,
           b.indprog,
           y.comune_amm,

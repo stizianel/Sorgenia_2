@@ -2,8 +2,6 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-		-- regola per zzpool_ric se stato = 
-		-- società veicolo se stato =
 		select substr(a.acdan,0,10),--0
           'Z000000006',             --1
           substr(arags,0,40),       --2
@@ -20,17 +18,17 @@
           anmte,                    --13
           b.pool,                   --14
           substr(b.stato,0,1),      --15
-          to_char(b.data_ultima_modifica_stato,'YYYYMMDD'), 	--16
-          substr(b.rating,0,1),                             	--17
-          b.fatturato_annuo,                                	--18
-          b.plafond,                                        	--19
-          b.plafond_richiesto,                              	--20
-          b.protesti,                                       	--21
-          b.pregiudizievoli,                                	--22
-          to_char(b.data_costituzione,'YYYYMMDD'),          	--23
-          to_char(b.data_aggiornamento_crm,'YYYYMMDD'),     	--24
-          b.credit_check_crm_in_corso,                      	--25
-          substr(acognome,0,20),                            	--26
+          to_char(b.data_ultima_modifica_stato,'YYYYMMDD'),   --16
+          substr(b.rating,0,1),                               --17
+          b.fatturato_annuo,                                  --18
+          b.plafond,                                          --19
+          b.plafond_richiesto,                                --20
+          b.protesti,                                         --21
+          b.pregiudizievoli,                                  --22
+          to_char(b.data_costituzione,'YYYYMMDD'),            --23
+          to_char(b.data_aggiornamento_crm,'YYYYMMDD'),       --24
+          b.credit_check_crm_in_corso,                        --25
+          substr(acognome,0,20),                              --26
           to_char(b.data_cessione, 'YYYYMMDD'),                 --27
           dec_segcred(a.segmento_credito_sap),                  --28
           dec_segcli(a.segmento_cliente_sap),                   --29
@@ -41,7 +39,7 @@
             else ''
           end                                                    --31
           from v_clienti a left outer join dbi_user.ifc_sap_anagrclientifactor b on (a.acdan = b.acdan)
-          where a.acdan in (select acdan from z_clienti_in_lavorazione)
+          where a.acdan not in (select chiave from dq_esclusioni where object = 'PARTNER')
 	]]></mainSelect>
 			<insertTable name='PARTNER_INIT' truncate = 'True' break_index=''  condition_index='5' condition_value = 'G' condition_type='.eq.' >
 					<field name='LEGACY' index='0' />
@@ -283,7 +281,7 @@
 	   
        <partnerExtractor>
 		<mainSelect ><![CDATA[
-			select 
+ 	select 
       a.legacy,                               -- 0   INIT
       a.legacy||c.adext_addr,                 -- 1
       a.legacy||c.adext_addr||d.adr_kind,     -- 2
@@ -388,7 +386,7 @@
        	</csvLine>
        	<csvLine line_index='2' break_index='0' field_start_index='80' field_end_index='82'>
        	</csvLine>
-       	<csvLine line_index='3' break_index='3' field_start_index='67' field_end_index='75' condition_index='67' condition_value = 'None' condition_type='.ne.'>
+       	<csvLine line_index='3' break_index='3' field_start_index='67' field_end_index='75' condition_index='69' condition_value = 'None' condition_type='.ne.'>
        	</csvLine>
        	<csvLine line_index='4' break_index='1' field_start_index='52' field_end_index='61'>
        	</csvLine>

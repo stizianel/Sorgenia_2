@@ -1,14 +1,14 @@
 10
 
 dir
-2139
+2214
 https://sorgenia-repos.e-utile.it/sorgenia/Sorgenia_2
 https://sorgenia-repos.e-utile.it/sorgenia
 
 
 
-2013-05-20T08:53:23.992821Z
-2139
+2013-06-17T13:10:30.779142Z
+2214
 stizianel
 
 
@@ -23,12 +23,12 @@ svn:special svn:externals svn:needs-lock
 
 
 
-
+incomplete
 4c04fc0c-caa8-11e1-8875-e90f1007625d
 
 .project
 file
-
+2139
 
 
 
@@ -99,7 +99,7 @@ dir
 
 Capfile
 file
-
+2139
 
 
 
@@ -136,7 +136,7 @@ dir
 
 sapnwrfc-0.26.tar.gz
 file
-
+2139
 
 
 
@@ -168,6 +168,9 @@ has-props
 
 134205
 
+scripts
+dir
+
 sql
 dir
 
@@ -176,7 +179,7 @@ dir
 
 zmda_instln_info.csv
 file
-
+2139
 
 
 

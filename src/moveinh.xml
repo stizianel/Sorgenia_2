@@ -69,7 +69,7 @@ GROUP BY
     p.pod
         ]]></mainSelect>
 		<insertTable name='MOVEINH_EVER' truncate = 'True' break_index='' >
-				<field name='LEGACY' index='12' />
+				<field name='LEGACY' index='0' />
 				<field name='TIPO' constant_value='EVER' />
 				<field name='BUKRS' constant_value='SORG' />
 				<field name='SPARTE' index='1' />

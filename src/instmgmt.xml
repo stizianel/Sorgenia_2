@@ -2,46 +2,47 @@
 	<queries>
 	<instmgmtAggregator>
 		<mainSelect ><![CDATA[
--- Provvisorio
-SELECT
-    dbi_original_key_pr, -- 0
-    TO_CHAR(b.dt_inizio_fornitura, 'YYYYMMDD'), -- 1
-    '04', -- 2
-    prnum, -- 3
-    'E0000', -- 4
-    '0', -- 5
-    tiptar, -- 6
-    get_perverbr_ee(a.cpod, tiptar), -- 7
-    legacy, -- 8
-    tpnum, -- 9
-    b.fattore_trasformazione, -- 10
-    cpod --11
-FROM
-    dbi_user.ifc_sap_anagrcontrele a,
-    devinforec_int,
-    z_grnum,
-    dbi_user.ifc_sap_punti_fornitura b
-WHERE
-    SUBSTR(legacy, (instr(legacy, 'P'))) = a.dbi_original_key_pr
-AND matnr = cod_gruppo
-AND (
-        a.dbi_original_key_pr = b.dbi_punto_key
-    AND a.ctipo = b.ptipo)
-AND a.dbi_original_key_pr IN
-    (
-        SELECT
-            cncon
-        FROM
-            z_pr_in_lavorazione)
-ORDER BY
-    dbi_original_key_pr,
-    prnum
+select dbi_punto_key,   --0
+       to_char(min(min_mese_competenza),'yyyymmdd'), --1
+       '04',           --2
+       zg.prnum,       --3
+       'E0000',        --4
+       '0',            --5 
+       zg.tiptar,      --6
+       get_perverbr_ee(fe.s_pod, tiptar)as perverbr, --7
+       di.legacy,                                    --8
+       fe.s_pod,                                     --9
+       max(d_valido_al),
+       rm.matricola_misuratore,
+       di.matnr
+  from dbi_user.ifc_sap_fornitura_ee_config fe,
+       dbi_user.stg_ret_pod_misuratori      rm,
+       dbi_user.ifc_sap_statopunti          sp,
+       devinforec_int                       di,
+       z_grnum                              zg
+ where fe.s_pod = rm.pod
+   and sp.cd_punto = fe.dbi_punto_key
+   and sp.stato_punto_dbi = 'ATTIVO'
+   and di.geraet = rm.matricola_misuratore
+   and zg.cod_gruppo = di.matnr
+ group by dbi_punto_key,
+       '04',
+       zg.prnum,
+       'E0000',
+       '0', 
+       zg.tiptar,
+       get_perverbr_ee(fe.s_pod, tiptar),
+       di.legacy,
+       fe.s_pod,
+       rm.matricola_misuratore,
+       di.matnr
+ order by fe.dbi_punto_key, zg.prnum
 		]]></mainSelect>
 		<insertTable name='INSTMGMT_DIINT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' index='0' />
 		<field name='TIPO' constant_value='DI_INT' />
 		<field name='DEVLOC' constant_value=' ' />
-		<field name='ANLAGE' index='11' />
+		<field name='ANLAGE' index='9' />
 		<field name='EADAT'  index='1' />
 		<field name='ACTION' index='2' />
 		</insertTable>

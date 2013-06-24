@@ -48,9 +48,7 @@ SELECT
                         SELECT
                             cncon
                         FROM
-                            z_test_contratti
-                        WHERE
-                            note = 'lotto 31')
+                            z_test_contratti where note = 'lotto 40') 
                 AND a.operando = b.operando
                 AND tipo ='QPRICE'
                 AND
@@ -90,7 +88,7 @@ SELECT
                     get_ab2(b.operando,a.ctar1,v.cdsti,data_validita),
                     GET_AB_EF_SC_APP(a.operando,a.ctar1,v.cdsti,a.data_validita),
                     get_bis2(b.operando,a.ctar1,v.cdsti,v.cdces,data_validita_al),
-                    GET_AB_ESQP_01_FT(a.operando,a.ctar1,v.cdsti,a.data_validita),
+                    --GET_AB_ESQP_01_FT(a.operando,a.ctar1,v.cdsti,a.data_validita),
                     valori, --5
                     NVL(prezzo,0), --6
                    b.id_operando , --7
@@ -144,8 +142,7 @@ SELECT
                                             cncon
                                         FROM
                                             z_test_contratti
-                                        WHERE
-                                            note = 'lotto 31')
+                                        where note = 'lotto 40')
                                 AND a.operando = b.operando
                                 AND tipo ='QPRICE'
                                 AND
@@ -280,7 +277,7 @@ SELECT
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
          and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
          and a.operando = b.operando
          and tipo ='LPRICE'
           AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
@@ -308,7 +305,7 @@ SELECT
         where 
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
           and v.ctar1=a.ctar1
-        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
+        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
         and a.operando = b.operando
         and tipo ='LPRICE'
          AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
@@ -396,7 +393,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31')
+        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
         and a.operando = b.operando
         and tipo ='TPRICE'
          AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'

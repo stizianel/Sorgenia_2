@@ -15,7 +15,7 @@
         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
        where v.ctar1 = a.ctar1 
          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 31')
+         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 40')
          and a.operando = b.operando
          and tipo ='FLAG'
           AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'

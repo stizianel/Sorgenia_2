@@ -2,26 +2,36 @@
 	<queries>
 	<devinforecAggregator>
 	<mainSelect ><![CDATA[
-		select substr(matricola_misuratore, 0, 18) || d.cncon as legacy,
-       'G',
-       decode(numero_cifre, 5, 'GV5', 6, 'GV6', 'GV6'),
-       '20010101',
-       decode(substr(matricola_misuratore, 0, 18), '', d.cncon, substr(matricola_misuratore, 0, 18)) as matr,
-       e.pr_area_ai,
-       e.temp_area,
-       substr(fg.cd_remi, -8)
-  from v_contratti                           d,
-       adrcity_city                          e,
-       dbi_user.ifc_sap_anagrindirizzi_pr    ip,
-       v_indirizzi                           vi,
-       dbi_user.ifc_sap_fornitura_gas_config fg
- where d.cncon in (select cncon from z_pr_in_lavorazione)
-   and vi.indccom = e.legacy
-   and d.ctipo = 3
-   and d.cncon = ip.Pr
-   and ip.Indprog = vi.indprog
-   and fg.dbi_punto_key = d.cncon
-   order by 1
+		SELECT
+    SUBSTR(matricola_misuratore, 0, 18) || d.cncon AS legacy,
+    'G',
+    DECODE(numero_cifre, 5, 'GV5', 6, 'GV6', 'GV6'),
+    '20010101',
+    DECODE(SUBSTR(matricola_misuratore, 0, 18), '', d.cncon, SUBSTR(matricola_misuratore, 0, 18))
+    AS matr,
+    e.pr_area_ai,
+    e.temp_area,
+    SUBSTR(fg.cd_remi, -8)
+FROM
+    v_contratti d,
+    adrcity_city e,
+    dbi_user.ifc_sap_anagrindirizzi_pr ip,
+    v_indirizzi vi,
+    dbi_user.ifc_sap_fornitura_gas_config fg
+WHERE
+    d.cncon IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione_gas)
+AND vi.indccom = e.legacy
+AND d.ctipo = 3
+AND d.cncon = ip.Pr
+AND ip.Indprog = vi.indprog
+AND fg.dbi_punto_key = d.cncon
+ORDER BY
+    1
 		]]></mainSelect>
 		<insertTable name='DEVINFORECG_INT' truncate = 'True' break_index='0' >
 		<field name='LEGACY' 		index='0' />

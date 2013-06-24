@@ -40,7 +40,7 @@
 	</meterread91Aggregator>
 	<meterreadExtractor>
 		<mainSelect><![CDATA[
-			select * from meterread2_ieablu where rownum < 1000001 order by legacy			
+			select * from meterread2_ieablu order by legacy			
 		]]></mainSelect>
 		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='9' hexa_def='007E' >
 			<field offset='30' 	index='0' type='A' />

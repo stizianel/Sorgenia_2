@@ -1,15 +1,15 @@
 10
 
 dir
-2205
+2214
 https://sorgenia-repos.e-utile.it/sorgenia/Sorgenia_2/sql
 https://sorgenia-repos.e-utile.it/sorgenia
 
 
 
-2013-06-14T13:19:10.743780Z
-2205
-stizianel
+2013-06-14T13:25:37.996388Z
+2207
+arossoni
 
 
 svn:special svn:externals svn:needs-lock
@@ -33,9 +33,43 @@ svn:special svn:externals svn:needs-lock
 
 0
 
-test.sql
+Scheduler.sql
 file
 
+
+
+
+2013-06-17T14:49:35.253000Z
+c8d5ab89fae2f576c6db68d80c0c9bb3
+2013-06-14T13:25:37.996388Z
+2207
+arossoni
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5768
+
+test.sql
+file
+2205
 
 
 

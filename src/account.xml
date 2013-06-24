@@ -13,8 +13,8 @@ SELECT
     a.spaz, --6
     a.arags, --7
     dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) AS ezawe, --8
-    dec_ikey(a.acatc)             AS ikey, --9
-    dec_togru(a.acatc)            AS togru, --10
+    dec_ikey(a.acatc)                                         AS ikey, --9
+    dec_togru(a.acatc)                                        AS togru, --10
     a.ktokl, --11
     a.mahnv, --12
     CASE
@@ -29,7 +29,10 @@ SELECT
         ELSE 'C'
     END AS azawe , --13
     CASE
-        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) IN ('R','F','T','S') 
+        WHEN dec_ezawe2(a.delprog,k.stato,a.mercato_versione,a.delabi) IN ('R',
+                                                                           'F',
+                                                                           'T',
+                                                                           'S')
         THEN a.delprog
         ELSE ''
     END AS ABVTY_EXT, --14
@@ -43,10 +46,10 @@ FROM
             a.delprog, --3
             apers, --4
             acatc, --5
-            ' '                     AS spaz, --6
-            SUBSTR(arags, 0, 35)    AS arags,
-            dec_ktokl(cserv, acatc) AS ktokl, --11
-            dec_mahnv(cserv, acatc) AS mahnv,
+            ' '                                         AS spaz, --6
+            SUBSTR(arags, 0, 35)                        AS arags,
+            dec_ktokl(cserv, acatc)                     AS ktokl, --11
+            dec_mahnv(cserv, acatc)                     AS mahnv,
             dec_ausgrup_in(segmento_cliente_sap, cserv) AS ausgrup_in,--15
             b.delabi,
             a.mercato_versione
@@ -59,7 +62,16 @@ FROM
                 cflg9 = delef
             AND a.delprog = b.delprog),
             dbi_user.ifc_sap_anagrindirizzi i,
-            z_pr_in_lavorazione pr
+            (
+                SELECT
+                    *
+                FROM
+                    SAP_USER.Z_PR_IN_LAVORAZIONE
+                UNION ALL
+                SELECT
+                    *
+                FROM
+                    SAP_USER.Z_PR_IN_LAVORAZIONE_gas) pr
         WHERE
             a.cflg9 = i.indcli
         AND a.acdan IN

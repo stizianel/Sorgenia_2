@@ -2,32 +2,48 @@
 	<queries>
 		<connobjAggregator>
 			<mainSelect ><![CDATA[
-			  select        
-              b.indprog,         --0 
-              c.indccom,            --1
-              c.inddcom,            --2
-              c.indcap,            -- 3
-              substr(c.indindi||' '||c.indccvia,0,60), --4
-              nvl(substr(c.indcivi,0,10),'99999'),     --5
-              c.indprov,                  --6
-              dec_regiogroup(c.indregio),  --7
-              decode(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT')
-              from v_contratti v, DBI_USER.ifc_sap_anagrindirizzi_pr b, v_indirizzi c
-              where
-              v.cncon = b.pr and
-              b.indprog = c.indprog
-              and v.cncon in (select cncon from z_pr_in_lavorazione)
-              group by
-              b.indprog,
-              c.indccom,            --1
-              c.inddcom,            --2
-              c.indcap,            -- 3
-              c.indindi||' '||c.indccvia, --4
-              substr(c.indcivi,0,10),     --5
-              c.indprov,                  --6
-              dec_regiogroup(c.indregio),  --7
-              decode(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT')
-              order by indprog  
+			  SELECT
+    b.indprog, --0
+    c.indccom, --1
+    c.inddcom, --2
+    c.indcap, -- 3
+    SUBSTR(c.indindi||' '||c.indccvia,0,60), --4
+    NVL(SUBSTR(c.indcivi,0,10),'99999'), --5
+    c.indprov, --6
+    dec_regiogroup(c.indregio), --7
+    DECODE(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT'),
+    c.IDFRAZIONE_GEOLAB    
+FROM
+    v_contratti v,
+    DBI_USER.ifc_sap_anagrindirizzi_pr b,
+    v_indirizzi c
+WHERE
+    v.cncon = b.pr
+AND b.indprog = c.indprog
+AND v.cncon IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione
+        UNION ALL
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione_gas)
+GROUP BY
+    b.indprog,
+    c.indccom, --1
+    c.inddcom, --2
+    c.indcap, -- 3
+    c.indindi||' '||c.indccvia, --4
+    SUBSTR(c.indcivi,0,10), --5
+    c.indprov, --6
+    dec_regiogroup(c.indregio), --7
+    DECODE(c.indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT'),
+    c.IDFRAZIONE_GEOLAB
+ORDER BY
+    indprog  
 	      ]]></mainSelect>
 			<insertTable name='CONNOBJ_COEHA' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />

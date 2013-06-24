@@ -1,0 +1,10 @@
+<modify-entry
+   committed-rev="2214"
+   last-author="stizianel"
+   name=""
+   uuid="4c04fc0c-caa8-11e1-8875-e90f1007625d"
+   committed-date="2013-06-17T13:10:30.779142Z"/>
+<modify-wcprop
+   name=""
+   propname="svn:wc:ra_dav:version-url"
+   propval="/sorgenia/!svn/ver/2214/Sorgenia_2"/>

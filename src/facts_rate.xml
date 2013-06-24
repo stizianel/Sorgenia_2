@@ -30,7 +30,7 @@
             Dbi_User.Ifc_Sap_Anagrindirizzi_pr g ,
             v_Indirizzi l
         WHERE
-            i.Note = 'lotto 31'
+            i.Note = 'lotto 40'
         AND v.Dbi_Original_Key_Pr = i.Cncon
         --AND v.Dbi_Original_Key_Pr = 'PR2011209'
         AND v.Dbi_Original_Key_Pr=g.pr

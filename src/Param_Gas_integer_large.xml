@@ -7,7 +7,7 @@
                b.operando,                        --2
                '20090701',       --3                           
               '99991231',       --4
-               case when b.operando='GI_PRELIEV' then ' 000001' else b.tipo_tariffa end case,
+               case when b.operando='GI_PRELIEV' then '000001' else b.tipo_tariffa end case,
                --substr(e.CD_PROF_USO,5) else b.tipo_tariffa end case, --5  
                b.gruppo_info,                     --6
                c.id_operando                      --7 

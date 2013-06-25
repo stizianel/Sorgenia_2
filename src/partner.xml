@@ -2,44 +2,86 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-		select substr(a.acdan,0,10),--0
-          'Z000000006',             --1
-          substr(arags,0,40),       --2
-          substr(acognome,0,40),    --3
-          substr(anome,0,40),       --4
-          apers,                    --5
-          asesso,                   --6
-          acdfi,                    --7
-          apiva,                    --8
-          dec_acatc(acatc),         --9
-          adtna,                    --10
-          alcna,                    --11
-          substr(arags,0,20),       --12
-          anmte,                    --13
-          b.pool,                   --14
-          substr(b.stato,0,1),      --15
-          to_char(b.data_ultima_modifica_stato,'YYYYMMDD'),   --16
-          substr(b.rating,0,1),                               --17
-          b.fatturato_annuo,                                  --18
-          b.plafond,                                          --19
-          b.plafond_richiesto,                                --20
-          b.protesti,                                         --21
-          b.pregiudizievoli,                                  --22
-          to_char(b.data_costituzione,'YYYYMMDD'),            --23
-          to_char(b.data_aggiornamento_crm,'YYYYMMDD'),       --24
-          b.credit_check_crm_in_corso,                        --25
-          substr(acognome,0,20),                              --26
-          to_char(b.data_cessione, 'YYYYMMDD'),                 --27
-          dec_segcred(a.segmento_credito_sap),                  --28
-          dec_segcli(a.segmento_cliente_sap),                   --29
-          decode(fl_non_disattivabile, 'S', 'X', 'N', ' ', 'X'), --30
-          case stato
-            when 'O' then 'IMI'
-            when 'C' then 'IFI'
-            else ''
-          end                                                    --31
-          from v_clienti a left outer join dbi_user.ifc_sap_anagrclientifactor b on (a.acdan = b.acdan)
-          where a.acdan not in (select chiave from dq_esclusioni where object = 'PARTNER')
+		SELECT
+    SUBSTR(a.acdan,0,10),--0
+    'Z000000006', --1
+    SUBSTR(arags,0,40), --2
+    SUBSTR(acognome,0,40), --3
+    SUBSTR(anome,0,40), --4
+    apers, --5
+    asesso, --6
+    acdfi, --7
+    apiva, --8
+    dec_acatc(acatc), --9
+    adtna, --10
+    alcna, --11
+    SUBSTR(arags,0,20), --12
+    anmte, --13
+    b.pool, --14
+    SUBSTR(b.stato,0,1), --15
+    TO_CHAR(b.data_ultima_modifica_stato,'YYYYMMDD'), --16
+    SUBSTR(b.rating,0,1), --17
+    b.fatturato_annuo, --18
+    CASE
+        WHEN stato IN ('O',
+                       'K')
+        THEN 999999999.00
+        WHEN stato IN ('C',
+                       'M' ,
+                       'S' ,
+                       'V')
+        THEN b.plafond
+        ELSE NULL
+    END AS ZZPLAFOND, --19
+    CASE
+        WHEN stato IN ('O',
+                       'K')
+        THEN 999999999.00
+        WHEN stato IN ('C',
+                       'M' ,
+                       'S' ,
+                       'V')
+        THEN b.plafond_richiesto
+        ELSE NULL
+    END AS ZZPLAFOND_RIC ,--20
+    b.protesti, --21
+    b.pregiudizievoli, --22
+    TO_CHAR(b.data_costituzione,'YYYYMMDD'), --23
+    TO_CHAR(b.data_aggiornamento_crm,'YYYYMMDD'), --24
+    b.credit_check_crm_in_corso, --25
+    SUBSTR(acognome,0,20), --26
+    TO_CHAR(b.data_cessione, 'YYYYMMDD'), --27
+    dec_segcred(a.segmento_credito_sap), --28
+    dec_segcli(a.segmento_cliente_sap), --29
+    DECODE(fl_non_disattivabile, 'S', 'X', 'N', ' ', 'X'), --30
+    CASE
+        WHEN stato IN ('O',
+                       'K')
+        THEN 'IMI'
+        WHEN stato IN ('C',
+                       'M' ,
+                       'S' ,
+                       'V')
+        THEN 'IFI'
+        ELSE ''
+    END , --31
+    SUBSTR(a.arag5,0,40)
+FROM
+    v_clienti a
+LEFT OUTER JOIN
+    dbi_user.ifc_sap_anagrclientifactor b
+ON
+    (
+        a.acdan = b.acdan)
+WHERE
+    a.acdan NOT IN
+    (
+        SELECT
+            chiave
+        FROM
+            dq_esclusioni
+        WHERE
+            object = 'PARTNER')
 	]]></mainSelect>
 			<insertTable name='PARTNER_INIT' truncate = 'True' break_index=''  condition_index='5' condition_value = 'G' condition_type='.eq.' >
 					<field name='LEGACY' index='0' />
@@ -91,7 +133,8 @@
 			        <field name='ZZCESDT' index='27' />
 			        <field name='ZZSEGCRED' index='28' />
 			        <field name='ZZSEGCLI' index='29' />
-			        <field name='ZZFLDIS1' index='30' />         
+			        <field name='ZZFLDIS1' index='30' />
+			        <field name='NICKNAME' index='32' />         
 			</insertTable>
 		    <insertTable name='PARTNER_BUT000' truncate = 'True' break_index=''  condition_index='5' condition_value = 'F' condition_type='.eq.' >
 					<field name='LEGACY' index='0' />
@@ -125,7 +168,8 @@
 			        <field name='ZZCESDT' index='27' />  
 			        <field name='ZZSEGCRED' index='28' />
 			        <field name='ZZSEGCLI' index='29' />
-			        <field name='ZZFLDIS1' index='30' />   
+			        <field name='ZZFLDIS1' index='30' />
+			        <field name='NICKNAME' index='32' />   
 			</insertTable>
 			<insertTable name='PARTNER_BUTCOM' truncate = 'True' break_index='' condition_index='13' condition_value = 'None' condition_type='.ne.' >
 					<field name='LEGACY' index='0' />
@@ -281,7 +325,7 @@
 	   
        <partnerExtractor>
 		<mainSelect ><![CDATA[
- 	select 
+			select 
       a.legacy,                               -- 0   INIT
       a.legacy||c.adext_addr,                 -- 1
       a.legacy||c.adext_addr||d.adr_kind,     -- 2
@@ -298,7 +342,7 @@
       b.tipo,                                 -- 13
       b.bu_sort1,                             -- 14
       b.bu_sort2,                             -- 15
-      b.title,                                -- 16 
+      b.title,                                -- 16   
       b.name_org1,                            -- 17
       b.name_org2,                            -- 18
       b.name_org3,                            -- 19
@@ -306,65 +350,69 @@
       b.legal_enty,                           -- 21
       b.name_last,                            -- 22
       b.name_first,                           -- 23
-      b.partgrptyp,                           -- 24
-      b.name_grp1,                            -- 25
-      b.name_grp2,                            -- 26
-      ' ',                                    -- 27
-      ' ',                                    -- 28
+      ' ',                                    -- 24
+      b.nickname,                             -- 25
+      b.partgrptyp,                           -- 26
+      b.name_grp1,                            -- 27
+      b.name_grp2,                            -- 28
       ' ',                                    -- 29
-      b.zzfactor,                             -- 30
-      b.zzstato,                              -- 31
-      b.zzaedat,                              -- 32
-      b.zzpool,                               -- 33
-      b.zzwaers,                              -- 34
-      replace(to_char(b.zzfattu,'99999999990D99'),'.',','),        -- 35 
-      replace(to_char(b.zzplafond_ric,'99999999990D99'),'.',','),  -- 36
-      replace(to_char(b.zzplafond,'99999999990D99'),'.',','),      -- 37
-      replace(to_char(b.zzprotest,'99999999990D99'),'.',','),      -- 38
-      replace(to_char(b.zzpregiud,'99999999990D99'),'.',','),  -- 39 
-      b.zzrating,                             -- 40
-      b.zzdtcost,                             -- 41
-      b.zzvalid,                              -- 42
-      b.zzcrmdt,                              -- 43
-      b.zzcrmcc,                              -- 44
-      b.zzmahns_gas,                          -- 45
-      b.zzmahns_pow,                          -- 46
-      b.zzmahns_fot,                          -- 47
-      b.zzcesdt,                              -- 48
-      b.zzfldis1,	        				  -- 49             
-      b.zzsegcli,                             -- 50
-      b.zzsegcred,                            -- 51
-      c.legacy,                               -- 52 BUT020
-      c.tipo,                                 -- 53
-      c.adext_addr,                           -- 54
-      c.city1,                                -- 55
-      c.post_code1,                           -- 56
-      c.street,                               -- 57
-      c.house_num1,                           -- 58
-      c.country,                              -- 59
-      c.region,                               -- 60
-      c.tel_number,                           -- 61
-      d.legacy,                               -- 62 BUT0IS
-      d.tipo,                                 -- 63
-      d.adext_advw,                           -- 64
-      d.adr_kind,                             -- 65
-      d.xdfadu,                               -- 66
-      k.legacy,                               -- 67 BUT0BK
-      k.tipo,                                 -- 68   
-      k.banks,								  -- 69
-      k.bankl,                                -- 70
-      k.bankn,                                -- 71
-      k.bkont,                                -- 72
-      k.koinh,                                -- 73 
-      k.bkext,                                -- 74
-      k.iban,                                 -- 75 
-      t.legacy,                               -- 76 TAXNUM
-      t.tipo,                                 -- 77
-      t.taxtype,                              -- 78
-      t.taxnum ,                              -- 79 
-      m.legacy,                               -- 80 BUTCOM
-      m.tipo,                                 -- 81
-      m.icom_tel_number                       -- 82 
+      ' ',                                    -- 30
+      b.zzfactor,                             -- 31
+      b.zzstato,                              -- 32
+      b.zzaedat,                              -- 33
+      b.zzpool,                               -- 34
+      b.zzwaers,                              -- 35
+      replace(to_char(b.zzfattu,'99999999990D99'),'.',','),        -- 36 
+      replace(to_char(b.zzplafond_ric,'99999999990D99'),'.',','),  -- 37
+      replace(to_char(b.zzplafond,'99999999990D99'),'.',','),      -- 38
+      replace(to_char(b.zzprotest,'99999999990D99'),'.',','),      -- 39
+      replace(to_char(b.zzpregiud,'99999999990D99'),'.',','),  -- 40 
+      b.zzrating,                             -- 41
+      b.zzdtcost,                             -- 42
+      b.zzvalid,                              -- 43
+      b.zzcrmdt,                              -- 44
+      b.zzcrmcc,                              -- 45
+      b.zzmahns_gas,                          -- 46
+      b.zzmahns_pow,                          -- 47
+      b.zzmahns_fot,                          -- 48
+      b.zzcesdt,                              -- 49
+      b.zzfldis1,	        				  -- 50             
+      b.zzsegcli,                             -- 51
+      b.zzsegcred,                            -- 52
+      ' ',                                    -- 53
+      ' ',                                    -- 54
+      ' ',                                    -- 55
+      c.legacy,                               -- 56 BUT020
+      c.tipo,                                 -- 57
+      c.adext_addr,                           -- 58
+      c.city1,                                -- 59
+      c.post_code1,                           -- 60
+      c.street,                               -- 61
+      c.house_num1,                           -- 62
+      c.country,                              -- 63
+      c.region,                               -- 64
+      c.tel_number,                           -- 65
+      d.legacy,                               -- 66 BUT0IS
+      d.tipo,                                 -- 67
+      d.adext_advw,                           -- 68
+      d.adr_kind,                             -- 69
+      d.xdfadu,                               -- 70
+      k.legacy,                               -- 71 BUT0BK
+      k.tipo,                                 -- 72   
+      k.banks,								  -- 73
+      k.bankl,                                -- 74
+      k.bankn,                                -- 75
+      k.bkont,                                -- 76
+      k.koinh,                                -- 77 
+      k.bkext,                                -- 78
+      k.iban,                                 -- 79 
+      t.legacy,                               -- 80 TAXNUM
+      t.tipo,                                 -- 81
+      t.taxtype,                              -- 82
+      t.taxnum ,                              -- 83 
+      m.legacy,                               -- 84 BUTCOM
+      m.tipo,                                 -- 85
+      m.icom_tel_number                       -- 86 
       from
       partner_init a left outer join partner_but0bk k on a.legacy = k.legacy
         left outer join partner_but021 d on a.legacy = d.legacy,
@@ -382,17 +430,17 @@
        ]]></mainSelect>
        	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
        	</csvLine>
-       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='51'>
+       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='55'>
        	</csvLine>
-       	<csvLine line_index='2' break_index='0' field_start_index='80' field_end_index='82'>
+       	<csvLine line_index='2' break_index='0' field_start_index='84' field_end_index='86'>
        	</csvLine>
-       	<csvLine line_index='3' break_index='3' field_start_index='67' field_end_index='75' condition_index='69' condition_value = 'None' condition_type='.ne.'>
+       	<csvLine line_index='3' break_index='3' field_start_index='71' field_end_index='79' condition_index='73' condition_value = 'None' condition_type='.ne.'>
        	</csvLine>
-       	<csvLine line_index='4' break_index='1' field_start_index='52' field_end_index='61'>
+       	<csvLine line_index='4' break_index='1' field_start_index='56' field_end_index='65'>
        	</csvLine>
-       	<csvLine line_index='5' break_index='2' field_start_index='62' field_end_index='66' condition_index='62' condition_value = 'None' condition_type='.ne'>
+       	<csvLine line_index='5' break_index='2' field_start_index='66' field_end_index='70' condition_index='66' condition_value = 'None' condition_type='.ne'>
        	</csvLine>
-       	<csvLine line_index='6' break_index='4' field_start_index='76' field_end_index='79'>
+       	<csvLine line_index='6' break_index='4' field_start_index='80' field_end_index='83'>
        	</csvLine>
        	<ende field_index='0' />
 	</partnerExtractor>

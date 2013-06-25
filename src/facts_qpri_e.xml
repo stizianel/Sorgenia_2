@@ -48,7 +48,7 @@ SELECT
                         SELECT
                             cncon
                         FROM
-                            z_test_contratti where note = 'lotto 40') 
+                            z_test_contratti where note = 'lotto 42') 
                 AND a.operando = b.operando
                 AND tipo ='QPRICE'
                 AND
@@ -78,7 +78,7 @@ SELECT
                     END <= TO_CHAR(V.CDCES, 'YYYYMMDD')
                 AND a.operando!='EPB_A_43'
                 and a.operando='ESQP_01_FT'
-                 AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
+                 --AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
                 GROUP BY
                     v.DBI_ORIGINAL_KEY_PR, --0
                     v.DBI_ORIGINAL_KEY_PR, --1
@@ -142,7 +142,7 @@ SELECT
                                             cncon
                                         FROM
                                             z_test_contratti
-                                        where note = 'lotto 40')
+                                        where note = 'lotto 42')
                                 AND a.operando = b.operando
                                 AND tipo ='QPRICE'
                                 AND
@@ -221,6 +221,27 @@ SELECT
 		     <field name='PROG'    index='7' />  
 		     <field name='CPOD'   index= '1'/> 
 		     </insertTable> 
+		       <insertTable name='FACTS_F_QPRICE_SAV' truncate = 'False' break_index='9' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_QPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_QPRICE_SAV' truncate = 'False' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_QPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />  
+		     <field name='CPOD'   index= '1'/> 
+		     </insertTable> 
 		
 	</qpriAggregator>
 	 <FactQpriExtractor>
@@ -277,10 +298,10 @@ SELECT
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
          and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 42')
          and a.operando = b.operando
          and tipo ='LPRICE'
-          AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
+          --AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
             group by 
         v.DBI_ORIGINAL_KEY_PR,     --0
          v.CPOD,                                       --1
@@ -305,10 +326,10 @@ SELECT
         where 
           d.dbi_punto_key=  v.DBI_ORIGINAL_KEY_PR
           and v.ctar1=a.ctar1
-        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
+        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 42')
         and a.operando = b.operando
         and tipo ='LPRICE'
-         AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
+         --AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
         group by 
          v.DBI_ORIGINAL_KEY_PR,     --0
          v.cpod,                                       --1
@@ -331,6 +352,25 @@ SELECT
 		      <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_LPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_LPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='TARIFART' index='6' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' />   
+		      <field name='CPOD'   index= '1'/>
+		     </insertTable> 
+		      <insertTable name='FACTS_F_LPRI_SAV' truncate = 'False' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_LPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		      <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_LPRICE_SAV' truncate = 'False' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_LPRI' />
 		     <field name='AB' index='3' />
@@ -393,10 +433,10 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
+        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 42')
         and a.operando = b.operando
         and tipo ='TPRICE'
-         AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
+        --AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
          group by 
          v.DBI_ORIGINAL_KEY_PR||a.operando||to_char(v.d_valido_dal,'yyyymmdd'), 
         v.DBI_ORIGINAL_KEY_PR,     --0
@@ -421,6 +461,27 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a, z_anagrafica_opera
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_TPRICE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_TPRI' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='PREIS' index='5' />
+		     <field name='PRSBTR' index='6' />
+		     <field name='WAERS' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'    index='7' /> 
+		     <field name='CPOD'   index= '1'/>  
+		     </insertTable> 
+		      <insertTable name='FACTS_F_TPRI_SAV' truncate = 'False' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_TPRI' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index='7' />
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_TPRICE_SAV' truncate = 'False' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_TPRI' />
 		     <field name='AB' index='3' />

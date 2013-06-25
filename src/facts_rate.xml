@@ -30,7 +30,7 @@
             Dbi_User.Ifc_Sap_Anagrindirizzi_pr g ,
             v_Indirizzi l
         WHERE
-            i.Note = 'lotto 40'
+            i.Note = 'lotto 42'
         AND v.Dbi_Original_Key_Pr = i.Cncon
         --AND v.Dbi_Original_Key_Pr = 'PR2011209'
         AND v.Dbi_Original_Key_Pr=g.pr
@@ -43,7 +43,7 @@
         AND d.valid_until=v.d_valido_al
         AND d.Frequenza_Misura = v.Cfreq
         AND l.Indprog = g.Indprog
-        AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
+        --AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
             --AND a.Prodotto = 'STD_TANDEM'
         GROUP BY
             v.Dbi_Original_Key_Pr , --0
@@ -72,6 +72,24 @@
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
+		      <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_RATE' />
+		     <field name='AB'   index='3' />
+		     <field name='BIS' index='4' />
+		      <field name='TARIFART' index='5' />
+		     <field name='KONDIGR' index='6' />
+		     <field name='PROG'  index ='7' />
+		     <field name='CPOD'   index= '1'/>
+		     </insertTable> 
+		     <insertTable name='FACTS_F_RATE_TYPE_SAV' truncate = 'False' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_RATE' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index= '7'/>
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_RATE_TYPE_SAV' truncate = 'False' break_index='' >
 		      <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_RATE' />
 		     <field name='AB'   index='3' />

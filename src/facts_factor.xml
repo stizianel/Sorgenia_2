@@ -2,7 +2,7 @@
 	<queries>
 	<FactorAggregator>
 		<mainSelect ><![CDATA[
-SELECT
+/*SELECT
     c.DBI_ORIGINAL_KEY_PR, --0
     c.cpod, --1
     a.operando, --2
@@ -34,15 +34,15 @@ SELECT
                 SELECT
                     cncon
                 FROM
-                    z_test_contratti)
-               -- WHERE
-                 --   note = 'lotto 31')
+                    z_test_contratti
+                WHERE
+                   note = 'lotto 42')
         AND a.operando = b.operando
         AND a.operando != 'EF_SC_APP'
         AND tipo = 'FACTOR'
         AND c.d_valido_dal=d.valid_from
         AND c.d_valido_al=d.valid_until
-        AND Get_Bis2(a.Operando,a.Ctar1,c.cdsti,c.cdces,Data_Validita_Al) > '20080401'
+        --AND Get_Bis2(a.Operando,a.Ctar1,c.cdsti,c.cdces,Data_Validita_Al) > '20080401'
         GROUP BY
             c.DBI_ORIGINAL_KEY_PR,
             c.cpod,
@@ -111,22 +111,22 @@ SELECT
                             cncon
                         FROM
                             z_test_contratti
-                        where note = 'lotto 40')
+                        where note = 'lotto 42')
                 AND a.operando = b.operando
                 AND a.operando = 'EF_SC_APP'
                 AND tipo = 'FACTOR'
                 AND c.d_valido_dal=d.valid_from
                 AND c.d_valido_al=d.valid_until
-                AND (
-                        CASE
-                            WHEN TO_CHAR(cdces,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,
-                                x.min_cdsti, c.d_valido_al, data_validita_al)
-                            THEN TO_CHAR(cdces,'YYYYMMDD')
-                            ELSE get_bis3(b.operando,c.ctar1,x.min_cdsti,c.d_valido_al,
-                                data_validita_al)
-                        END) > '20080401'
-                AND TO_CHAR(cdsti,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,x.min_cdsti,
-                    c.d_valido_al, data_validita_al) --bis
+                --AND (
+                     --   CASE
+                      --      WHEN TO_CHAR(cdces,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,
+                        --        x.min_cdsti, c.d_valido_al, data_validita_al)
+                       --    THEN TO_CHAR(cdces,'YYYYMMDD')
+                        --   ELSE get_bis3(b.operando,c.ctar1,x.min_cdsti,c.d_valido_al,
+                        --data_validita_al)
+                       -- END) > '20080401'
+                --AND TO_CHAR(cdsti,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,x.min_cdsti,
+                  --c.d_valido_al, data_validita_al) --bis
                 AND NVL(GET_AB_ESQP_01_FT(b.operando,c.ctar1,x.min_cdsti,data_validita, c.cdces,
                     c.d_valido_dal), '99991231') <= TO_CHAR(cdces,'YYYYMMDD')
                 GROUP BY
@@ -146,7 +146,45 @@ SELECT
                     TO_CHAR(cdces,'YYYYMMDD')
                 ORDER BY
                     operando,
-                    bis
+                    bis*/
+                    SELECT
+    c.DBI_ORIGINAL_KEY_PR, --0
+    c.cpod, --1
+    a.operando, --2
+    get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita)                   AS ab ,--3
+    get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al,data_validita_al) AS bis ,--4
+    CASE
+        WHEN A.OPERANDO='EF_RES'
+        THEN DEC_CTFOR(C.CTFOR)
+        WHEN a.operando='EF_SC_APP'
+        THEN prezzo
+        ELSE valori
+    END
+    CASE, --5
+            NVL(prezzo,0) , --6
+            b.id_operando, --7
+            DEC_CTFOR(C.CTFOR)
+        FROM
+            z_prodotto_operando a,
+            z_anagrafica_operandi b,
+            DBI_USER.ifc_sap_anagrcontrele C --,
+            --DBI_USER.ifc_sap_punti_fornitura d
+        WHERE
+            a.acquisizione= c.cfreq
+            --AND d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
+            --AND c.DBI_ORIGINAL_KEY_PR = 'PR2267551'
+        AND a.ctar1=c.ctar1
+        AND c.DBI_ORIGINAL_KEY_PR IN
+            (
+                SELECT
+                    cncon
+                FROM
+                    z_test_contratti
+                WHERE
+                    note = 'lotto 42')
+        AND a.operando = b.operando
+        AND a.operando != 'EF_SC_APP'
+        AND tipo = 'FACTOR'
         ]]></mainSelect>
 		
 		     <insertTable name='FACTS_F_FACTOR' truncate = 'True' break_index='' >
@@ -158,6 +196,25 @@ SELECT
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_FACTOR' truncate = 'True' break_index='' >
+		     <field name='LEGACY'    index='0' />
+		     <field name='TIPO'       constant_value='V_FACT' />
+		     <field name='TARIFART'   constant_value='' />
+		      <field name='FACTOR'     index='5' />
+		     <field name='KONDIGR'    constant_value='' />
+		     <field name='AB'         index='3' />
+		     <field name='BIS'        index='4' />
+		     <field name='PROG'       index= '7' /> 
+		     <field name='CPOD'   index= '1'/>
+		     </insertTable> 
+		      <insertTable name='FACTS_F_FACTOR_SAV' truncate = 'False' break_index='' >
+		     <field name='LEGACY'  index='0' />
+		     <field name='TIPO'    constant_value='F_FACT' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON'  constant_value='' />
+		     <field name='PROG'    index= '7' />
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_FACTOR_SAV' truncate = 'False' break_index='' >
 		     <field name='LEGACY'    index='0' />
 		     <field name='TIPO'       constant_value='V_FACT' />
 		     <field name='TARIFART'   constant_value='' />

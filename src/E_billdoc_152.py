@@ -8,5 +8,5 @@ from it_eutile_utils_extractor.ExtractorManager import ExtractorManager
 
 #la parte preExtractor non serve piu' in quanto gestita nel processo di aggregazione
 #AggregatorManagerExMny('preExtractor',1000,'preExtractor', filename='test.xml')
-ExtractorManager('billdoc','billdocExtractor', filename='billdoc.xml') 
+ExtractorManager('billdoc','billdocExtractor', filename='billdoc2.xml') 
 

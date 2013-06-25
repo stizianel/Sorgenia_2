@@ -16,7 +16,7 @@
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d
        
-    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 40')
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 42')
     and  c.tipo='DEMA'
     and b.ctar1=a.ctar1 
     and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
@@ -24,7 +24,7 @@
       and c.operando=b.operando
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
-     and get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al)> '20080401'
+     --and get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al)> '20080401'
        ]]></mainSelect>
      
 		   <insertTable name='FACTS_F_DEMA' truncate = 'True' break_index=''  >
@@ -36,6 +36,27 @@
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='FACTS_V_DEMA' truncate = 'True' break_index=''   >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_DEMA' />
+		     <field name='AB'   index ='2' />
+		     <field name='BIS'  index='3' />
+		     <field name='LMENGE'   index = '5'  />
+		     <field name='LMENGE2'  constant_value=''  />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDIGR' constant_value='' />
+		     <field name='PROG'  index ='9' />  
+		     <field name='CPOD'   index= '1'/>
+		     </insertTable>	
+		     
+		      <insertTable name='FACTS_F_DEMA_SAV' truncate = 'False' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_DEMA' />
+		     <field name='OPERAND' index = '4' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='9' />
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_DEMA_SAV' truncate = 'False' break_index=''   >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_DEMA' />
 		     <field name='AB'   index ='2' />
@@ -102,14 +123,14 @@
                  b.acquisizione                                         --9
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d 
-    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 40')
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti where note = 'lotto 42')
     and c.tipo='USERDEF'    
       and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
     and b.acquisizione= a.cfreq   
        and c.operando=b.operando
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
-       AND get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al) > '20080401'
+      -- AND get_bis2(b.operando,a.ctar1,a.d_valido_dal,a.d_valido_al,data_validita_al) > '20080401'
              
        ]]></mainSelect>
      		   <insertTable name='FACTS_F_UDEF' truncate = 'True' break_index=''  >
@@ -121,6 +142,28 @@
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		    <insertTable name='FACTS_V_UDEF' truncate = 'True' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_UDEF' />
+		     <field name='AB' index='3' />
+		     <field name='BIS' index='4' />
+		     <field name='UDEFVAL1' index='6' />
+		     <field name='UDEFVAL2' index='7' />
+		     <field name='UDEFVAL3' constant_value='' />
+		     <field name='UDEFVAL4' constant_value='' />
+		     <field name='TARIFART' constant_value='' />
+		     <field name='KONDGIR' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		     <field name='CPOD'   index= '1'/>
+		    </insertTable> 
+		     <insertTable name='FACTS_F_UDEF_SAV' truncate = 'False' break_index=''  >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_UDEF' />
+		     <field name='OPERAND' index = '2' />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'  index ='5' />
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		    <insertTable name='FACTS_V_UDEF_SAV' truncate = 'False' break_index=''  >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_UDEF' />
 		     <field name='AB' index='3' />

@@ -248,8 +248,7 @@
        ,f.timtypza                  --39
        ,f.geraet                    --40
        ,f.massbill                  --41
-       ,f.mwskz                    
-       ,' '                         --42
+       ,f.mwskz                     --42
        ,f.nettobtr                  --43
        ,f.twaers                    --44
        ,f.preistuf                  --45
@@ -301,22 +300,16 @@
        ,f.record_key                --91
         from tmp_billdoc_erch_full f
         where 
-        f.vertrag in
-        ('PR2038144',
-		'PR3248833',
-		'PR3292979' )
-        order by begabrpe, f.billdocline
-        --f.hashtarget = 3
-        --and (f.vertrag = z.oldkey and z.object = 'MOVE_IN')
-        --and rownum < 10000000
+		f.hashtarget = 3
+        order by f.legacy, f.billdocline
 		]]></mainSelect>
 		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='27'>
        	</csvLine>
-       	<csvLine line_index='1' break_index=''  field_start_index='28' field_end_index='73'>
+       	<csvLine line_index='1' break_index=''  field_start_index='28' field_end_index='72'>
        	</csvLine>
-       	<csvLine line_index='2' break_index='91' field_start_index='74' field_end_index='78'>
+       	<csvLine line_index='2' break_index='91' field_start_index='73' field_end_index='77'>
        	</csvLine>
-       	<csvLine line_index='3' break_index='91' field_start_index='79' field_end_index='83'>
+       	<csvLine line_index='3' break_index='91' field_start_index='78' field_end_index='82'>
        	</csvLine>
 		<ende field_index='0' />
 	</billdocExtractor>

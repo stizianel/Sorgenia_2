@@ -15,7 +15,7 @@
         DBI_USER.ifc_sap_punti_fornitura d
         where 
         a.ctar1=v.ctar1 
-        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 31' )
+        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40' )
         and a.operando = b.operando  
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
         --and a.cd_parametro=e.cd_parametro_valore_large

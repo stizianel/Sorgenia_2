@@ -11,73 +11,49 @@ from it_eutile_utils_log.LogManager import LogManager
 from it_eutile_utils_csvmanager.CsvManager import CsvManager
 #
 stat_finale = '''
-select id_interazione_as_is,
-       canale,
-       direzione,
-       descrizione,
-       numero_operazione,
-       tipo_richiedente,
-       user_id_creatore,
-       esito,
-       partner_contatto,
-       dipendente_responsabile,
-       gruppo_responsabile,
-       pod,
-       pdr,
-       categoria_1,
-       categoria_2,
-       categoria_3,
-       c.numero_documenti,
-       to_char(c.data_apertura, 'YYYYMMDDhh24miss'),
-       to_char(c.data_chiusura, 'YYYYMMDDhh24miss'),
-       to_char(c.data_ricezione_richiesta, 'YYYYMMDDhh24miss'),
-       substr(c.identificativo_opt,0,20),
-       substr(c.note,0,999),
-       substr(c.note,999,999),
-       substr(c.note,1998,999),
-       z.newkey,
-       to_char(c.data_invio, 'YYYYMMDDhh24miss'),
-       c.tipo_corrispondenza,
-       c.genere_corrispondenza,
-       c.altri_destinatari
-  from dbi_user.Ifc_Sap_Crm_Int_Contatti c, z_temksv z, z_temksv z2
-  where 
-  (z.object = 'ACCOUNT'  and c.ca = z.oldkey)
-  and (z2.object = 'PARTNER' and c.partner_contatto = z2.oldkey)
-  and length(categoria_1||categoria_2||categoria_3) = 12
-  and categoria_1 <> 'N.A.'
-  --and rownum < 100001
-  group by
-        id_interazione_as_is,
-       canale,
-       direzione,
-       descrizione,
-       numero_operazione,
-       tipo_richiedente,
-       user_id_creatore,
-       esito,
-       partner_contatto,
-       dipendente_responsabile,
-       gruppo_responsabile,
-       pod,
-       pdr,
-       categoria_1,
-       categoria_2,
-       categoria_3,
-       c.numero_documenti,
-       to_char(c.data_apertura, 'YYYYMMDDhh24miss'),
-       to_char(c.data_chiusura, 'YYYYMMDDhh24miss'),
-       to_char(c.data_ricezione_richiesta, 'YYYYMMDDhh24miss'),
-       substr(c.identificativo_opt,0,20),
-       substr(c.note,0,999),
-       substr(c.note,999,999),
-       substr(c.note,1998,999),
-       z.newkey,
-       to_char(c.data_invio, 'YYYYMMDDhh24miss'),
-       c.tipo_corrispondenza,
-       c.genere_corrispondenza,
-       c.altri_destinatari
-      
+SELECT
+    Tipo_Contatto ,
+    Id_Interazione_As_Is ,
+    Canale ,
+    Direzione ,
+    Descrizione ,
+    Numero_Operazione ,
+    Tipo_Richiedente ,
+    User_Id_Creatore ,
+    Esito ,
+    Partner_Contatto ,
+    Dipendente_Responsabile ,
+    Gruppo_Responsabile ,
+    POD ,
+    Pdr ,
+    Categoria_1 ,
+    Categoria_2 ,
+    Categoria_3 ,
+    Numero_Documenti ,
+    TO_CHAR(Data_Apertura,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Chiusura,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Ricezione_Richiesta,'yyyymmddhh24miss') ,
+    Identificativo_Opt ,
+    Note ,
+    Note2 ,
+    Note3 ,
+    CA ,
+    TO_CHAR(Data_Invio,'yyyymmddhh24miss') ,
+    Tipo_Corrispondenza ,
+    Genere_Corrispondenza ,
+    Altri_Destinatari
+FROM
+    dbi_user.IFC_SAP_CRM_INT_CONTATTI,
+    sapsr3.but000@sap_caq b, --partner
+    sapsr3.isu_pod@sap_caq c, --ext_ui
+    sapsr3.crmm_babr_h@sap_caq d --zzvkona
+WHERE
+    lpad(Partner_Contatto,10,'0') = lpad(b.partner,10,'0')
+AND pod = c.ext_ui
+AND d.zzvkona = ca
+AND Categoria_3 NOT IN ('TBD',
+                        'N.A.')
+AND Categoria_3 IS NOT NULL      
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

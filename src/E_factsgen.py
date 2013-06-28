@@ -3,6 +3,7 @@ Created on 07/nov/2012
 
 @author: stefano.tizianel
 '''
+import sys
 import datetime
 import csv
 from it_eutile_utils_properties.Constants import Constants
@@ -10,10 +11,10 @@ from it_eutile_utils_csvmanager.CsvManager import CsvManager
 from it_eutile_utils_database.ConnectionManager import ConnectionManager
 from it_eutile_utils_log.LogManager import LogManager
 #-----------------------------------------------------------------
-mainSelect="select * from facts_key"
+mainSelect='select * from facts_key where gruppo = :gruppo'
 lfacts=[("select legacy, tipo, operand, prog                       from facts_f_dema a      where a.legacy = :key group by legacy,tipo,operand,prog ", "select legacy, tipo, ab, bis, lmenge      from facts_v_dema a       where a.legacy = :key and a.prog = :prog and bis >'20080401'"),
         ("select legacy, tipo, operand, ' ', timbasis, timtyp, prog from facts_f_tqua a      where a.legacy = :key group by legacy, tipo, operand, ' ', timbasis, timtyp, prog", "select legacy, tipo, ab, bis, menge, tarifart, kondigr from facts_v_tqua a where a.legacy = :key and a.prog = :prog and bis >'20080401'"),
-        ("select legacy, tipo, operand, prog                        from facts_f_qprice a    where a.legacy = :key group by legacy,tipo,operand,prog", "select legacy, tipo, ab, bis, preis,    prsbtr,   waers,    tarifart, kondgir            from facts_v_qprice a     where a.legacy = :key and a.prog = :prog and bis >'20080401'"),
+        ("select legacy, tipo, operand, prog                        from facts_f_qprice a    where a.legacy = :key and a.operand !='ESQP_01_FT' group by legacy,tipo,operand,prog", "select legacy, tipo, ab, bis, preis,    prsbtr,   waers,    tarifart, kondgir            from facts_v_qprice a     where a.legacy = :key and a.prog = :prog and a.prog !='126' and bis >'20080401'"),
         ("select legacy, tipo, operand, prog                        from facts_f_factor a    where a.legacy = :key group by legacy,tipo,operand,prog" , "select legacy, tipo, ab, bis, factor,   tarifart, kondigr                                from facts_v_factor a     where a.legacy = :key and a.prog = :prog and bis >'20080401'AND BIS>=AB"),
         ("select legacy, tipo, operand, prog                        from facts_f_flag   a    where a.legacy = :key group by legacy,tipo,operand, prog" , "select legacy, tipo, ab, bis, boolkz,   tarifart, kondigr                                from facts_v_flag a       where a.legacy = :key and a.prog = :prog and bis >'20080401'"),
         ("select legacy, tipo, operand, prog                        from facts_f_rate_type a where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, tarifart, kondigr     from facts_v_rate_type a  where a.legacy = :key and a.prog = :prog and bis >'20080401'"),
@@ -24,6 +25,8 @@ date=datetime.datetime.now()
 htmlMode=''
 #-----------------------------------------------------------------
 #  
+w_gruppo = sys.argv[1]
+
 #inizializzazione e apertura file di log
 log = LogManager('factsgen', Constants.getDebugMode(),date,htmlMode)
 #                
@@ -41,7 +44,7 @@ cur_s1 = conn.conn.cursor()
 cur_s2 = conn.conn.cursor()
 cur_s3 = conn.conn.cursor()
 #select principale
-cur_s1.execute(mainSelect)
+cur_s1.execute(mainSelect, gruppo=w_gruppo)
 
 i=0      
 ifx = '\t'

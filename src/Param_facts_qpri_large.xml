@@ -26,7 +26,7 @@
       and e.cncon=v.DBI_ORIGINAL_KEY_PR
       and d.tipo='QPRICE'
     and v.cfreq=c.tipo
-    and e.note = 'lotto 31'
+    and e.note = 'lotto 40'
      and data_fine_val(v.DBI_ORIGINAL_KEY_PR,c.operando,v.ctar1,b.d_inizio_val, b.d_fine_val) >'20080401'
      --and v.ccontratto=b.cd_contratto
         group by v.DBI_ORIGINAL_KEY_PR, --0

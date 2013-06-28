@@ -2,12 +2,12 @@
 	<queries>
 	<FactorAggregator>
 		<mainSelect ><![CDATA[
-/*SELECT
+SELECT
     c.DBI_ORIGINAL_KEY_PR, --0
     c.cpod, --1
     a.operando, --2
-    get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita)                   AS ab ,--3
-    get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al,data_validita_al) AS bis ,--4
+    TO_CHAR(c.cdsti, 'YYYYMMDD'),
+    TO_CHAR(c.cdces, 'YYYYMMDD') ,
     CASE
         WHEN A.OPERANDO='EF_RES'
         THEN DEC_CTFOR(C.CTFOR)
@@ -22,158 +22,14 @@
         FROM
             z_prodotto_operando a,
             z_anagrafica_operandi b,
-            DBI_USER.ifc_sap_anagrcontrele C ,
-            DBI_USER.ifc_sap_punti_fornitura d
-        WHERE
-            a.acquisizione= c.cfreq
-        AND d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
-        --AND c.DBI_ORIGINAL_KEY_PR = 'PR2267551'
-        AND a.ctar1=c.ctar1
-        AND c.DBI_ORIGINAL_KEY_PR IN
-            (
-                SELECT
-                    cncon
-                FROM
-                    z_test_contratti
-                WHERE
-                   note = 'lotto 42')
-        AND a.operando = b.operando
-        AND a.operando != 'EF_SC_APP'
-        AND tipo = 'FACTOR'
-        AND c.d_valido_dal=d.valid_from
-        AND c.d_valido_al=d.valid_until
-        --AND Get_Bis2(a.Operando,a.Ctar1,c.cdsti,c.cdces,Data_Validita_Al) > '20080401'
-        GROUP BY
-            c.DBI_ORIGINAL_KEY_PR,
-            c.cpod,
-            a.operando,
-            prezzo,
-            --GET_AB_ESQP_01_FT(b.operando,a.ctar1,c.d_valido_dal,data_validita),
-            get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita) ,--3
-            get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al, data_validita_al),--4
-            --get_bis3(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al, data_validita_al),
-            valori,
-            c.d_valido_dal,
-            NVL(prezzo,0),
-            b.id_operando ,
-            DEC_CTFOR(C.CTFOR)
-        UNION ALL
-        SELECT
-            c.DBI_ORIGINAL_KEY_PR, --0
-            c.cpod, --1
-            a.operando, --2
-            CASE
-                WHEN TO_CHAR(cdsti,'YYYYMMDD') >= NVL(GET_AB_ESQP_01_FT(b.operando,c.ctar1,
-                    x.min_cdsti, data_validita, c.cdces, c.d_valido_dal),'99991231')
-                THEN TO_CHAR(cdsti,'YYYYMMDD')
-                ELSE NVL(GET_AB_ESQP_01_FT(b.operando,c.ctar1,x.min_cdsti,data_validita, c.cdces,
-                    c.d_valido_dal),'99991231')
-            END AS ab,
-            CASE
-                WHEN TO_CHAR(cdces,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,x.min_cdsti,
-                    c.d_valido_al, data_validita_al)
-                THEN TO_CHAR(cdces,'YYYYMMDD')
-                ELSE get_bis3(b.operando,c.ctar1,x.min_cdsti,c.d_valido_al,data_validita_al)
-            END AS bis,--4
-            CASE
-                WHEN A.OPERANDO='EF_RES'
-                THEN DEC_CTFOR(C.CTFOR)
-                WHEN a.operando='EF_SC_APP'
-                THEN prezzo
-                ELSE valori
-            END
-            CASE, --5
-                    NVL(prezzo,0) , --6
-                    b.id_operando, --7
-                    DEC_CTFOR(C.CTFOR)
-                FROM
-                    z_prodotto_operando a,
-                    z_anagrafica_operandi b,
-                    DBI_USER.ifc_sap_anagrcontrele C ,
-                    DBI_USER.ifc_sap_punti_fornitura d,
-                    (
-                        SELECT
-                            MIN(c.d_valido_dal) AS min_cdsti,
-                            c.DBI_ORIGINAL_KEY_PR
-                        FROM
-                            DBI_USER.ifc_sap_anagrcontrele C
-                        GROUP BY
-                            c.DBI_ORIGINAL_KEY_PR) x
-                WHERE
-                    a.acquisizione= c.cfreq
-                AND d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
-                AND c.DBI_ORIGINAL_KEY_PR = x.DBI_ORIGINAL_KEY_PR
-                --AND c.DBI_ORIGINAL_KEY_PR = 'PR2267551'
-                AND a.ctar1=c.ctar1
-                AND c.DBI_ORIGINAL_KEY_PR IN
-                    (
-                        SELECT
-                            cncon
-                        FROM
-                            z_test_contratti
-                        where note = 'lotto 42')
-                AND a.operando = b.operando
-                AND a.operando = 'EF_SC_APP'
-                AND tipo = 'FACTOR'
-                AND c.d_valido_dal=d.valid_from
-                AND c.d_valido_al=d.valid_until
-                --AND (
-                     --   CASE
-                      --      WHEN TO_CHAR(cdces,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,
-                        --        x.min_cdsti, c.d_valido_al, data_validita_al)
-                       --    THEN TO_CHAR(cdces,'YYYYMMDD')
-                        --   ELSE get_bis3(b.operando,c.ctar1,x.min_cdsti,c.d_valido_al,
-                        --data_validita_al)
-                       -- END) > '20080401'
-                --AND TO_CHAR(cdsti,'YYYYMMDD') <= get_bis3(b.operando,c.ctar1,x.min_cdsti,
-                  --c.d_valido_al, data_validita_al) --bis
-                AND NVL(GET_AB_ESQP_01_FT(b.operando,c.ctar1,x.min_cdsti,data_validita, c.cdces,
-                    c.d_valido_dal), '99991231') <= TO_CHAR(cdces,'YYYYMMDD')
-                GROUP BY
-                    c.DBI_ORIGINAL_KEY_PR,
-                    c.cpod,
-                    a.operando,
-                    prezzo,
-                    NVL(GET_AB_ESQP_01_FT(b.operando,c.ctar1,x.min_cdsti,data_validita, c.cdces,
-                    c.d_valido_dal), '99991231'),
-                    get_bis3(b.operando,c.ctar1,x.min_cdsti,c.d_valido_al, data_validita_al),
-                    valori,
-                    c.d_valido_dal,
-                    NVL(prezzo,0),
-                    b.id_operando ,
-                    DEC_CTFOR(C.CTFOR),
-                    TO_CHAR(cdsti,'YYYYMMDD'),
-                    TO_CHAR(cdces,'YYYYMMDD')
-                ORDER BY
-                    operando,
-                    bis*/
-                    SELECT
-    c.DBI_ORIGINAL_KEY_PR, --0
-    c.cpod, --1
-    a.operando, --2
-    get_ab2(b.operando,a.ctar1,c.d_valido_dal,data_validita)                   AS ab ,--3
-    get_bis2(b.operando,a.ctar1,c.d_valido_dal,c.d_valido_al,data_validita_al) AS bis ,--4
-    CASE
-        WHEN A.OPERANDO='EF_RES'
-        THEN DEC_CTFOR(C.CTFOR)
-        WHEN a.operando='EF_SC_APP'
-        THEN prezzo
-        ELSE valori
-    END
-    CASE, --5
-            NVL(prezzo,0) , --6
-            b.id_operando, --7
-            DEC_CTFOR(C.CTFOR)
-        FROM
-            z_prodotto_operando a,
-            z_anagrafica_operandi b,
-            DBI_USER.ifc_sap_anagrcontrele C --,
+            DBI_USER.ifc_sap_anagrcontrele C, --,
             --DBI_USER.ifc_sap_punti_fornitura d
+            instln_data e
         WHERE
             a.acquisizione= c.cfreq
             --AND d.dbi_punto_key= c.DBI_ORIGINAL_KEY_PR
-            --AND c.DBI_ORIGINAL_KEY_PR = 'PR2267551'
         AND a.ctar1=c.ctar1
+        and c.cpod=e.legacy
         AND c.DBI_ORIGINAL_KEY_PR IN
             (
                 SELECT
@@ -181,10 +37,12 @@
                 FROM
                     z_test_contratti
                 WHERE
-                    note = 'lotto 42')
+                    note = 'lotto 40')
         AND a.operando = b.operando
-        AND a.operando != 'EF_SC_APP'
-        AND tipo = 'FACTOR'
+       AND a.operando NOT IN ('EF_SC_APP',
+                               'EF_COEFODS')
+        AND b.tipo = 'FACTOR'
+        and TO_CHAR(c.cdsti, 'YYYYMMDD')>e.ab
         ]]></mainSelect>
 		
 		     <insertTable name='FACTS_F_FACTOR' truncate = 'True' break_index='' >

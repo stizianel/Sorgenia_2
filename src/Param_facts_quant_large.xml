@@ -21,7 +21,7 @@
         and f.dbi_punto_key=v.DBI_ORIGINAL_KEY_PR
         AND C.CD_PUNTO=f.dbi_punto_key
         and c.cd_parametro_valore_large=a.cd_parametro
-        and v.DBI_ORIGINAL_KEY_PR IN(select g.cncon from z_test_contratti g where g.note='lotto 31' )
+        and v.DBI_ORIGINAL_KEY_PR IN(select g.cncon from z_test_contratti g where g.note='lotto 40' )
         and a.operando = b.operando
         and B.tipo = 'TQUANT'   
            group by 

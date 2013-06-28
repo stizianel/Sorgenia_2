@@ -1,0 +1,49 @@
+<root>
+	<queries>
+	<instlnchaExtractor>
+		<mainSelect ><![CDATA[
+       		select a.legacy,
+			a.tipo,
+			a.anlage,
+			b.legacy,
+			b.tipo,
+			b.sparte,
+			b.vstelle,
+			' ',
+			b.bapertyp,
+			b.spebene,
+			b.anlart,
+			b.nodisconct,
+			b.ab,
+			b.tariftyp,
+			b.branche,
+			b.aklasse,
+			b.ableinh,
+			b.service,
+			b.deregstat,
+			c.legacy,
+			c.tipo,
+			c.datefrom,
+			c.euirole_tech,
+			c.ext_ui,
+			c.grid_id,
+			c.grid_level,
+			c.timefrom,
+			c.uistrutyp,
+			c.uitype
+			from instlncha_key a, instlncha_data b, instlncha_pod c
+			where
+			a.legacy = b.legacy
+			and a.legacy = c.legacy
+       ]]></mainSelect>
+       	<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='2'>
+       	</csvLine>
+       	<csvLine line_index='1' break_index='0' field_start_index='3' field_end_index='18'>
+       	</csvLine>
+       	<csvLine line_index='2' break_index='0' field_start_index='19' field_end_index='28'>
+       	</csvLine>
+		<ende field_index='0' />
+	</instlnchaExtractor>
+	
+	</queries>
+</root>

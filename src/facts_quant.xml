@@ -5,31 +5,34 @@
         select v.DBI_ORIGINAL_KEY_PR,   --0
         v.cpod,                                     --1
         a.operando,                                  --2
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
+        TO_CHAR(v.cdsti, 'YYYYMMDD'),--3 
+         TO_CHAR(v.cdces, 'YYYYMMDD'),--4
         valori,                                      --5
        DECODE( B.OPERANDO,'EQT_EAC' ,  nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),                                     --6
         b.id_operando                                --7
         from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
-         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
+         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d,
+         instln_data e
         where v.ctar1 = a.ctar1  
         and a.acquisizione= v.cfreq
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 42')
+       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 40')
        and a.operando = b.operando
-       and tipo = 'TQUANT'
+       and b.tipo = 'TQUANT'
+       and v.cpod=e.legacy
+       and TO_CHAR(v.cdsti, 'YYYYMMDD')>=e.ab
            and v.d_valido_dal=d.valid_from
              and v.d_valido_al=d.valid_until
             -- AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
         group by 
-        v.DBI_ORIGINAL_KEY_PR, 
-        v.cpod, 
-        a.operando, 
-        get_ab2(b.operando,a.ctar1,d.dt_inizio_fornitura,data_validita),--3 
-         get_bis2(b.operando,a.ctar1,d.dt_inizio_fornitura,d.dt_fine_fornitura,data_validita_al),--4
-        valori, 
-        DECODE( B.OPERANDO,'EQT_EAC' , nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),     
-        b.id_operando 
+        v.DBI_ORIGINAL_KEY_PR,   --0
+        v.cpod,                                     --1
+        a.operando,                                  --2
+        TO_CHAR(v.cdsti, 'YYYYMMDD'),--3 
+         TO_CHAR(v.cdces, 'YYYYMMDD'),--4
+        valori,                                      --5
+       DECODE( B.OPERANDO,'EQT_EAC' ,  nvl(d.consumo_annuo_f0,0) , nvl(VALORI,0) ),                                     --6
+        b.id_operando   
  	
         ]]></mainSelect>
 	     <insertTable name='FACTS_F_TQUA' truncate = 'True' break_index='' >

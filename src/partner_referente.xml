@@ -2,82 +2,117 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-	select c.row_id -- 8000000000 + 4260000,           --0 
-       --b.customer_cd_target,      --1
-       ,z.oldkey
-       ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
-       c.x_cognome,               --3
-       c.x_nome,                  --4
-       v.indccom,                 --5
-       v.inddcom,                 --6
-       v.indindi,                 --7
-       v.indindi||' '||v.indccvia,--8
-       substr(indcivi,0,10),      --9
-       v.indest,                  --10
-       v.indcap,                  --11
-       decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
-       v.indregio,                --13
-       case
-         when length(c.num_tel_work) > 6 then c.num_tel_work
-         when length(c.num_tel_cell) = 10 then c.num_tel_cell
-       else
-         ' '
-       end case,                  --14 
-       c.email_addr,              --15
-       v.indprov,                 --16
-       v.indprog,                 --17
-       substr(x_cognome,0,20),    --18
-       decode(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009', 'BUR001') --19
-       
-  from dbi_user.ifc_sap_crm_contatti c
-  left outer join dbi_user.ifc_sap_customer_rename b
-    on c.id_cliente = b.customer_cd_source, v_indirizzi v,
- z_temksv z
- where tipologia is not null
-   and c.indirizzo = v.indprog
-   and b.customer_cd_target is not null
-   --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
-   and c.tipologia in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
-   and (c.id_cliente = z.oldkey and z.object = 'PARTNER')
-union
-select c.row_id -- 8000000000 + 4260000,           --0 
-       --b.customer_cd_target,      --1
-       ,z.oldkey
-       ,decode(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01', 'BUP001'), --2
-       c.x_cognome,               --3
-       c.x_nome,                  --4
-       v.indccom,                 --5
-       v.inddcom,                 --6
-       v.indindi,                 --7
-       v.indindi||' '||v.indccvia,--8
-       substr(indcivi,0,10),      --9
-       v.indest,                  --10
-       v.indcap,                  --11
-       decode(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
-       v.indregio,                --13
-       case
-         when length(c.num_tel_work) > 6 then c.num_tel_work
-         when length(c.num_tel_cell) = 10 then c.num_tel_cell
-       else
-         ' '
-       end case,                  --14 
-       c.email_addr,              --15
-       v.indprov,                 --16
-       v.indprog,                 --17
-       substr(x_cognome,0,20),    --18
-       decode(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009', 'BUR001') --19
-       
-  from dbi_user.ifc_sap_crm_contatti c
-  left outer join dbi_user.ifc_sap_customer_rename b
-    on c.id_cliente = b.customer_cd_source, v_indirizzi v,
- z_temksv z
- where tipologia is not null
-   and c.indirizzo = v.indprog
-   and b.customer_cd_target is not null
-   --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
-   and c.tipologia not in ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
-   and (c.id_cliente = z.oldkey and z.object = 'PARTNER')
-order by 1
+SELECT
+    c.row_id -- 8000000000 + 4260000,           --0
+    --          b.customer_cd_target,      --1
+    ,
+    z.oldkey ,
+    DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01',
+    'BUP001'), --2
+    c.x_cognome, --3
+    c.x_nome, --4
+    v.indccom, --5
+    v.inddcom, --6
+    v.indindi, --7
+    v.indindi||' '||v.indccvia,--8
+    SUBSTR(indcivi,0,10), --9
+    v.indest, --10
+    v.indcap, --11
+    DECODE(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
+    v.indregio, --13
+    CASE
+        WHEN LENGTH(c.num_tel_work) > 6
+        THEN c.num_tel_work
+        WHEN LENGTH(c.num_tel_cell) = 10
+        THEN c.num_tel_cell
+        ELSE ' '
+    END
+    CASE, --14
+            c.email_addr, --15
+            v.indprov, --16
+            v.indprog, --17
+            SUBSTR(x_cognome,0,20), --18
+            DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009',
+            'BUR001'), --19
+                    substr(k.arag5,0,40) --20
+        FROM
+            dbi_user.ifc_sap_crm_contatti c
+        LEFT OUTER JOIN
+            dbi_user.ifc_sap_customer_rename b
+        ON
+            c.id_cliente = b.customer_cd_source,
+            v_indirizzi v,
+            sapsr3.temksv@sap_iap z,
+            v_clienti k
+        WHERE
+            tipologia IS NOT NULL
+        AND lpad(k.acdan,10,'0') = lpad(c.id_cliente,10,'0')
+        AND c.indirizzo = v.indprog
+        AND b.customer_cd_target IS NOT NULL
+            --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
+        AND c.tipologia IN ('REFERENTE CONTRATTUALE',
+                            'REFERENTE CONTABILE')
+        AND (z.mandt = 100
+            AND z.firma = 'RESID'
+            AND lpad(c.id_cliente,10,'0') = lpad(z.oldkey,10,'0')
+            AND z.object = 'PARTNER' )
+        UNION
+        SELECT
+            c.row_id -- 8000000000 + 4260000,           --0
+            --          b.customer_cd_target,      --1
+            ,
+            z.oldkey ,
+            DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01',
+            'BUP001'), --2
+            c.x_cognome, --3
+            c.x_nome, --4
+            v.indccom, --5
+            v.inddcom, --6
+            v.indindi, --7
+            v.indindi||' '||v.indccvia,--8
+            SUBSTR(indcivi,0,10), --9
+            v.indest, --10
+            v.indcap, --11
+            DECODE(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
+            v.indregio, --13
+            CASE
+                WHEN LENGTH(c.num_tel_work) > 6
+                THEN c.num_tel_work
+                WHEN LENGTH(c.num_tel_cell) = 10
+                THEN c.num_tel_cell
+                ELSE ' '
+            END
+            CASE, --14
+                    c.email_addr, --15
+                    v.indprov, --16
+                    v.indprog, --17
+                    SUBSTR(x_cognome,0,20), --18
+                    DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE',
+                    'ZUR009', 'BUR001'), --19
+                    substr(k.arag5,0,40) --20
+                FROM
+                    dbi_user.ifc_sap_crm_contatti c
+                LEFT OUTER JOIN
+                    dbi_user.ifc_sap_customer_rename b
+                ON
+                    c.id_cliente = b.customer_cd_source,
+                    v_indirizzi v,
+                    sapsr3.temksv@sap_iap z,
+                    v_clienti k
+                WHERE
+                    tipologia IS NOT NULL
+                AND c.indirizzo = v.indprog
+                AND lpad(k.acdan,10,'0') = lpad(c.id_cliente,10,'0')
+                AND b.customer_cd_target IS NOT NULL
+                    --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
+                AND c.tipologia NOT IN ('REFERENTE CONTRATTUALE',
+                                        'REFERENTE CONTABILE')
+                AND (z.mandt = 100
+                    AND z.firma = 'RESID'
+                    AND lpad(c.id_cliente,10,'0') = lpad(z.oldkey,10,'0')
+                    AND z.object = 'PARTNER' )
+                ORDER BY
+                    1
 	]]></mainSelect>
 			<insertTable name='PARTNER_REF_INIT' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />
@@ -104,6 +139,7 @@ order by 1
 					<field name='NAME_GRP2'  constant_value='' />
 					<field name='BU_SORT1'   index='18' />
 					<field name='BU_SORT2'   index='18' />
+					<field name='NICKNAME'   index='20' />
 			</insertTable>
 			<insertTable name='PARTNER_REF_BUTCOM' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />
@@ -166,6 +202,7 @@ order by 1
       b.name_last,                            -- 22
       b.name_first,                           -- 23
       b.partgrptyp,                           -- 24
+      b.nickname,
       b.name_grp1,                            -- 25
       b.name_grp2,                            -- 26
       ' ',                                    -- 27
@@ -222,11 +259,11 @@ order by 1
        ]]></mainSelect>
        	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
        	</csvLine>
-       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='51'>
+       	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='52'>
        	</csvLine>
-       	<csvLine line_index='2' break_index='2' field_start_index='62' field_end_index='65' condition_index='62' condition_value = 'None' condition_type='.ne'>
+       	<csvLine line_index='2' break_index='2' field_start_index='63' field_end_index='66' condition_index='63' condition_value = 'None' condition_type='.ne'>
        	</csvLine>
-       	<csvLine line_index='3' break_index='1' field_start_index='52' field_end_index='61'>
+       	<csvLine line_index='3' break_index='1' field_start_index='53' field_end_index='62'>
        	</csvLine>
        	<ende field_index='0' />
 	</partnerRefExtractor>

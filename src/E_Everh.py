@@ -21,7 +21,7 @@ stat_finale = '''
             v.ctar1,
             v.acdan
         FROM
-            sapsr3.ever@sap_iaq b,
+            sapsr3.ever@sap_iap b,
             v_contratti v,
             dbi_user.rpl_anu_t_vers_prodotti c,
             dbi_user.rpl_anu_t_prodotti p

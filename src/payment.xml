@@ -94,7 +94,8 @@ ORDER BY
 		   EMIG_PAY_FKKOPK.SGTXT --14
 		  FROM EMIG_PAY_FKKKO,
 		       EMIG_PAY_FKKOPK
-		   WHERE EMIG_PAY_FKKKO.LEGACY=EMIG_PAY_FKKOPK.LEGACY
+		   WHERE EMIG_PAY_FKKKO.LEGACY=EMIG_PAY_FKKOPK.LEGACY AND
+		   EMIG_PAY_FKKKO.LEGACY > '7349569'
 		 ORDER BY EMIG_PAY_FKKKO.LEGACY
 		 ]]></mainSelect>
          <csvLine line_index='00' break_index='0' field_start_index='0' field_end_index='7' >

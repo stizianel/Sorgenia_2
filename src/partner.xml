@@ -325,109 +325,135 @@ WHERE
 	   
        <partnerExtractor>
 		<mainSelect ><![CDATA[
-			select 
-      a.legacy,                               -- 0   INIT
-      a.legacy||c.adext_addr,                 -- 1
-      a.legacy||c.adext_addr||d.adr_kind,     -- 2
-      a.legacy||k.bkext,                      -- 3
-      a.legacy||t.taxtype||t.taxnum,          -- 4
-      a.legacy,                               -- 5
-      a.tipo,                                 -- 6  
-      a.partner,                              -- 7
-      a.muster_kun,                           -- 8
-      a.bu_rltyp,                             -- 9
-      a.bu_type,                              -- 10
-      a.bpkind,                               -- 11
-      b.legacy,                               -- 12  BUT000
-      b.tipo,                                 -- 13
-      b.bu_sort1,                             -- 14
-      b.bu_sort2,                             -- 15
-      b.title,                                -- 16   
-      b.name_org1,                            -- 17
-      b.name_org2,                            -- 18
-      b.name_org3,                            -- 19
-      b.name_org4,                            -- 20     
-      b.legal_enty,                           -- 21
-      b.name_last,                            -- 22
-      b.name_first,                           -- 23
-      ' ',                                    -- 24
-      b.nickname,                             -- 25
-      b.partgrptyp,                           -- 26
-      b.name_grp1,                            -- 27
-      b.name_grp2,                            -- 28
-      ' ',                                    -- 29
-      ' ',                                    -- 30
-      b.zzfactor,                             -- 31
-      b.zzstato,                              -- 32
-      b.zzaedat,                              -- 33
-      b.zzpool,                               -- 34
-      b.zzwaers,                              -- 35
-      replace(to_char(b.zzfattu,'99999999990D99'),'.',','),        -- 36 
-      replace(to_char(b.zzplafond_ric,'99999999990D99'),'.',','),  -- 37
-      replace(to_char(b.zzplafond,'99999999990D99'),'.',','),      -- 38
-      replace(to_char(b.zzprotest,'99999999990D99'),'.',','),      -- 39
-      replace(to_char(b.zzpregiud,'99999999990D99'),'.',','),  -- 40 
-      b.zzrating,                             -- 41
-      b.zzdtcost,                             -- 42
-      b.zzvalid,                              -- 43
-      b.zzcrmdt,                              -- 44
-      b.zzcrmcc,                              -- 45
-      b.zzmahns_gas,                          -- 46
-      b.zzmahns_pow,                          -- 47
-      b.zzmahns_fot,                          -- 48
-      b.zzcesdt,                              -- 49
-      b.zzfldis1,	        				  -- 50             
-      b.zzsegcli,                             -- 51
-      b.zzsegcred,                            -- 52
-      ' ',                                    -- 53
-      ' ',                                    -- 54
-      ' ',                                    -- 55
-      c.legacy,                               -- 56 BUT020
-      c.tipo,                                 -- 57
-      c.adext_addr,                           -- 58
-      c.city1,                                -- 59
-      c.post_code1,                           -- 60
-      c.street,                               -- 61
-      c.house_num1,                           -- 62
-      c.country,                              -- 63
-      c.region,                               -- 64
-      c.tel_number,                           -- 65
-      d.legacy,                               -- 66 BUT0IS
-      d.tipo,                                 -- 67
-      d.adext_advw,                           -- 68
-      d.adr_kind,                             -- 69
-      d.xdfadu,                               -- 70
-      k.legacy,                               -- 71 BUT0BK
-      k.tipo,                                 -- 72   
-      k.banks,								  -- 73
-      k.bankl,                                -- 74
-      k.bankn,                                -- 75
-      k.bkont,                                -- 76
-      k.koinh,                                -- 77 
-      k.bkext,                                -- 78
-      k.iban,                                 -- 79 
-      t.legacy,                               -- 80 TAXNUM
-      t.tipo,                                 -- 81
-      t.taxtype,                              -- 82
-      t.taxnum ,                              -- 83 
-      m.legacy,                               -- 84 BUTCOM
-      m.tipo,                                 -- 85
-      m.icom_tel_number                       -- 86 
-      from
-      partner_init a left outer join partner_but0bk k on a.legacy = k.legacy
-        left outer join partner_but021 d on a.legacy = d.legacy,
-      partner_but000 b,
-      partner_but020 c,
-      partner_taxnum t,
-      partner_butcom m
-      where
-      a.legacy = b.legacy and
-      a.legacy = c.legacy and
-      a.legacy = t.legacy and
-      a.legacy = m.legacy
-      --and rownum < 11
-      order by a.legacy, a.legacy||c.adext_addr, a.legacy||c.adext_addr||d.adr_kind,a.legacy||k.bkext,a.legacy||t.taxtype||t.taxnum
-       ]]></mainSelect>
+SELECT
+    a.legacy, -- 0   INIT
+    a.legacy||              c.adext_addr, -- 1
+    a.legacy||c.adext_addr||d.adr_kind, -- 2
+    a.legacy||              k.bkext, -- 3
+    a.legacy||t.taxtype||   t.taxnum, -- 4
+    a.legacy, -- 5
+    a.tipo, -- 6
+    a.partner, -- 7
+    a.muster_kun, -- 8
+    a.bu_rltyp, -- 9
+    a.bu_type, -- 10
+    a.bpkind, -- 11
+    b.legacy, -- 12  BUT000
+    b.tipo, -- 13
+    b.bu_sort1, -- 14
+    b.bu_sort2, -- 15
+    b.title, -- 16
+    b.name_org1, -- 17
+    b.name_org2, -- 18
+    b.name_org3, -- 19
+    b.name_org4, -- 20
+    b.legal_enty, -- 21
+    b.name_last, -- 22
+    b.name_first, -- 23
+    ' ', -- 24
+    b.nickname, -- 25
+    b.partgrptyp, -- 26
+    b.name_grp1, -- 27
+    b.name_grp2, -- 28
+    ' ', -- 29
+    ' ', -- 30
+    b.zzfactor, -- 31
+    b.zzstato, -- 32
+    b.zzaedat, -- 33
+    b.zzpool, -- 34
+    b.zzwaers, -- 35
+    REPLACE(TO_CHAR(b.zzfattu,'99999999990D99'),'.',','), -- 36
+    REPLACE(TO_CHAR(b.zzplafond_ric,'99999999990D99'),'.',','), -- 37
+    REPLACE(TO_CHAR(b.zzplafond,'99999999990D99'),'.',','), -- 38
+    REPLACE(TO_CHAR(b.zzprotest,'99999999990D99'),'.',','), -- 39
+    REPLACE(TO_CHAR(b.zzpregiud,'99999999990D99'),'.',','), -- 40
+    b.zzrating, -- 41
+    b.zzdtcost, -- 42
+    b.zzvalid, -- 43
+    b.zzcrmdt, -- 44
+    b.zzcrmcc, -- 45
+    b.zzmahns_gas, -- 46
+    b.zzmahns_pow, -- 47
+    b.zzmahns_fot, -- 48
+    b.zzcesdt, -- 49
+    b.zzfldis1, -- 50
+    b.zzsegcli, -- 51
+    b.zzsegcred, -- 52
+    ' ', -- 53
+    ' ', -- 54
+    ' ', -- 55
+    c.legacy, -- 56 BUT020
+    c.tipo, -- 57
+    c.adext_addr, -- 58
+    c.city1, -- 59
+    c.post_code1, -- 60
+    c.street, -- 61
+    c.house_num1, -- 62
+    c.country, -- 63
+    c.region, -- 64
+    m.icom_tel_number,
+    --c.tel_number, -- 65
+    d.legacy, -- 66 BUT0IS
+    d.tipo, -- 67
+    d.adext_advw, -- 68
+    d.adr_kind, -- 69
+    d.xdfadu, -- 70
+    k.legacy, -- 71 BUT0BK
+    k.tipo, -- 72
+    k.banks, -- 73
+    k.bankl, -- 74
+    k.bankn, -- 75
+    k.bkont, -- 76
+    k.koinh, -- 77
+    k.bkext, -- 78
+    k.iban, -- 79
+    t.legacy, -- 80 TAXNUM
+    t.tipo, -- 81
+    t.taxtype, -- 82
+    t.taxnum , -- 83
+    m.legacy, -- 84 BUTCOM
+    m.tipo, -- 85
+    m.icom_tel_number -- 86
+FROM
+    partner_init a
+LEFT OUTER JOIN
+    partner_but0bk k
+ON
+    a.legacy = k.legacy
+LEFT OUTER JOIN
+    partner_but021 d
+ON
+    a.legacy = d.legacy,
+    partner_but000 b,
+    partner_but020 c,
+    partner_taxnum t,
+    partner_butcom m
+WHERE
+    a.legacy = b.legacy
+AND a.legacy = c.legacy
+AND a.legacy = t.legacy
+AND a.legacy = m.legacy
+
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+AND a.legacy IN
+                 (
+                 SELECT DISTINCT
+                     acdan
+                 FROM
+                     v_contratti
+                 WHERE
+                     d_valido_al > to_date('20121231','yyyymmdd'))
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+                     
+                     
+    --and rownum < 11
+ORDER BY
+    a.legacy,
+    a.legacy||c.adext_addr,
+    a.legacy||c.adext_addr||d.adr_kind,
+    a.legacy||k.bkext,
+    a.legacy||t.taxtype||t.taxnum
+    ]]></mainSelect>
        	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
        	</csvLine>
        	<csvLine line_index='1' break_index='0' field_start_index='12' field_end_index='55'>

@@ -2,6 +2,8 @@
 	<queries>    
 	<KeyLargeAggregator>
          <mainSelect ><![CDATA[
+         	select legacy,CPOD from pfacts_f_dema
+         	union
          select legacy,CPOD from PEMG_FACTS_QUANT
          union 
          select legacy, cpod from pfacts_f_amou

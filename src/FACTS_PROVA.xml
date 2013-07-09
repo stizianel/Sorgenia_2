@@ -1,0 +1,155 @@
+<root>
+	<queries>
+	
+      	
+<rate>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+<mainSelect><![CDATA[ 
+SELECT
+    a.*,
+    DECODE(A.TIPO_OP, 'F_DEMA', '1', 'F_TQUA', '2', 'F_RATE','3', A.TIPO_OP) AS TIPOLOGIA
+FROM
+    (
+        SELECT
+            a.legacy||'RATE' AS legacy,
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE' AS legacy2,
+            a.tipo           AS tipo_op,
+            a.operand,
+            '\n'             AS rott,
+            b.legacy||'RATE' AS legacy3,
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.tarifart,
+            b.kondigr
+        FROM
+            facts_f_rate a,
+            facts_v_rate b,
+            Dbi_User.Ifc_Sap_Anagrcontrele c
+        WHERE
+            a.legacy = b.legacy
+        AND a.legacy = c.cncon
+        AND a.prog = b.prog
+        AND b.bis >'20080401'
+        and a.operand != 'ER412_SRFL'
+        GROUP BY
+            a.legacy||'RATE',
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE',
+            a.tipo,
+            a.operand,
+            '\n',
+            b.legacy||'RATE',
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.tarifart,
+            b.kondigr
+        UNION ALL
+        SELECT
+            a.legacy||'RATE',
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE',
+            a.tipo,
+            a.operand,
+            '\n' AS rott,
+            b.legacy||'RATE',
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.LMENGE,
+            B.LMENGE2
+        FROM
+            facts_f_dema a,
+            facts_v_dema b,
+            Dbi_User.Ifc_Sap_Anagrcontrele c
+        WHERE
+            a.legacy = b.legacy
+        AND a.legacy = c.cncon
+        AND a.prog = b.prog
+        AND b.bis >'20080401'
+        GROUP BY
+            a.legacy||'RATE',
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE',
+            a.tipo,
+            a.operand,
+            '\n',
+            b.legacy||'RATE',
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.LMENGE,
+            B.LMENGE2
+            UNION ALL
+        SELECT
+            a.legacy||'RATE',
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE',
+            a.tipo,
+            a.operand,
+            '\n' AS rott,
+            b.legacy||'RATE',
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.MENGE,
+            ''
+        FROM
+            facts_f_TQUA a,
+            facts_v_TQUA b,
+            Dbi_User.Ifc_Sap_Anagrcontrele c
+        WHERE
+            a.legacy = b.legacy
+        AND a.legacy = c.cncon
+        AND a.prog = b.prog
+        AND b.bis >'20080401'
+        GROUP BY
+            a.legacy||'RATE',
+            'KEY',
+            C.CPOD,
+            '99991231',
+            a.legacy||'RATE',
+            a.tipo,
+            a.operand,
+            '\n',
+            b.legacy||'RATE',
+            b.tipo,
+            b.ab,
+            b.bis,
+            b.MENGE,
+            '') a,
+    facts_key b
+WHERE
+    a.legacy = b.legacy||'RATE'
+AND b.gruppo = 12
+ORDER BY
+    a.CPOD,
+    a.legacy,
+    DECODE(A.TIPO_OP, 'F_DEMA', '1', 'F_TQUA', '2', 'F_RATE','3', A.TIPO_OP) ,
+    a.operand
+    ]]></mainSelect>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+       	<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='3'>                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+       	</csvLine>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       	<csvLine line_index='1' break_index='' field_start_index='4' field_end_index='13' DUPLICABLE = 'True'>                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+       	</csvLine>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+	<ende field_index='0' />                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+</rate>   
+
+
+
+	
+	
+	</queries>
+</root>
+

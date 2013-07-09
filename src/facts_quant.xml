@@ -16,7 +16,7 @@
         where v.ctar1 = a.ctar1  
         and a.acquisizione= v.cfreq
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 40')
+       and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti) --where note = 'lotto 45')
        and a.operando = b.operando
        and b.tipo = 'TQUANT'
        and v.cpod=e.legacy
@@ -56,7 +56,7 @@
 		     <field name='PROG'    index='7' />   
 		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 
-		      <insertTable name='FACTS_F_TQUA_SAV' truncate = 'False' break_index='' >
+		      <insertTable name='FACTS_F_TQUA_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_TQUA' />
 		     <field name='OPERAND' index = '2'  />
@@ -66,7 +66,7 @@
 		     <field name='PROG'   index='7'/>
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_TQUA_SAV' truncate = 'False' break_index='' >
+		   <insertTable name='FACTS_V_TQUA_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_TQUA' />
 		     <field name='AB' index='3' />

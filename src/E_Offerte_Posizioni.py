@@ -17,10 +17,8 @@ from it_eutile_utils_csvmanager.CsvManager import CsvManager
 
 stat_finale = '''
 SELECT
-    -- Ora uso la distinct perche devo fare ancora un check per i duplicati, da levare
-    -- successivamente
-    DISTINCT Cod_Proposta ,
-    Cod_Conto_Contrattuale ,
+    DISTINCT posi.Cod_Proposta ,
+    posi.Cod_Conto_Contrattuale ,
     Cod_Prodotto ,
     Mercato_Provenienza ,
     Apparecchiatura ,
@@ -29,24 +27,24 @@ SELECT
     Codice_Remi ,
     Fl_Remi_Non_Cert ,
     Fl_Distr_Non_Cert ,
-    TO_CHAR(Data_Invio_Benvenuto,'yyyymmddhh24miss')    AS Data_Invio_Benvenuto,
-    TO_CHAR(Data_Inizio_Fornitura,'yyyymmddhh24miss')   AS Data_Inizio_Fornitura,
-    TO_CHAR(Data_Fine_Fornitura,'yyyymmddhh24miss')     AS Data_Fine_Fornitura,
-    TO_CHAR(Data_Invio_Reces_Trader,'yyyymmddhh24miss') AS Data_Invio_Reces_Trader,
-    TO_CHAR(Data_Creazione_Pratica,'yyyymmddhh24miss')  AS Data_Creazione_Pratica,
-    TO_CHAR(Data_Invio_Pratica,'yyyymmddhh24miss')      AS Data_Invio_Pratica,
+    TO_CHAR(Data_Invio_Benvenuto,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Inizio_Fornitura,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Fine_Fornitura,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Invio_Reces_Trader,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Creazione_Pratica,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Invio_Pratica,'yyyymmddhh24miss') ,
     Numero_Pratica ,
-    Cod_Cliente ,
+    posi.Cod_Cliente ,
     Cod_Vendit_Uscente ,
     POD ,
     Distributore_Locale ,
     Cod_Misuratore ,
     Stato_Pos_Offerta ,
-    Motivo_Sosp_Rif ,
+    posi.Motivo_Sosp_Rif ,
     IBAN ,
     Zona_Climatica ,
     Classe_Prelievo_AEEG ,
-    TO_CHAR(Data_Fine_Fornitura_Prev,'yyyymmddhh24miss') AS Data_Fine_Fornitura_Prev,
+    TO_CHAR(Data_Fine_Fornitura_Prev,'yyyymmddhh24miss') ,
     Volume_Mese ,
     Impegno_Contrattuale ,
     Numero_Pronto_Interv ,
@@ -54,9 +52,9 @@ SELECT
     Consumo_Annuo_Compl ,
     Cod_Versione ,
     Residente ,
-    REPLACE(Potenza_Contrattuale,',','.') AS Potenza_Contrattuale,
-    REPLACE(Potenza_Disponibile,',','.')  AS Potenza_Disponibile,
-    REPLACE(Potenza_Impegnata,',','.')    AS Potenza_Impegnata ,
+    REPLACE(Potenza_Contrattuale,',','.') ,
+    REPLACE(Potenza_Disponibile,',','.') ,
+    REPLACE(Potenza_Impegnata,',','.') ,
     Tipologia_Uso_Elettr ,
     Livello_Tensione ,
     Tipologia_Uso_Gas ,
@@ -72,15 +70,18 @@ SELECT
     Premio_Sottoscr ,
     Opz_Last_Call
 FROM
-    dbi_user.IFC_SAP_CRM_OFF_POSIZIONE
---     sapsr3.but000@sap_caq b, --partner
---    sapsr3.isu_pod@sap_caq c, --ext_ui
---    sapsr3.crmm_babr_h@sap_caq d --zzvkona
+    dbi_user.IFC_SAP_CRM_OFF_POSIZIONE posi,
+    dbi_user.IFC_SAP_CRM_OFF_TESTATA testa,
+    sapsr3.but000@sap_caq b, --partner
+    --sapsr3.isu_pod@sap_caq c, --ext_ui
+    sapsr3.crmm_babr_h@sap_caq d --zzvkona
     -- Bisogna mettere il codice_proposta associato perche deve legarsi all'offerta
---WHERE
---    lpad(cod_cliente,10,'0') = lpad(b.partner,10,'0')
+WHERE
+    posi.cod_proposta = testa.cod_proposta
+    and lpad(posi.cod_cliente,10,'0') = lpad(b.partner,10,'0')
 --AND pod = c.ext_ui
---AND d.zzvkona = cod_conto_contrattuale
+AND d.zzvkona = posi.cod_conto_contrattuale 
+
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

@@ -15,14 +15,13 @@
         DBI_USER.ifc_sap_punti_fornitura d
         where 
         a.ctar1=v.ctar1 
-        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40' )
+        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti  )
         and a.operando = b.operando  
         and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-        --and a.cd_parametro=e.cd_parametro_valore_large
+        and v.ctar1='ST08'
         and b.tipo = 'USERDEF'  
         and a.tipo= v.cfreq
-        AND  to_char(d.dt_fine_fornitura,'yyyymmdd')>'20080401'
-       group by 
+             group by 
        v.DBI_ORIGINAL_KEY_PR,  --0
            v.CPOD,                                    --1 
            a.operando,                                 --2

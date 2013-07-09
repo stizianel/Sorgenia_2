@@ -2,27 +2,42 @@
 	<queries>
 	<moveinGAggregator>
 		<mainSelect ><![CDATA[
- 			select  a.cncon,                         --0
-            decode(a.ctipo, '1', 'P', '3', 'G'), --1
-            a.cflg9,                             --2
-            apers,                               --3
-            decode(a.caliv,'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), --4
---            to_char(p.dt_inizio_fornitura,'YYYYMMDD'),                                  --5
-            case when nvl(p.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) < to_date('20090701','YYYYMMDD') then '20090701' 
-               else to_char(p.dt_inizio_fornitura,'YYYYMMDD') end, -- 1                                                   -- 0
-            dec_serviceid(b.cdist),                                                     --6
-            dec_cokey(a.cserv, acatc),                                                  --7
-            dec_gsber(k.ktokl),                                                --8
-            a.cserv,
-            acatc,
-            dec_stagruver_gas(acatc)                                                    --11
-            from v_contratti a, DBI_USER.ifc_sap_anagrcontrgas b, dbi_user.ifc_sap_punti_fornitura p, accountg_vkp k --, z_temksv z
-            where 
-            a.cncon = p.dbi_punto_key and
-            a.cncon in (select cncon from z_pr_in_lavorazione_gas)
-            and a.cncon = b.cncon and b.ctipo = 3
-            and a.cflg9 = k.legacy
-            --and a.cncon = z.oldkey
+ 			SELECT
+    a.cncon, --0
+    DECODE(a.ctipo, '1', 'P', '3', 'G'), --1
+    a.cflg9, --2
+    apers, --3
+    DECODE(a.caliv,'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), --4
+    --            to_char(p.dt_inizio_fornitura,'YYYYMMDD'),                                  --5
+    CASE
+        WHEN NVL(p.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) < to_date('20090701',
+            'YYYYMMDD')
+        THEN '20090701'
+        ELSE TO_CHAR(p.dt_inizio_fornitura,'YYYYMMDD')
+    END, -- 1                                                   -- 0
+    dec_serviceid(b.cdist), --6
+    dec_cokey(a.cserv, acatc), --7
+    dec_gsber(k.ktokl), --8
+    a.cserv,
+    acatc,
+    dec_stagruver_gas(acatc) --11
+FROM
+    v_contratti a,
+    DBI_USER.ifc_sap_anagrcontrgas b,
+    dbi_user.ifc_sap_punti_fornitura p,
+    account_vkp k --, z_temksv z
+WHERE
+    a.cncon = p.dbi_punto_key
+AND a.cncon IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione_gas)
+AND a.cncon = b.cncon
+AND b.ctipo = 3
+AND a.cflg9 = k.legacy
+    --and a.cncon = z.oldkey
         ]]></mainSelect>
 		<insertTable name='MOVEING_EVER' truncate = 'True' break_index='' >
 				<field name='LEGACY' index='0' />

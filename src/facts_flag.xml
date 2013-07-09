@@ -15,7 +15,7 @@
         z_anagrafica_operandi b ,DBI_USER.ifc_sap_punti_fornitura d
        where v.ctar1 = a.ctar1 
          and d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR
-         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti where note = 'lotto 40')
+         and v.DBI_ORIGINAL_KEY_PR IN(select cncon from z_test_contratti) --where note = 'lotto 45')
          and a.operando = b.operando
          and tipo ='FLAG'
           --AND Get_Bis2(b.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
@@ -48,7 +48,7 @@
 		     <field name='PROG'  index ='7' />
 		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 		
-		     <insertTable name='FACTS_F_FLAG_SAV' truncate = 'False' break_index='' >
+		     <insertTable name='FACTS_F_FLAG_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_FLAG' />
 		     <field name='OPERAND' index = '2'  />
@@ -56,7 +56,7 @@
 		     <field name='PROG'   index= '7'/>
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_FLAG_SAV' truncate = 'False' break_index='' >
+		   <insertTable name='FACTS_V_FLAG_SAV' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_FLAG' />
 		     <field name='AB'   index='3' />

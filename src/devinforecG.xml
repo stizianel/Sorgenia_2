@@ -2,7 +2,7 @@
 	<queries>
 	<devinforecAggregator>
 	<mainSelect ><![CDATA[
-		SELECT
+SELECT
     SUBSTR(matricola_misuratore, 0, 18) || d.cncon AS legacy,
     'G',
     DECODE(numero_cifre, 5, 'GV5', 6, 'GV6', 'GV6'),
@@ -11,13 +11,14 @@
     AS matr,
     e.pr_area_ai,
     e.temp_area,
-    SUBSTR(fg.cd_remi, -8)
+    sap.calor_area
 FROM
     v_contratti d,
     adrcity_city e,
     dbi_user.ifc_sap_anagrindirizzi_pr ip,
     v_indirizzi vi,
-    dbi_user.ifc_sap_fornitura_gas_config fg
+    dbi_user.ifc_sap_fornitura_gas_config fg,
+    sapsr3.ZTE453T@sap_iap sap
 WHERE
     d.cncon IN
     (
@@ -29,6 +30,7 @@ AND vi.indccom = e.legacy
 AND d.ctipo = 3
 AND d.cncon = ip.Pr
 AND ip.Indprog = vi.indprog
+AND sap.text40(+) = fg.cd_remi
 AND fg.dbi_punto_key = d.cncon
 ORDER BY
     1

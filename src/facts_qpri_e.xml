@@ -29,9 +29,8 @@ FROM
                 SELECT
                     cncon
                 FROM
-                    z_test_contratti
-                WHERE
-                    note = 'lotto 40')
+                    z_test_contratti)
+                --WHERE note = 'lotto 45')
         AND a.operando = b.operando
         AND b.tipo ='QPRICE'
         AND a.operando!='EPB_A_43'
@@ -87,9 +86,8 @@ FROM
                                 SELECT
                                     cncon
                                 FROM
-                                    z_test_contratti
-                                WHERE
-                                    note = 'lotto 44')
+                                    z_test_contratti)
+                                --WHERE note = 'lotto 45')
                         AND a.operando = b.operando
                         AND b.tipo ='QPRICE'
                         AND
@@ -155,7 +153,7 @@ AND A.AB >= B.AB
 		     <field name='PROG'    index='7' />  
 		     <field name='CPOD'   index= '1'/> 
 		     </insertTable> 
-		       <insertTable name='FACTS_F_QPRICE_SAV' truncate = 'False' break_index='9' >
+		       <insertTable name='FACTS_F_QPRICE_SAV' truncate = 'True' break_index='9' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_QPRI' />
 		     <field name='OPERAND' index = '2'  />
@@ -163,7 +161,7 @@ AND A.AB >= B.AB
 		     <field name='PROG'   index='7' />
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_QPRICE_SAV' truncate = 'False' break_index='' >
+		   <insertTable name='FACTS_V_QPRICE_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_QPRI' />
 		     <field name='AB' index='3' />
@@ -235,7 +233,7 @@ AND A.AB >= B.AB
         and v.ctar1=a.ctar1
         and v.cpod=e.legacy
         and TO_CHAR(v.cdsti, 'YYYYMMDD')>=e.ab
-         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
+         and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti) --where note = 'lotto 45')
          and a.operando = b.operando
          and b.tipo ='LPRICE'
           --AND Get_Bis2(a.Operando,a.Ctar1,v.cdsti,v.cdces,Data_Validita_Al) > '20080401'
@@ -271,7 +269,7 @@ AND A.AB >= B.AB
 		     <field name='PROG'    index='7' />   
 		      <field name='CPOD'   index= '1'/>
 		     </insertTable> 
-		      <insertTable name='FACTS_F_LPRI_SAV' truncate = 'False' break_index='' >
+		      <insertTable name='FACTS_F_LPRI_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_LPRI' />
 		     <field name='OPERAND' index = '2'  />
@@ -279,7 +277,7 @@ AND A.AB >= B.AB
 		     <field name='PROG'   index='7' />
 		      <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_LPRICE_SAV' truncate = 'False' break_index='' >
+		   <insertTable name='FACTS_V_LPRICE_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_LPRI' />
 		     <field name='AB' index='3' />
@@ -344,7 +342,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
         where
          d.dbi_punto_key= v.DBI_ORIGINAL_KEY_PR and a.acquisizione= v.cfreq
         and v.ctar1=a.ctar1
-        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40')
+        and  v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti) --where note = 'lotto 45')
         and a.operando = b.operando
         and b.tipo ='TPRICE'
         and e.legacy=v.cpod
@@ -386,7 +384,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
 		     <field name='PROG'    index='7' /> 
 		     <field name='CPOD'   index= '1'/>  
 		     </insertTable> 
-		      <insertTable name='FACTS_F_TPRI_SAV' truncate = 'False' break_index='' >
+		      <insertTable name='FACTS_F_TPRI_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_TPRI' />
 		     <field name='OPERAND' index = '2'  />
@@ -394,7 +392,7 @@ from DBI_USER.ifc_sap_anagrcontrele v, z_prodotto_operando a,
 		     <field name='PROG'   index='7' />
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_TPRICE_SAV' truncate = 'False' break_index='' >
+		   <insertTable name='FACTS_V_TPRICE_SAV' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_TPRI' />
 		     <field name='AB' index='3' />

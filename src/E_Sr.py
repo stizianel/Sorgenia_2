@@ -213,7 +213,7 @@ SELECT
     ,
     TO_CHAR(Mdc_Data_Cessione_Prevista,'yyyymmddhh24miss') AS Mdc_Data_Cessione_Prevista
     --                                                        Sr Modifica di connessione -
-    --                                                        Verifiche
+                                                              -- Verifiche
     ,
     Strumento_Registrazione
     -- Sr Disattivazione
@@ -239,7 +239,7 @@ SELECT
     -- Sr Rettifica Fatturazione
     ,
     TO_CHAR(Data_Decorrenza_Richiesta,'yyyymmddhh24miss') AS Data_Decorrenza_Richiesta -- Non
-    --                                                       Gestito
+                                                             -- Gestito
     ,
     Flag_Letture_Inserite -- Non Gestito
     ,
@@ -345,5 +345,5 @@ with open(mycsv.csvFileName.replace('$s',str(yy)), 'wb') as f:
 cur_s1.close()
 #cursor.close()
 print "Sono state scritte ",ctrTota," righe."
-conn.close()
+conn.closeConnection()
 log.close()

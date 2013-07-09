@@ -20,6 +20,13 @@ FROM
 WHERE
     v.cncon = b.pr
 AND b.indprog = c.indprog
+		
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+AND v.d_valido_al > to_date('20121231','yyyymmdd')
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+                   
+                   
+
 AND v.cncon IN
     (
         SELECT
@@ -45,13 +52,13 @@ GROUP BY
 ORDER BY
     indprog  
 	      ]]></mainSelect>
-			<insertTable name='CONNOBJ_COEHA' truncate = 'True' break_index='0' >
+			<insertTable name='CONNOBJ_COEHA2' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />
 					<field name='TIPO' constant_value='CO_EHA' />
 					<field name='PLTXT' constant_value='Punto di connessione' />
 					<field name='SWERK' constant_value='' />
 			</insertTable>
-			<insertTable name='CONNOBJ_COADR' truncate = 'True' break_index='0' >
+			<insertTable name='CONNOBJ_COADR2' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />
 					<field name='TIPO' constant_value='CO_ADR' />
 					<field name='CITY1' index='2' />
@@ -84,7 +91,7 @@ ORDER BY
 	        b.country,
 	        b.region,
 	        b.regiogroup
-	        from connobj_coeha a, connobj_coadr b
+	        from connobj_coeha2 a, connobj_coadr2 b
 	        where
 	        a.legacy = b.legacy
 	    ]]></mainSelect>

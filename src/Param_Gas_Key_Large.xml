@@ -24,7 +24,8 @@
 		     <field name='ANLAGE' index='0' />
 		     <field name='BIS' constant_value='99991231' />
 		   </insertTable> 
-		    </KeyLargeGasAggregator>                  
+		    </KeyLargeGasAggregator>          
+		             
  </queries>
 </root>     
 	    

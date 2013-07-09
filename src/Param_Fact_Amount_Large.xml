@@ -16,11 +16,11 @@
         DBI_USER.rpl_anu_t_param_valori_large  d
         where 
         a.ctar1=v.ctar1 
-        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti where note = 'lotto 40' )
+        and v.DBI_ORIGINAL_KEY_PR IN (select cncon from z_test_contratti )
         and a.operando = b.operando  
         and v.ccontratto=d.cd_contratto
        and d.cd_punto=v.DBI_ORIGINAL_KEY_PR
-      --and to_char(d.d_fine_val,'yyyymmdd')>'20080401'
+      and v.ctar1='ST08'
       and a.cd_parametro=d.cd_parametro_valore_large
         and b.tipo = 'AMOUNT'  
         and a.tipo= v.cfreq

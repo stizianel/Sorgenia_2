@@ -2,52 +2,105 @@
 	<queries>
 	<ParamRateLargeAggregator>
 		<mainSelect ><![CDATA[
-    select  /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d c b) */
- b.cd_punto, --0
+    select /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d c b) */
+        cd_punto
+        ,cpod
+        ,operando
+       ,tipo
+       ,n_valore 
+       ,cd_parametro_valore_large
+       ,cd_parametro
+       ,d_inizio_val
+       ,d_fine_val
+       ,p_large_v_tarifart
+       ,Kondigr
+       ,ctarl
+       ,id_operando
+from (   
+select
+      a.cd_punto cd_punto
+      ,a.CPOD cpod
+        ,c.operando operando
+       ,d.tipo tipo
+       ,a.n_valore n_valore 
+       ,a.cd_parametro_valore_large cd_parametro_valore_large
+       ,c.cd_parametro cd_parametro
+       ,to_char(a.d_inizio_val, 'yyyymmdd') d_inizio_val
+       , --5
+        CASE
+          WHEN to_char(a.d_fine_val, 'yyyymmdd') IS NULL
+          THEN 
+            DATA_FINE_VAL(a.DBI_ORIGINAL_KEY_PR,c.OPERANDO,a.ctar1,a.d_inizio_val,a.d_fine_val)
+          ELSE to_char(a.d_fine_val, 'yyyymmdd')
+        END d_fine_val
+        ,case
+          when c.tipo_tariffa is null
+          then
+            PARAM_LARGE_VALORI_TARIFART(c.OPERANDO,a.cd_parametro_valore_large,a.DBI_ORIGINAL_KEY_PR,a.ctar1, a.n_tensione,dec_spebene(a.crete,a.n_tensione),CAST(a.n_potenza_imp AS VARCHAR2(10)),'0',a.indprov,a.indccom,null,a.d_inizio_val)
+          else c.tipo_tariffa
+        end p_large_v_tarifart --7
+      ,PARAM_large_PREZZO_KONDIGR(c.OPERANDO,a.cd_parametro_valore_large,a.DBI_ORIGINAL_KEY_PR,a.ctar1, a.n_tensione,dec_spebene(a.crete,a.n_tensione),CAST(a.n_potenza_imp AS VARCHAR2(10)),'0',a.indprov,a.indccom,null,a.d_inizio_val) Kondigr --8
+       ,a.ctar1 ctarl
+       ,d.id_operando id_operando --10
+ 
+from z_test_contratti                     e
+,(
+select 
+b.d_fine_val,
+V.crete,
+f.n_tensione,
+f.n_potenza_imp,
+h.indccom,
+h.indprov,
+b.d_inizio_val,
+  v.cfreq,
+  v.Dbi_Original_Key_Pr,
+b.cd_punto, --0
      V.CPOD, --1
-        c.operando, --2
-       d.tipo,--3
-       b.n_valore,--4  
-       b.cd_parametro_valore_large,c.cd_parametro,
-       to_char(b.d_inizio_val, 'yyyymmdd'), --5
-        CASE WHEN to_char(b.d_fine_val, 'yyyymmdd')IS NULL THEN  DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val)ELSE to_char(b.d_fine_val, 'yyyymmdd')END CASE  ,--6
-        case when c.tipo_tariffa is null then PARAM_LARGE_VALORI_TARIFART(c.OPERANDO,b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,v.ctar1, f.n_tensione,dec_spebene(V.crete,f.n_tensione),CAST(f.n_potenza_imp AS VARCHAR2(10)),'0',h.indprov,h.indccom,null,b.d_inizio_val)else c.tipo_tariffa end case ,--7
-      PARAM_large_PREZZO_KONDIGR(c.OPERANDO,b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,v.ctar1, f.n_tensione,dec_spebene(V.crete,f.n_tensione),CAST(f.n_potenza_imp AS VARCHAR2(10)),'0',h.indprov,h.indccom,null,b.d_inizio_val)Kondigr,--8
-       v.ctar1,d.id_operando --10
-            from 
+      
+       b.n_valore,--4 
+       b.cd_parametro_valore_large
+       ,to_char(b.d_inizio_val, 'yyyymmdd')
+      ,v.ctar1
+            from
         DBI_USER.rpl_anu_t_param_valori_large                       b,
-       z_parametro_operando_large                 c,
-       z_anagrafica_operandi                d,
-       z_test_contratti                     e,
        dbi_user.ifc_sap_anagrcontrele       v,
        DBI_USER.ifc_sap_fornitura_ee_config             f,
     DBI_USER.ifc_sap_anagrindirizzi_pr g,
     v_indirizzi h
- 		 where e.note='lotto 31'
-		  and v.Dbi_Original_Key_Pr =e.cncon
-		AND b.cd_parametro_valore_large = c.cd_parametro
-  and c.operando =d.operando
-  and v.DBI_ORIGINAL_KEY_PR=g.pr
+                        where  
+  v.DBI_ORIGINAL_KEY_PR=g.pr
   and h.indprog=g.indprog
     and f.dbi_punto_key=v.DBI_ORIGINAL_KEY_PR
-   and v.ctar1=c.ctar1
-    and c.tipo=v.cfreq
    and b.cd_punto=v.DBI_ORIGINAL_KEY_PR
-   and d.tipo='RATE TYPE'
- AND  DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val)> '20080401'
     AND B.CD_PUNTO=F.dbi_punto_key
-     group by b.cd_punto, V.CPOD,b.cd_parametro_valore_large,c.cd_parametro,
-     c.operando, --2
-       d.tipo,--3
-       b.n_valore,--4
-      to_char(b.d_inizio_val, 'yyyymmdd'), --5
-       c.tipo_tariffa,to_char(b.d_fine_val, 'yyyymmdd'),
-   DATA_FINE_VAL(v.DBI_ORIGINAL_KEY_PR,c.OPERANDO,v.ctar1,b.d_inizio_val,b.d_fine_val) ,--6
-    PARAM_LARGE_VALORI_TARIFART(c.OPERANDO,b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,v.ctar1, f.n_tensione,dec_spebene(V.crete,f.n_tensione),CAST(f.n_potenza_imp AS VARCHAR2(10)),'0',h.indprov,h.indccom,null,b.d_inizio_val),
-       PARAM_large_PREZZO_KONDIGR(c.OPERANDO,b.cd_parametro_valore_large,v.DBI_ORIGINAL_KEY_PR,v.ctar1, f.n_tensione,dec_spebene(V.crete,f.n_tensione),CAST(f.n_potenza_imp AS VARCHAR2(10)),'0',h.indprov,h.indccom,null,b.d_inizio_val),--9
-       v.ctar1,d.id_operando 
- order by b.cd_punto
-
+    group by b.d_fine_val,V.crete,f.n_tensione,f.n_potenza_imp,h.indprov,h.indccom,b.d_inizio_val,v.cfreq,v.Dbi_Original_Key_Pr,b.cd_punto,V.CPOD,b.n_valore,b.cd_parametro_valore_large,to_char(b.d_inizio_val, 'yyyymmdd'),v.ctar1
+    ) a
+    ,z_parametro_operando_large                 c
+    ,z_anagrafica_operandi                d
+   
+    where a.ctar1='ST08'
+    and a.Dbi_Original_Key_Pr =e.cncon
+    AND a.cd_parametro_valore_large = c.cd_parametro
+   and a.ctar1=c.ctar1
+    and c.tipo=a.cfreq
+    and d.tipo='RATE TYPE'
+    and c.operando =d.operando
+) ult
+group by
+cd_punto
+        ,cpod
+        ,operando
+       ,tipo
+       ,n_valore 
+       ,cd_parametro_valore_large
+       ,cd_parametro
+       ,d_inizio_val
+       ,d_fine_val
+       ,p_large_v_tarifart
+       ,Kondigr
+       ,ctarl
+       ,id_operando
         ]]></mainSelect>
 		
 	     <insertTable name='PFACTS_F_RATE_TYPE' truncate = 'True' break_index='' >
@@ -55,17 +108,17 @@
 		     <field name='TIPO' constant_value='F_RATE' />
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
-		     <field name='PROG'   index= '10'/>
+		     <field name='PROG'   index= '12'/>
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
 		   <insertTable name='PFACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_RATE' />
-		     <field name='AB'   index='5' />
-		     <field name='BIS' index='6' />
-		      <field name='TARIFART' index='7' />
-		     <field name='KONDIGR' index='8' />
-		     <field name='PROG'   index= '10'/>
+		     <field name='AB'   index='7' />
+		     <field name='BIS' index='8' />
+		      <field name='TARIFART' index='9' />
+		     <field name='KONDIGR' index='10' />
+		     <field name='PROG'   index= '12'/>
 		     <field name='CPOD'   index= '1'/>
 		      </insertTable> 
 		

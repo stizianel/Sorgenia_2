@@ -10,7 +10,7 @@
          union
          select legacy,cpod from facts_f_qprice
          union 
-         select legacy,cpod from facts_f_rate_type
+         select legacy,cpod from facts_f_rate--_type
          union
          select legacy,cpod from facts_f_lpri
          union
@@ -26,13 +26,16 @@
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
 		   </insertTable> 
-		    <insertTable name='FACTS_KEY_SAV' truncate = 'False' break_index='0'    >
+		    <insertTable name='FACTS_KEY_SAV' truncate = 'True' break_index='0'    >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='KEY' />
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
 		   </insertTable> 
-		    </KeyMMAggregator>                  
+		    </KeyMMAggregator>      
+		    		    
+		    
+		                
  </queries>
 </root>     
 	    

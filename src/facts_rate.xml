@@ -1,7 +1,10 @@
 <root>
 	<queries>
+	
+	
 	<RateAggregator>
 		<mainSelect ><![CDATA[
+		
      SELECT
     /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
     v.Dbi_Original_Key_Pr , --0
@@ -79,8 +82,9 @@ FROM
     v_Indirizzi l,
     z_zmda_instln z,instln_data e
 WHERE
-    i.Note = 'lotto 40'
-AND v.Dbi_Original_Key_Pr = i.Cncon
+  --i.Note = 'lotto 40'
+--AND 
+v.Dbi_Original_Key_Pr = i.Cncon
     --AND v.Dbi_Original_Key_Pr = 'PR2011209'
 AND v.Dbi_Original_Key_Pr=g.pr
 AND a.Acquisizione = v.Cfreq
@@ -215,8 +219,296 @@ GROUP BY
 		     <field name='PROG'  index ='7' />
 		     <field name='CPOD'   index= '1'/>
 		     </insertTable> 
+	</RateAggregator>		
+
+
+	<RateNewAggregator>
+		<mainSelect ><![CDATA[		
+SELECT
+    /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
+    v.Dbi_Original_Key_Pr , --0
+    v.cpod, --1
+    a.Operando,
+    CASE
+        WHEN TO_CHAR(v.cdsti, 'YYYYMMDD') < '20080401'
+        THEN '20080401'
+        ELSE TO_CHAR(v.cdsti, 'YYYYMMDD')
+    END                          AS ab, --3
+    TO_CHAR(v.cdces, 'YYYYMMDD') AS bis,
+    CASE
+        WHEN b.operando NOT IN ('ER91_IMP',
+                                'ER60DISTR')
+        THEN a.valori
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di illuminazione pubblica'
+        THEN 'E91E_L01'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E91I_UD'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di altro tipo'
+        THEN 'E91S_M04'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E610DSUD'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor != 'Utenza residenziale'
+        THEN 'E620DAUI'
+        ELSE a.valori
+    END AS tarif , --5
+    CASE
+        WHEN a.prezzo IS NOT NULL
+        THEN a.prezzo
+        WHEN a.prezzo IS NULL
+        AND b.operando IN ('ER126_UC1',
+                           'ER250_DBT',
+                           'ER91_IMP' )
+        AND ( z.RESIDENZA = DEC_CTFOR(v.CTFOR)
+            OR  z.RESIDENZA IS NULL)
+        THEN z.kondigr
+        WHEN a.prezzo IS NULL
+        AND b.operando NOT IN ('ER126_UC1',
+                               'ER250_DBT',
+                               'ER91_IMP' )
+        THEN z.kondigr
+    END AS kondigr,
+    b.Id_Operando
+FROM
+    Dbi_User.Ifc_Sap_Anagrcontrele v ,
+    Dbi_User.Ifc_Sap_Punti_Fornitura d ,
+    Dbi_User.Ifc_Sap_Anagrindirizzi_pr g ,
+    z_Test_Contratti i ,    
+    z_Prodotto_Operando a ,    
+    v_Indirizzi l,
+    z_zmda_instln z,
+    instln_data e,
+    z_Anagrafica_Operandi b
+WHERE
+    --i.Note = 'lotto 45'
+--AND
+--v.Dbi_Original_Key_Pr IN (SELECT LEGACY FROM FACTS_KEY WHERE GRUPPO = 12)
+--AND 
+d.Dbi_Punto_Key = v.Dbi_Original_Key_Pr
+AND d.valid_from=v.d_valido_dal
+AND d.valid_until=v.d_valido_al
+AND d.Frequenza_Misura = v.Cfreq
+AND g.pr = v.Dbi_Original_Key_Pr
+AND i.Cncon = v.Dbi_Original_Key_Pr
+
+AND a.Acquisizione = v.Cfreq
+AND a.Ctar1 = v.Ctar1
+AND v.cpod=e.legacy
+AND a.Operando = b.Operando
+AND a.prezzo IS NULL
+AND b.Tipo = 'RATE TYPE'
+
+
+AND TO_CHAR(v.cdsti, 'YYYYMMDD')>= e.ab
+
+AND l.Indprog = g.Indprog
+AND z.operand = b.Operando
+AND (
+        z.OPZ_DISTR = d.Cd_Tariffa_Distr_norm
+    OR  z.OPZ_DISTR IS NULL)
+AND z.TIPO_USO = Dec_Stagruver(v.Ctfor)
+AND z.LIV_TENS = Dec_Spebene(v.Crete,d.Tensione)
+/*AND (
+    z.RESIDENZA = DEC_CTFOR(v.CTFOR)
+    OR  z.RESIDENZA IS NULL)*/
+AND (
+        z.PROVINCIA = l.Indprov
+    OR  z.PROVINCIA IS NULL)
+--AND (z.CD_ISTAT = l.Indccom or z.CD_ISTAT is null)
+AND TRIM(TO_CHAR(d.potenza_impegnata)) BETWEEN z.POTENZA_DA AND z.POTENZA_A
+AND (
+        CASE
+            WHEN a.prezzo IS NOT NULL
+            THEN a.prezzo
+            WHEN a.prezzo IS NULL
+            AND b.operando IN ('ER126_UC1',
+                               'ER250_DBT',
+                               'ER91_IMP' )
+            AND ( z.RESIDENZA = DEC_CTFOR(v.CTFOR)
+                OR  z.RESIDENZA IS NULL)
+            THEN z.kondigr
+            WHEN a.prezzo IS NULL
+            AND b.operando NOT IN ('ER126_UC1',
+                                   'ER250_DBT',
+                                   'ER91_IMP' )
+            THEN z.kondigr
+        END) IS NOT NULL
+GROUP BY
+    v.Dbi_Original_Key_Pr , --0
+    v.cpod, --1
+    a.Operando,
+    CASE
+        WHEN TO_CHAR(v.cdsti, 'YYYYMMDD') < '20080401'
+        THEN '20080401'
+        ELSE TO_CHAR(v.cdsti, 'YYYYMMDD')
+    END ,
+    TO_CHAR(v.cdces, 'YYYYMMDD'),
+    CASE
+        WHEN b.operando NOT IN ('ER91_IMP',
+                                'ER60DISTR')
+        THEN a.valori
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di illuminazione pubblica'
+        THEN 'E91E_L01'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E91I_UD'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di altro tipo'
+        THEN 'E91S_M04'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E610DSUD'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor != 'Utenza residenziale'
+        THEN 'E620DAUI'
+        ELSE a.valori
+    END,
+    CASE
+        WHEN a.prezzo IS NOT NULL
+        THEN a.prezzo
+        WHEN a.prezzo IS NULL
+        AND b.operando IN ('ER126_UC1',
+                           'ER250_DBT',
+                           'ER91_IMP' )
+        AND ( z.RESIDENZA = DEC_CTFOR(v.CTFOR)
+            OR  z.RESIDENZA IS NULL)
+        THEN z.kondigr
+        WHEN a.prezzo IS NULL
+        AND b.operando NOT IN ('ER126_UC1',
+                               'ER250_DBT',
+                               'ER91_IMP' )
+        THEN z.kondigr
+    END,
+    b.Id_Operando
+UNION ALL
+SELECT
+    /*+ ORDERED FULL(i) FULL(a) FULL(d) USE_HASH(v d a b) */
+    v.Dbi_Original_Key_Pr , --0
+    v.cpod, --1
+    a.Operando,
+    CASE
+        WHEN TO_CHAR(v.cdsti, 'YYYYMMDD') < '20080401'
+        THEN '20080401'
+        ELSE TO_CHAR(v.cdsti, 'YYYYMMDD')
+    END                          AS ab, --3
+    TO_CHAR(v.cdces, 'YYYYMMDD') AS bis,
+    CASE
+        WHEN b.operando NOT IN ('ER91_IMP',
+                                'ER60DISTR')
+        THEN a.valori
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di illuminazione pubblica'
+        THEN 'E91E_L01'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E91I_UD'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di altro tipo'
+        THEN 'E91S_M04'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E610DSUD'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor != 'Utenza residenziale'
+        THEN 'E620DAUI'
+        ELSE a.valori
+    END AS tarif , --5
+    a.prezzo AS kondigr,
+    b.Id_Operando
+FROM
+    Dbi_User.Ifc_Sap_Anagrcontrele v ,
+    Dbi_User.Ifc_Sap_Punti_Fornitura d ,
+     Dbi_User.Ifc_Sap_Anagrindirizzi_pr g ,
+    z_Test_Contratti i ,    
+    z_Prodotto_Operando a ,
+    z_Anagrafica_Operandi b ,   
+    v_Indirizzi l,
+    --z_zmda_instln z,
+    instln_data e
+WHERE
+    --i.Note = 'lotto 45'
+--AND 
+--v.Dbi_Original_Key_Pr IN (SELECT LEGACY FROM FACTS_KEY WHERE GRUPPO = 12)
+
+--AND 
+v.Dbi_Original_Key_Pr=g.pr
+AND d.Dbi_Punto_Key = v.Dbi_Original_Key_Pr
+AND d.valid_from=v.d_valido_dal
+AND d.valid_until=v.d_valido_al
+AND d.Frequenza_Misura = v.Cfreq
+AND g.pr = v.Dbi_Original_Key_Pr
+AND a.Acquisizione = v.Cfreq
+AND a.Ctar1 = v.Ctar1
+AND a.Operando = b.Operando
+AND b.Tipo = 'RATE TYPE'
+AND i.Cncon = v.Dbi_Original_Key_Pr
+AND e.legacy = v.cpod
+AND e.ab <= TO_CHAR(v.cdsti, 'YYYYMMDD')
+AND l.Indprog = g.Indprog
+AND a.prezzo IS NOT NULL
+GROUP BY
+    v.Dbi_Original_Key_Pr , --0
+    v.cpod, --1
+    a.Operando,
+    CASE
+        WHEN TO_CHAR(v.cdsti, 'YYYYMMDD') < '20080401'
+        THEN '20080401'
+        ELSE TO_CHAR(v.cdsti, 'YYYYMMDD')
+    END ,
+    TO_CHAR(v.cdces, 'YYYYMMDD'),
+    CASE
+        WHEN b.operando NOT IN ('ER91_IMP',
+                                'ER60DISTR')
+        THEN a.valori
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di illuminazione pubblica'
+        THEN 'E91E_L01'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E91I_UD'
+        WHEN b.operando = 'ER91_IMP'
+        AND v.Ctfor = 'Utenza di altro tipo'
+        THEN 'E91S_M04'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor = 'Utenza residenziale'
+        THEN 'E610DSUD'
+        WHEN b.operando = 'ER60DISTR'
+        AND v.Ctfor != 'Utenza residenziale'
+        THEN 'E620DAUI'
+        ELSE a.valori
+    END,
+    a.prezzo ,
+    b.Id_Operando		
+     ]]></mainSelect>
 		
-	</RateAggregator>
+		     <insertTable name='FACTS_F_RATE' truncate = 'True' break_index='' >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='F_RATE' />
+		     <field name='OPERAND' index = '2'  />
+		     <field name='SAISON' constant_value='' />
+		     <field name='PROG'   index= '7'/>
+		     <field name='CPOD'   index= '1'/>
+		   </insertTable> 
+		   <insertTable name='FACTS_V_RATE' truncate = 'True' break_index='' >
+		      <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='V_RATE' />
+		     <field name='AB'   index='3' />
+		     <field name='BIS' index='4' />
+		      <field name='TARIFART' index='5' />
+		     <field name='KONDIGR' index='6' />
+		     <field name='PROG'  index ='7' />
+		     <field name='CPOD'   index= '1'/>
+		     </insertTable> 
+	</RateNewAggregator>		
+		
+		
+		
+
 	<RateExtractor>
 		<mainSelect ><![CDATA[
 		SELECT
@@ -251,6 +543,6 @@ GROUP BY
          </csvLine>   
          <ende field_index='0' />
 	</RateExtractor>
+	
 	</queries>
 </root>
-

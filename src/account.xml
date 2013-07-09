@@ -187,6 +187,19 @@ ORDER BY
 		where
 		a.legacy = b.legacy and
 		a.legacy = c.legacy
+		
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+		AND a.legacy IN
+               (
+               SELECT DISTINCT
+                   cflg9
+               FROM
+                   v_contratti
+               WHERE
+                   d_valido_al > to_date('20121231','yyyymmdd'))
+-- MODIFICA FILTRO CAUCCINO DA TOGLIERE
+                   
+                   
 		order by a.legacy
 		]]></mainSelect>
 		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='4'>

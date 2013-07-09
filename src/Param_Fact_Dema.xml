@@ -3,32 +3,72 @@
 
 	<FactDemaAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
-          select a.DBI_ORIGINAL_KEY_PR,  --0
-                 a.cpod,  --1
-                TO_CHAR(a.cdsti, 'YYYYMMDD'),--3 
-                TO_CHAR(a.cdces, 'YYYYMMDD'),--4
-                c.operando,                             --4
-               decode (c.operando,'ED_LIM_BOP',B.VALORI,'EDPOTDIS00',cast(a.cpota as varchar2(10)),'EDPOTCIMP0',cast(a.cpot1 as varchar2(10)),cast(a.cpot1 as varchar2(10))), -- 5
-               cast(a.cpota as varchar2(10)),                    -- 6
-               b.valori,                                             --7
-               b.prezzo,                                              --8
-               c.id_operando                                          --9
-            from z_anagrafica_operandi c,z_prodotto_operando b, 
-                DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d ,
-                instln_data e
-    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti) --where note = 'lotto 45')
-    and  c.tipo='DEMA'
-    and b.ctar1=a.ctar1 
-    and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
-    and b.acquisizione= a.cfreq   
-      and c.operando=b.operando
-      and a.d_valido_dal=d.valid_from
-      and a.d_valido_al=d.valid_until
-      and a.cpod=e.legacy
-      and TO_CHAR(a.cdsti, 'YYYYMMDD') >=e.ab
+          select * from (
+SELECT
+    a.DBI_ORIGINAL_KEY_PR as pr, --0
+    a.cpod as legacy, --1
+    TO_CHAR(a.cdsti, 'YYYYMMDD'),--2
+    TO_CHAR(a.cdces, 'YYYYMMDD'),--3
+    'EDPOTDIS00'                   AS operando, --4
+    CAST(a.cpota AS VARCHAR2(100)) AS EDPOTDIS00, --5
+    ''                            AS A,
+    ''                            AS B,
+    ''                            AS C,
+    '2'                            AS ID
+FROM
+    DBI_USER.ifc_sap_anagrcontrele a,
+    DBI_USER.ifc_sap_punti_fornitura d,
+    instln_data e
+WHERE
+    a.DBI_ORIGINAL_KEY_PR IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_test_contratti
+        )
+AND d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
+and a.ctar1='ST08'
+AND a.mercato_versione = 'LARGE'
+AND a.d_valido_dal=d.valid_from
+AND a.d_valido_al=d.valid_until
+AND a.cpod=e.legacy
+AND TO_CHAR(a.cdsti, 'YYYYMMDD') >=e.ab
+UNION ALL
+SELECT
+    a.DBI_ORIGINAL_KEY_PR, --0
+    a.cpod, --1
+    TO_CHAR(a.cdsti, 'YYYYMMDD'),--2
+    TO_CHAR(a.cdces, 'YYYYMMDD'),--3
+    'EDPOTCIMP0', --4
+    CAST(a.cpota AS VARCHAR2(100)) AS EDPOTCIMP0, --5
+    ''                            AS A,
+    ''                            AS B,
+    ''                            AS C,
+    '5'                            AS ID
+FROM
+    DBI_USER.ifc_sap_anagrcontrele a,
+    DBI_USER.ifc_sap_punti_fornitura d ,
+    instln_data e
+WHERE
+    a.DBI_ORIGINAL_KEY_PR IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_test_contratti
+        )
+AND d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
+AND a.mercato_versione = 'LARGE'
+AND a.d_valido_dal=d.valid_from
+AND a.d_valido_al=d.valid_until
+AND a.cpod=e.legacy
+and a.ctar1='ST08'
+AND TO_CHAR(a.cdsti, 'YYYYMMDD') >=e.ab)
+order by legacy, pr, operando
        ]]></mainSelect>
      
-		   <insertTable name='FACTS_F_DEMA' truncate = 'True' break_index=''  >
+		   <insertTable name='PFACTS_F_DEMA' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_DEMA' />
 		     <field name='OPERAND' index = '4' />
@@ -36,28 +76,7 @@
 		     <field name='PROG'  index ='9' />
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		   <insertTable name='FACTS_V_DEMA' truncate = 'True' break_index=''   >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='V_DEMA' />
-		     <field name='AB'   index ='2' />
-		     <field name='BIS'  index='3' />
-		     <field name='LMENGE'   index = '5'  />
-		     <field name='LMENGE2'  constant_value=''  />
-		     <field name='TARIFART' constant_value='' />
-		     <field name='KONDIGR' constant_value='' />
-		     <field name='PROG'  index ='9' />  
-		     <field name='CPOD'   index= '1'/>
-		     </insertTable>	
-		     
-		      <insertTable name='FACTS_F_DEMA_SAV' truncate = 'True' break_index=''  >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='F_DEMA' />
-		     <field name='OPERAND' index = '4' />
-		     <field name='SAISON' constant_value='' />
-		     <field name='PROG'  index ='9' />
-		     <field name='CPOD'   index= '1'/>
-		   </insertTable> 
-		   <insertTable name='FACTS_V_DEMA_SAV' truncate = 'True' break_index=''   >
+		   <insertTable name='PFACTS_V_DEMA' truncate = 'True' break_index=''   >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_DEMA' />
 		     <field name='AB'   index ='2' />
@@ -124,11 +143,12 @@
                  b.acquisizione                                         --9
        from z_anagrafica_operandi c,z_prodotto_operando b, 
        DBI_USER.ifc_sap_anagrcontrele a,DBI_USER.ifc_sap_punti_fornitura d ,instln_data e
-    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti) --where note = 'lotto 45')
+    where a.DBI_ORIGINAL_KEY_PR in (select cncon from z_test_contratti )
     and c.tipo='USERDEF'    
       and b.ctar1=a.ctar1 and d.dbi_punto_key= a.DBI_ORIGINAL_KEY_PR
     and b.acquisizione= a.cfreq   
        and c.operando=b.operando
+       and a.ctar1='ST08'
       and a.d_valido_dal=d.valid_from
       and a.d_valido_al=d.valid_until
       and a.cpod=e.legacy
@@ -156,7 +176,7 @@
 		     <field name='PROG'  index ='5' />
 		     <field name='CPOD'   index= '1'/>
 		    </insertTable> 
-		     <insertTable name='FACTS_F_UDEF_SAV' truncate = 'True' break_index=''  >
+		     <insertTable name='FACTS_F_UDEF_SAV' truncate = 'False' break_index=''  >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_UDEF' />
 		     <field name='OPERAND' index = '2' />
@@ -164,7 +184,7 @@
 		     <field name='PROG'  index ='5' />
 		     <field name='CPOD'   index= '1'/>
 		   </insertTable> 
-		    <insertTable name='FACTS_V_UDEF_SAV' truncate = 'True' break_index=''  >
+		    <insertTable name='FACTS_V_UDEF_SAV' truncate = 'False' break_index=''  >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='V_UDEF' />
 		     <field name='AB' index='3' />

@@ -82,7 +82,7 @@ yy=1
 ctrEnde=0
 ctrTota=0
 with open(mycsv.csvFileName.replace('$s',str(yy)), 'wb') as f:
-    csv.register_dialect('csv', delimiter=';',quotechar="'", quoting=csv.QUOTE_MINIMAL)
+    csv.register_dialect('csv', delimiter=';',quotechar=None, quoting=csv.QUOTE_NONE)
     dialect = csv.get_dialect('csv')
     writer = csv.writer(f,dialect)
     

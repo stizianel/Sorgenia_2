@@ -87,6 +87,7 @@
 		<field name='EQUNRALT'  constant_value=' ' />
 		</insertTable>
 	</instmgmtAggregator>
+	
 	<instmgmtExtractor>
 		<mainSelect ><![CDATA[
 			select * from instmgmtg_diint a, instmgmtg_dizw b, instmgmtg_diger c

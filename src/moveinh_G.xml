@@ -1,6 +1,6 @@
 <root>
 	<queries>
-	<moveinAggregator>
+	<moveinHGAggregator>
 		<mainSelect ><![CDATA[
 SELECT
     a.dbi_original_key_pr                                            AS Contratto, --0
@@ -12,13 +12,13 @@ SELECT
     dec_serviceid(b.cdist)                                                      AS service, --6
     dec_cokey(a.cserv, acatc)                                                   AS cokey, --7
     dec_gsber(k.ktokl)                                                          AS gsber, --8
-    dec_stagruver(b.ctfor)                                                      AS stagruver, --9
+    dec_stagruver_gas(acatc)                                                        AS stagruver, --9
     dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura)                        AS ausgrup , --10
     TO_CHAR(p.valid_until, 'YYYYMMDD')                                          AS AUSZDAT,
     p.pod                                                                       AS pod
 FROM
     v_contratti a,
-    DBI_USER.ifc_sap_anagrcontrele b,
+    DBI_USER.ifc_sap_anagrcontrgas b,
     (
         SELECT
             p.DBI_PUNTO_KEY,
@@ -47,9 +47,9 @@ AND a.dbi_original_key_pr IN
         SELECT
             cncon
         FROM
-            z_pr_in_lavorazione)
+            z_pr_in_lavorazione_gas)
 AND a.dbi_original_key_pr = b.dbi_original_key_pr
-AND b.ctipo = 1
+    --AND b.ctipo = 1
 AND a.cflg9 = k.legacy
 AND a.dbi_original_key_pr = t.cd_punto
 AND t.data_cessazione != to_date('31/12/9999', 'dd/mm/yyyy')
@@ -63,7 +63,7 @@ GROUP BY
     dec_serviceid(b.cdist), --6
     dec_cokey(a.cserv, acatc), --7
     dec_gsber(k.ktokl), --8
-    dec_stagruver(b.ctfor), --9
+    dec_stagruver_gas(acatc), --9
     dec_ausgrup(p.rete_appartenenenza, p.tipo_fornitura), --10
     TO_CHAR(p.valid_until, 'YYYYMMDD'),
     p.pod
@@ -92,9 +92,9 @@ GROUP BY
 				<field name='CONTRACTCLASS' constant_value='' />
 				<field name='AUSGRUP' index='10' />
 		</insertTable>
-	</moveinAggregator>
+	</moveinHGAggregator>
 	
-	<moveinExtractor>
+	<moveinHGExtractor>
 		<mainSelect ><![CDATA[
 SELECT
     *
@@ -106,7 +106,7 @@ ORDER BY
 		<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='21'>
        	</csvLine>
 		<ende field_index='0' />
-	</moveinExtractor>
+	</moveinHGExtractor>
 	</queries>
 </root>
 

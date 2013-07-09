@@ -19,10 +19,10 @@
          AND    d.cd_punto= c.DBI_ORIGINAL_KEY_PR
          and a.ctar1=c.ctar1 
          and a.cd_parametro=d.cd_parametro_valore_large
-         and C.DBI_ORIGINAL_KEY_PR IN (select c.cncon from z_test_contratti c where c.note='lotto 40' )
+         and C.DBI_ORIGINAL_KEY_PR IN (select c.cncon from z_test_contratti c )
          and a.operando = b.operando 
          and b.tipo = 'FACTOR'
-         --and to_char(d.d_fine_val, 'yyyymmdd') > '20080401'
+         and c.ctar1='ST08'
         group by 
            C.DBI_ORIGINAL_KEY_PR, 
            C.cpod, 

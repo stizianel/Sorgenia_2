@@ -26,15 +26,16 @@ htmlMode=''
 #-----------------------------------------------------------------
 #  
 w_gruppo = sys.argv[1]
+#w_gruppo = 11
 
 #inizializzazione e apertura file di log
-log = LogManager('factsgen', Constants.getDebugMode(),date,htmlMode)
+log = LogManager('factsgen_1', Constants.getDebugMode(),date,htmlMode)
 #                
 #inizializzazione e apertura file emigall
-mycsv = CsvManager('factsgen','\t',False)
+mycsv = CsvManager('factsgen_1','\t',False)
             
 #creazione oggetto di connessione Oracle
-conn = ConnectionManager('factsgen',log)
+conn = ConnectionManager('factsgen_1',log)
 
 #nome programma
 log.testata(" creazione csv Emigall " + 'factsgen')

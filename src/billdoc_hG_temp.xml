@@ -2,47 +2,56 @@
 	<queries>
 	<billdocHAggregator>
 		<mainSelect ><![CDATA[
-        select * from (
-        select t.dbi_cd_punto || to_char(t.ldall, 'YYYYMMDD') as lk, -- 0
-       e.ccdan, -- 1
-       e.cflg9, -- 2
-       e.cncon, -- 3
-       --        to_char(f.dt_inizio_fornitura,'YYYYMMDD') as dtini,         -- 4
-       case
-         when nvl(f.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) <
-              to_date('20090701', 'YYYYMMDD') then
-          '20090701'
-         else
-          to_char(f.dt_inizio_fornitura, 'YYYYMMDD')
-       end as dtini, -- 4                                                   -- 0
-       
-       to_char(t.ldall, 'YYYYMMDD') as dtfine, -- 5
-       to_char(sysdate, 'YYYYMMDD') as dtoggi, -- 6
-       decode(e.caliv,
-              'Aliquota ordinaria',
-              '01',
-              'Aliquota ridotta',
-              '02',
-              'ER'), -- 7
-       ableinh, -- 8
-       v.ktokl, -- 9
-       dec_tipolettura(e.cflg4, t.ldall), -- 10
-       row_number() over(partition by t.dbi_cd_punto, lmari, lprog order by ldall) ordine
-  from instmgmtg_diint                     i,
-       dbi_user.ifc_sap_letture_gas_anubis t,
-       dbi_user.ifc_sap_anagrcontrgas      e,
-       dbi_user.ifc_sap_punti_fornitura    f,
-       instlng_data                        g,
-       account_vkp                         v
- where i.anlage = t.dbi_cd_punto
-   and e.cncon in (select cncon from z_pr_in_lavorazione_gas)
-   and t.dbi_cd_punto = e.cncon
-   and t.dbi_cd_punto = f.dbi_punto_key
-   and t.dbi_cd_punto = g.legacy
-   and e.cflg9 = v.legacy 
-   and t.ldall > to_date(i.eadat, 'YYYYMMDD')
-        and ldall is not null) where ordine = 1
-        order by lk
+SELECT
+    *
+FROM
+    (
+        SELECT
+            t.dbi_cd_punto || TO_CHAR(t.ldall, 'YYYYMMDD') AS lk, -- 0
+            e.ccdan, -- 1
+            e.cflg9, -- 2
+            e.cncon, -- 3
+            --        to_char(f.dt_inizio_fornitura,'YYYYMMDD') as dtini,         -- 4
+            CASE
+                WHEN NVL(f.dt_inizio_fornitura, to_date('20090701', 'YYYYMMDD')) < to_date
+                    ('20090701', 'YYYYMMDD')
+                THEN '20090701'
+                ELSE TO_CHAR(f.dt_inizio_fornitura, 'YYYYMMDD')
+            END                AS dtini, -- 4                                                   -- 0
+            TO_CHAR(t.ldall, 'YYYYMMDD') AS dtfine, -- 5
+            TO_CHAR(SYSDATE, 'YYYYMMDD') AS dtoggi, -- 6
+            DECODE(e.caliv, 'Aliquota ordinaria', '01', 'Aliquota ridotta', '02', 'ER'), -- 7
+            ableinh, -- 8
+            v.ktokl, -- 9
+            dec_tipolettura(e.cflg4, t.ldall), -- 10
+            t.dbi_cd_punto /*,
+            row_number() over(partition BY t.dbi_cd_punto, lmari, lprog ORDER BY ldall DESC) ordine*/
+        FROM
+            instmgmtg_diint i,
+            dbi_user.ifc_sap_letture_gas_anubis t,
+            dbi_user.ifc_sap_anagrcontrgas e,
+            dbi_user.ifc_sap_punti_fornitura f,
+            instlng_data g,
+            account_vkp v
+        WHERE
+            i.anlage = t.dbi_cd_punto
+        AND e.cncon IN
+            (
+                SELECT
+                    cncon
+                FROM
+                    z_pr_in_lavorazione_gas)
+        AND t.dbi_cd_punto = e.cncon
+        AND t.dbi_cd_punto = f.dbi_punto_key
+        AND t.dbi_cd_punto = g.legacy
+        AND e.cflg9 = v.legacy
+        AND t.ldall > to_date(i.eadat, 'YYYYMMDD')
+        AND ldall IS NOT NULL)
+/*WHERE
+    ordine = 1*/
+ORDER BY
+    dbi_cd_punto DESC,
+    dtfine DESC
         ]]></mainSelect>
 		<insertTable name='BILLDOCG_ERCH_H' truncate = 'True' break_index='0' >
 				<field name='LEGACY' index='0' />

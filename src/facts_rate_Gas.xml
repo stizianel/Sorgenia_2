@@ -2,26 +2,38 @@
 	<queries>
 	<RateGasAggregator>
 		<mainSelect ><![CDATA[
-       select v.cncon,  --0
-        v.cncon,                                 --1
+      select v.cncon,  --0
+        v.cpod,                                 --1
         a.operando,                              --2
-        --to_char(v.cdsti,'yyyymmdd'),                            --3
-        '20090701',
-        data_validita_al ,
+         to_char(v.d_valido_dal,'yyyymmdd'), --3
+               to_char(v.d_valido_al,'yyyymmdd'), --4
        -- CASE WHEN A.OPERANDO='GRSCSPECIA' THEN to_char (add_months(last_day(v.cdsti),12)-1,'yyyymmdd')ELSE data_validita_al END CASE ,                    --4
-        GET_GAS_VALORI_TARIFART(A.OPERANDO,v.ctar1,ee.istat_cliente),--5
-       GET_GAS_PREZZO_KONDIGR(A.OPERANDO,v.ctar1,ee.istat_cliente,v.cdsti),--6
+        GET_GAS_VALORI_TARIFART(A.OPERANDO,v.ctar1,l.indccom),--5
+       GET_GAS_PREZZO_KONDIGR(A.OPERANDO,v.ctar1,l.indccom,v.d_valido_dal),--6
          b.id_operando --7 
         from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v,
-              z_prodotto_operando a,
-               z_anagrafica_operandi b,
-             DBI_USER.IFC_delibera_gas ee
+              gas_prodotto_operando a,
+               gas_anagrafica_operandi b,
+               Dbi_User.Ifc_Sap_Anagrindirizzi_pr g ,
+                 v_Indirizzi l,
+             Dbi_User.Ifc_Sap_Punti_Fornitura  ee
         where a.ctar1=v.ctar1
-       and v.cncon IN(SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        AND v.Dbi_Original_Key_Pr=g.pr
+       and v.Dbi_Original_Key_Pr IN(SELECT CNCON FROM z_test_contratti)
        and  a.operando = b.operando 
-        and ee.pr_anu=v.cncon
-        and v.cncon=ee.pr_anu
+        AND l.Indprog = g.Indprog
+        and v.Dbi_Original_Key_Pr=ee.dbi_punto_key
         and tipo = 'RATE TYPE'
+         and to_char(v.d_valido_dal,'yyyymmdd') > '20090701'
+        group by 
+         v.cncon,  --0
+        v.cncon,                                 --1
+        a.operando,                              --2
+         to_char(v.d_valido_dal,'yyyymmdd'), --3
+               to_char(v.d_valido_al,'yyyymmdd'), --4
+        GET_GAS_VALORI_TARIFART(A.OPERANDO,v.ctar1,l.indccom),--5
+       GET_GAS_PREZZO_KONDIGR(A.OPERANDO,v.ctar1,l.indccom,v.d_valido_dal),--6
+         b.id_operando --7 
         order by v.cncon
         ]]></mainSelect>
 		
@@ -30,6 +42,7 @@
 		     <field name='TIPO' constant_value='KEY' />
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
+		       <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		     <insertTable name='GAS_FACTS_F_RATE_TYPE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -37,6 +50,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index= '7'/>
+		       <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		   <insertTable name='GAS_FACTS_V_RATE_TYPE' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
@@ -46,6 +60,7 @@
 		      <field name='TARIFART' index='5' />
 		     <field name='KONDIGR' index='6' />
 		     <field name='PROG'  index ='7' />
+		       <field name='CPOD'    index= '1' />
 		     </insertTable> 
 		
 	</RateGasAggregator>

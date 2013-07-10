@@ -2,37 +2,35 @@
 	<queries>
 	<IntegerAggregator>
 		<mainSelect ><![CDATA[
-       SELECT A.CNCON,  --0
-               A.CNCON,        --1
+    SELECT A.CNCON,  --0
+               A.cpod,        --1
                b.operando,   --2
-              -- to_char(a.cdsti,'yyyymmdd'),--3
-              '20090701',
-               b.data_validita_al, --4
+               to_char(a.d_valido_dal,'yyyymmdd'), --3
+               to_char(a.d_valido_al,'yyyymmdd'), --4
               case when b.operando='GI_PRELIEV' then substr(e.CD_PROF_USO,5) else b.valori end case, --5  
                b.prezzo, --6
                c.id_operando ,  --7
               -- d.volumi_annui_anu, --8 
              --DEC_GIORNI_PRELIEVO(D.tipo_profilo_utilizzo_anu) --8
-              d.classe_prelievo_anu
-              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,z_prodotto_operando b,z_anagrafica_operandi c,dbi_user.ifc_delibera_gas D,
-              dbi_user.ifc_sap_punti_fornitura e
+              e.classe_prelievo_pr
+              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,gas_prodotto_operando b,gas_anagrafica_operandi c,
+                dbi_user.ifc_sap_punti_fornitura e
              WHERE b.operando=c.operando
-               and a.CNCON IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+               and a.CNCON IN (SELECT CNCON FROM z_test_contratti)
                and a.ctar1=b.ctar1
                 and e.dbi_punto_key = a.cncon
-                AND d.pr_anu=A.CNCON
-                and b.ctar1='F3M'
-               AND C.TIPO='INTEGER'
-               group by a.cncon,
-               A.CNCON,
-               b.operando,
-                 to_char(a.cdsti,'yyyymmdd'),--3
-               b.data_validita_al,
-               b.valori,
-             b.prezzo,e.CD_PROF_USO,
-                c.id_operando ,
-               d.volumi_annui_anu,
-                 d.classe_prelievo_anu
+            and to_char(a.d_valido_dal,'yyyymmdd')>'20090701'
+                AND C.TIPO='INTEGER'
+               group by 
+               A.CNCON,  --0
+               A.cpod,        --1
+               b.operando,   --2
+               to_char(a.d_valido_dal,'yyyymmdd'), --3
+               to_char(a.d_valido_al,'yyyymmdd'), --4
+                 b.prezzo, --6
+               c.id_operando ,  --7
+                         e.classe_prelievo_pr,
+                 substr(e.CD_PROF_USO,5) , b.valori 
                order by a.cncon
         ]]></mainSelect>
 		
@@ -41,6 +39,7 @@
 		     <field name='TIPO' constant_value='KEY' />
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
+		       <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		     <insertTable name='EMG_FACTS_INTEGER' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -48,6 +47,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index= '7'/>
+		         <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		   <insertTable name='EMG_VALUE_INTEGER' truncate = 'True' break_index='' >
 		      <field name='LEGACY' index='0' />
@@ -58,6 +58,7 @@
 		      <field name='TARIFART' constant_value='' />
 		     <field name='KONDIGR' constant_value='' />
 		     <field name='PROG'  index ='7' />
+		         <field name='CPOD'  index ='1' />
 		     </insertTable> 		
 	</IntegerAggregator>
 	<IntegerExtractor>

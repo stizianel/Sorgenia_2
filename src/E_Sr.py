@@ -285,18 +285,18 @@ SELECT
     Riemissione_Fattura ,
     Diniego_Marketing
 FROM
-    dbi_user.IFC_SAP_CRM_SR,
-    --sapsr3.but000@sap_caq b, --partner
-    sapsr3.isu_pod@sap_caq c --ext_ui
-    --, sapsr3.crmm_babr_h@sap_caq d --zzvkona
+    dbi_user.IFC_SAP_CRM_SR sr,
+    sapsr3.but000@sap_caq b, --partner
+    sapsr3.isu_pod@sap_caq c, --ext_ui
+    sapsr3.crmm_babr_h@sap_caq d --zzvkona
 WHERE
     Tipologia_Sr NOT IN ('TBD',
                          'N.A.',
                          'No S.R.')
 AND Tipologia_Sr IS NOT NULL
-    --AND lpad(Partner_Contatto,10,'0') = lpad(b.partner,10,'0')
+AND lpad(sr.codice_cliente,10,'0') = lpad(b.partner,10,'0')
 AND pod = c.ext_ui
-    --AND d.zzvkona = ca
+AND d.zzvkona = rrmb_cod_entita_fatturabile
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

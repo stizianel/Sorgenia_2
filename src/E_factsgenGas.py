@@ -11,12 +11,12 @@ from it_eutile_utils_database.ConnectionManager import ConnectionManager
 from it_eutile_utils_log.LogManager import LogManager
 #-----------------------------------------------------------------
 mainSelect="select * from gas_facts_key"
-lfacts=[("select legacy, tipo, operand, prog                        from emg_facts_quant a    where a.legacy = :key", "select legacy, tipo, ab, bis, menge, tarifart, kondigr                                   from emg_value_quant a    where a.legacy = :key and a.prog = :prog"),
-        ("select legacy, tipo, operand, prog                        from gas_facts_f_qprice a    where a.legacy = :key", "select legacy, tipo, ab, bis, preis,    prsbtr,   waers,    tarifart, kondgir            from gas_facts_v_qprice a     where a.legacy = :key and a.prog = :prog"),
+lfacts=[("select legacy, tipo, operand, prog                       from emg_facts_quant a    where a.legacy = :key", "select legacy, tipo, ab, bis, menge, tarifart, kondigr                                   from emg_value_quant a    where a.legacy = :key and a.prog = :prog"),
+        ("select legacy, tipo, operand, prog                         from gas_facts_f_qprice a    where a.legacy = :key", "select legacy, tipo, ab, bis, preis,    prsbtr,   waers,    tarifart, kondgir            from gas_facts_v_qprice a     where a.legacy = :key and a.prog = :prog"),
         ("select legacy, tipo, operand, prog                        from gas_facts_f_factor a    where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, to_number(factor),   tarifart, kondigr  from gas_facts_v_factor a     where a.legacy = :key and a.prog = :prog"),
         ("select legacy, tipo, operand, prog                        from emg_facts_integer a where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, integer4, tarifart, kondigr    from emg_value_integer a  where a.legacy = :key and a.prog = :prog"),
         ("select legacy, tipo, operand, prog                        from gas_facts_f_rate_type a where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, tarifart, kondigr     from gas_facts_v_rate_type a  where a.legacy = :key  and a.prog = :prog"),
-        ("select legacy, tipo, operand, prog                        from gas_facts_f_udef   a    where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, udefval1, udefval2, udefval3, udefval4, tarifart, kondgir  from gas_facts_v_udef a       where a.legacy = :key and a.prog = :prog")]
+        ("select legacy, tipo, operand, prog                         from gas_facts_f_udef   a    where a.legacy = :key group by legacy, tipo, operand, prog", "select legacy, tipo, ab, bis, udefval1, udefval2, udefval3, udefval4, tarifart, kondgir  from gas_facts_v_udef a       where a.legacy = :key and a.prog = :prog")]
 date=datetime.datetime.now()
 htmlMode=''
 #-----------------------------------------------------------------

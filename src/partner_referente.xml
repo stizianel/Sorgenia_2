@@ -2,117 +2,108 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-SELECT
-    c.row_id -- 8000000000 + 4260000,           --0
-    --          b.customer_cd_target,      --1
-    ,
-    z.oldkey ,
-    DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01',
-    'BUP001'), --2
-    c.x_cognome, --3
-    c.x_nome, --4
-    v.indccom, --5
-    v.inddcom, --6
-    v.indindi, --7
-    v.indindi||' '||v.indccvia,--8
-    SUBSTR(indcivi,0,10), --9
-    v.indest, --10
-    v.indcap, --11
-    DECODE(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
-    v.indregio, --13
-    CASE
-        WHEN LENGTH(c.num_tel_work) > 6
-        THEN c.num_tel_work
-        WHEN LENGTH(c.num_tel_cell) = 10
-        THEN c.num_tel_cell
-        ELSE ' '
-    END
-    CASE, --14
-            c.email_addr, --15
-            v.indprov, --16
-            v.indprog, --17
-            SUBSTR(x_cognome,0,20), --18
-            DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE', 'ZUR009',
-            'BUR001'), --19
-                    substr(k.arag5,0,40) --20
-        FROM
-            dbi_user.ifc_sap_crm_contatti c
-        LEFT OUTER JOIN
-            dbi_user.ifc_sap_customer_rename b
-        ON
-            c.id_cliente = b.customer_cd_source,
-            v_indirizzi v,
-            sapsr3.temksv@sap_iap z,
-            v_clienti k
-        WHERE
-            tipologia IS NOT NULL
-        AND lpad(k.acdan,10,'0') = lpad(c.id_cliente,10,'0')
-        AND c.indirizzo = v.indprog
-        AND b.customer_cd_target IS NOT NULL
-            --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
-        AND c.tipologia IN ('REFERENTE CONTRATTUALE',
-                            'REFERENTE CONTABILE')
-        AND (z.mandt = 100
-            AND z.firma = 'RESID'
-            AND lpad(c.id_cliente,10,'0') = lpad(z.oldkey,10,'0')
-            AND z.object = 'PARTNER' )
-        UNION
-        SELECT
-            c.row_id -- 8000000000 + 4260000,           --0
-            --          b.customer_cd_target,      --1
-            ,
-            z.oldkey ,
-            DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZBUP02', 'REFERENTE CONTRATTUALE', 'ZBUP01',
-            'BUP001'), --2
-            c.x_cognome, --3
-            c.x_nome, --4
-            v.indccom, --5
-            v.inddcom, --6
-            v.indindi, --7
-            v.indindi||' '||v.indccvia,--8
-            SUBSTR(indcivi,0,10), --9
-            v.indest, --10
-            v.indcap, --11
-            DECODE(indnazi,'ITALIA','IT','SAN MARINO','SM','IT'), --12
-            v.indregio, --13
-            CASE
-                WHEN LENGTH(c.num_tel_work) > 6
-                THEN c.num_tel_work
-                WHEN LENGTH(c.num_tel_cell) = 10
-                THEN c.num_tel_cell
-                ELSE ' '
-            END
-            CASE, --14
-                    c.email_addr, --15
-                    v.indprov, --16
-                    v.indprog, --17
-                    SUBSTR(x_cognome,0,20), --18
-                    DECODE(c.tipologia,'REFERENTE CONTABILE', 'ZUR010', 'REFERENTE CONTRATTUALE',
-                    'ZUR009', 'BUR001'), --19
-                    substr(k.arag5,0,40) --20
-                FROM
-                    dbi_user.ifc_sap_crm_contatti c
-                LEFT OUTER JOIN
-                    dbi_user.ifc_sap_customer_rename b
-                ON
-                    c.id_cliente = b.customer_cd_source,
-                    v_indirizzi v,
-                    sapsr3.temksv@sap_iap z,
-                    v_clienti k
-                WHERE
-                    tipologia IS NOT NULL
-                AND c.indirizzo = v.indprog
-                AND lpad(k.acdan,10,'0') = lpad(c.id_cliente,10,'0')
-                AND b.customer_cd_target IS NOT NULL
-                    --and (k.surrogate_key - 8000000000 + 4260000) < 4999999
-                AND c.tipologia NOT IN ('REFERENTE CONTRATTUALE',
-                                        'REFERENTE CONTABILE')
-                AND (z.mandt = 100
-                    AND z.firma = 'RESID'
-                    AND lpad(c.id_cliente,10,'0') = lpad(z.oldkey,10,'0')
-                    AND z.object = 'PARTNER' )
-                ORDER BY
-                    1
+SELECT c.row_id,
+       z.oldkey,
+       DECODE(c.tipologia,
+              'REFERENTE CONTABILE',
+              'ZBUP02',
+              'REFERENTE CONTRATTUALE',
+              'ZBUP01',
+              'BUP001'), --2
+       substr(c.x_cognome,0,40), --3
+       substr(c.x_nome,0,40), --4
+       v.indccom, --5
+       v.inddcom, --6
+       v.indindi, --7
+       v.indindi || ' ' || v.indccvia, --8
+       SUBSTR(indcivi, 0, 10), --9
+       v.indest, --10
+       v.indcap, --11
+       DECODE(indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT'), --12
+       v.indregio, --13
+       CASE
+         WHEN LENGTH(c.num_tel_work) > 6 THEN
+          c.num_tel_work
+         WHEN LENGTH(c.num_tel_cell) = 10 THEN
+          c.num_tel_cell
+         ELSE
+          ' '
+       END CASE, --14
+       translate(c.email_addr, 'X' || CHR (9) || CHR (10) || CHR (13), 'X'), --15
+       v.indprov, --16
+       v.indprog, --17
+       SUBSTR(x_cognome, 0, 20), --18
+       DECODE(c.tipologia,
+              'REFERENTE CONTABILE',
+              'ZUR010',
+              'REFERENTE CONTRATTUALE',
+              'ZUR009',
+              'BUR001'), --19
+       substr(k.arag5, 0, 40) --20
+  FROM dbi_user.ifc_sap_crm_contatti c
+  LEFT OUTER JOIN dbi_user.ifc_sap_customer_rename b
+    ON c.id_cliente = b.customer_cd_source, v_indirizzi v,
+ sapsr3.temksv@sap_iap z, v_clienti k
+ WHERE tipologia IS NOT NULL
+   AND lpad(k.acdan, 10, '0') = lpad(c.id_cliente, 10, '0')
+   AND c.indirizzo = v.indprog
+   AND b.customer_cd_target IS NOT NULL
+   AND c.tipologia IN ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
+   AND (z.mandt = 100 AND z.firma = 'RESID' AND
+       lpad(c.id_cliente, 10, '0') = lpad(z.oldkey, 10, '0') AND
+       z.object = 'PARTNER')
+UNION ALL
+SELECT c.row_id,
+       z.oldkey,
+       DECODE(c.tipologia,
+              'REFERENTE CONTABILE',
+              'ZBUP02',
+              'REFERENTE CONTRATTUALE',
+              'ZBUP01',
+              'BUP001'), --2
+       substr(c.x_cognome,0,40), --3
+       substr(c.x_nome,0,40), --4
+       v.indccom, --5
+       v.inddcom, --6
+       v.indindi, --7
+       v.indindi || ' ' || v.indccvia, --8
+       SUBSTR(indcivi, 0, 10), --9
+       v.indest, --10
+       v.indcap, --11
+       DECODE(indnazi, 'ITALIA', 'IT', 'SAN MARINO', 'SM', 'IT'), --12
+       v.indregio, --13
+       CASE
+         WHEN LENGTH(c.num_tel_work) > 6 THEN
+          c.num_tel_work
+         WHEN LENGTH(c.num_tel_cell) = 10 THEN
+          c.num_tel_cell
+         ELSE
+          ' '
+       END CASE, --14
+       translate(c.email_addr, 'X' || CHR (9) || CHR (10) || CHR (13), 'X'), --15
+       v.indprov, --16
+       v.indprog, --17
+       SUBSTR(x_cognome, 0, 20), --18
+       DECODE(c.tipologia,
+              'REFERENTE CONTABILE',
+              'ZUR010',
+              'REFERENTE CONTRATTUALE',
+              'ZUR009',
+              'BUR001'), --19
+       substr(k.arag5, 0, 40) --20
+  FROM dbi_user.ifc_sap_crm_contatti c
+  LEFT OUTER JOIN dbi_user.ifc_sap_customer_rename b
+    ON c.id_cliente = b.customer_cd_source, v_indirizzi v,
+ sapsr3.temksv@sap_iap z, v_clienti k
+ WHERE tipologia IS NOT NULL
+   AND c.indirizzo = v.indprog
+   AND lpad(k.acdan, 10, '0') = lpad(c.id_cliente, 10, '0')
+   AND b.customer_cd_target IS NOT NULL
+   AND c.tipologia NOT IN ('REFERENTE CONTRATTUALE', 'REFERENTE CONTABILE')
+   AND (z.mandt = 100 AND z.firma = 'RESID' AND
+       lpad(c.id_cliente, 10, '0') = lpad(z.oldkey, 10, '0') AND
+       z.object = 'PARTNER')
+ ORDER BY 1
 	]]></mainSelect>
 			<insertTable name='PARTNER_REF_INIT' truncate = 'True' break_index='0' >
 					<field name='LEGACY' index='0' />
@@ -252,9 +243,7 @@ SELECT
       where
       a.legacy = b.legacy and
       a.legacy = c.legacy and
-      a.legacy = m.legacy and
-      a.legacy in ( select legacy from PART_REL_INIT pr, z_losardo zl
-    				where to_number(partner1,'9999999999') = to_number(zl.partner, '9999999999'))
+      a.legacy = m.legacy
       order by a.legacy, a.legacy||c.adext_addr, a.legacy||c.adext_addr
        ]]></mainSelect>
        	<csvLine line_index='0' break_index='0' field_start_index='5' field_end_index='11'>
@@ -270,9 +259,8 @@ SELECT
 	
 	<partnerRelExtractor>
 		<mainSelect ><![CDATA[
-		select * from PART_REL_INIT rl, z_losardo zl
-            where to_number(partner1,'9999999999') = to_number(zl.partner, '9999999999')
-    order by legacy
+		select * from PART_REL_INIT rl
+    		order by legacy
 		]]></mainSelect>
 		<csvLine line_index='0' break_index='0' field_start_index='0' field_end_index='6'>
        	</csvLine>

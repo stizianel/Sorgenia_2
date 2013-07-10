@@ -35,7 +35,8 @@ SELECT
     TO_CHAR(Data_Invio_Pratica,'yyyymmddhh24miss') ,
     Numero_Pratica ,
     posi.Cod_Cliente ,
-    Cod_Vendit_Uscente ,
+    --Cod_Vendit_Uscente ,
+    'ENEL',
     POD ,
     Distributore_Locale ,
     Cod_Misuratore ,
@@ -73,15 +74,15 @@ FROM
     dbi_user.IFC_SAP_CRM_OFF_POSIZIONE posi,
     dbi_user.IFC_SAP_CRM_OFF_TESTATA testa,
     sapsr3.but000@sap_caq b, --partner
-    --sapsr3.isu_pod@sap_caq c, --ext_ui
+    sapsr3.isu_pod@sap_caq c, --ext_ui
     sapsr3.crmm_babr_h@sap_caq d --zzvkona
     -- Bisogna mettere il codice_proposta associato perche deve legarsi all'offerta
 WHERE
     posi.cod_proposta = testa.cod_proposta
     and lpad(posi.cod_cliente,10,'0') = lpad(b.partner,10,'0')
---AND pod = c.ext_ui
-AND d.zzvkona = posi.cod_conto_contrattuale 
-
+    AND pod = c.ext_ui
+    AND d.zzvkona = posi.cod_conto_contrattuale 
+    and lpad(testa.Referente_Contrattuale,10,'0') = lpad(b.partner,10,'0')
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

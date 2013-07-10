@@ -2,33 +2,77 @@
 	<queries>
 	<FactorGasAggregator>
 		<mainSelect ><![CDATA[
-       select C.Dbi_Original_Key_Pr,  --0
-        C.CPOD,                                    --1 
-        a.operando,                                 --2
-        --to_char(c.cdsti,'yyyymmdd'),                             --3
-        '20090701',
-        data_validita_al,                           --4
-        case when a.operando='GFCORR1590' then GET_GFCORR1590(A.OPERANDO,C.Dbi_Original_Key_Pr) ELSE to_number(valori)  END CASE,                                      --5
-        nvl(prezzo,0) ,                             --6
-        b.id_operando                            --7
-        from  GAS_prodotto_operando a, GAS_anagrafica_operandi b,
-        DBI_USER.ifc_sap_anagrcontrgas C,DBI_USER.ifc_sap_punti_fornitura d
-        where c.ctar1=a.ctar1
-        and C.Dbi_Original_Key_Pr IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
-        and a.operando = b.operando
-        and tipo = 'FACTOR'
-        and c.Dbi_Original_Key_Pr=d.dbi_punto_key
-        --AND c.cdsti IS NOT NULL
-        group by 
-        C.Dbi_Original_Key_Pr, 
-        C.CPOD, 
-        a.operando, 
-        to_char(c.cdsti,'yyyymmdd'),
-        data_validita_al, 
-         to_number(valori),
-        nvl(prezzo,0),
-        b.id_operando 
-        order by a.operando
+    SELECT
+    C.Dbi_Original_Key_Pr, --0
+    C.CPOD, --1
+    a.operando, --2                           
+    to_char(c.d_valido_dal,'yyyymmdd'),            --3
+        to_char(c.d_valido_al,'yyyymmdd'),    
+    valori, --5
+    '',--NVL(prezzo,0) , --6
+    b.id_operando --7
+FROM
+    GAS_prodotto_operando a,
+    GAS_anagrafica_operandi b,
+    DBI_USER.ifc_sap_anagrcontrgas C,
+    DBI_USER.ifc_sap_punti_fornitura d
+WHERE
+    c.ctar1=a.ctar1
+AND C.Dbi_Original_Key_Pr IN
+    (
+        SELECT
+            CNCON
+        FROM
+            Z_test_contratti)
+AND a.operando = b.operando
+AND a.operando != 'GFCORR1590'
+AND tipo = 'FACTOR'
+AND c.Dbi_Original_Key_Pr=d.dbi_punto_key
+AND valori IS NOT NULL
+GROUP BY
+    C.Dbi_Original_Key_Pr, --0
+    C.CPOD, --1
+    a.operando, --2                           
+    to_char(c.d_valido_dal,'yyyymmdd'),            --3
+        to_char(c.d_valido_al,'yyyymmdd'),    
+    valori, --5
+    '',--NVL(prezzo,0) , --6
+    b.id_operando --7
+UNION ALL
+SELECT
+    C.Dbi_Original_Key_Pr, --0
+    C.CPOD, --1
+    b.operando, --2
+    TO_CHAR(d.valid_from,'yyyymmdd'),--3
+    TO_CHAR(d.valid_until,'yyyymmdd'), --4
+    DECIMALI_FACT6(NVL(coefficente_c, '1,000000'),'6'), --5
+    '' , --6
+    b.id_operando --7
+FROM
+    GAS_anagrafica_operandi b,
+    DBI_USER.ifc_sap_anagrcontrgas C,
+    DBI_USER.ifc_sap_punti_fornitura d
+WHERE
+    C.Dbi_Original_Key_Pr IN
+    (
+        SELECT
+            CNCON
+        FROM
+            Z_test_contratti)
+AND b.operando = 'GFCORR1590'
+AND tipo = 'FACTOR'
+AND c.Dbi_Original_Key_Pr=d.dbi_punto_key
+GROUP BY
+    C.Dbi_Original_Key_Pr,
+    C.CPOD,
+    b.operando,
+    TO_CHAR(d.valid_from,'yyyymmdd'),--3
+    TO_CHAR(d.valid_until,'yyyymmdd'), --4
+    '',
+    b.id_operando,
+    NVL(coefficente_c, '1')
+ORDER BY
+    operando
         ]]></mainSelect>
 		
 		  </insertTable> 
@@ -92,26 +136,34 @@
 	<UDEFGasAggregator>
          <mainSelect legacy_name='a.cncon' ><![CDATA[
         select v.cncon,  --0
-           v.cncon,                                    --1 
+           v.CPOD,                                    --1 
            a.operando,                                 --2
-         --  to_char(v.cdsti,'yyyymmdd'),                              -- 3
-         '20090701',
-           '99991231' ,                           --4
+           to_char(v.d_valido_dal,'yyyymmdd'),            --3
+           to_char(v.d_valido_al,'yyyymmdd'),             --4  
            b.id_operando ,                       --5
-           case when a.operando='TIPOLOGIAC' then 'A' when a.operando='GI_CATEGOR' then d.CATEGORIA_USO_GAS_ANU else a.CTAR1 end case 
-        from DBI_USER.ifc_sap_anagrcontrgas v, z_prodotto_operando a, z_anagrafica_operandi b,dbi_user.ifc_delibera_gas d 
+           CASE
+WHEN DESC_DEST_USO = 'ACQUA CALDA' THEN 'C2'
+WHEN DESC_DEST_USO = 'ACQUA CALDA / PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'COTTURA' THEN 'C2'
+WHEN DESC_DEST_USO = 'COTTURA / ACQUA CALDA' THEN 'C2'
+WHEN DESC_DEST_USO = 'COTTURA / PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / ACQUA CALDA' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / ACQUA CALDA / PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / COTTURA' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / COTTURA / ACQUA CALDA' THEN 'C3'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / COTTURA / ACQUA CALDA / PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / COTTURA / PRODUZIONE' THEN 'C2'
+WHEN DESC_DEST_USO = 'RISCALDAMENTO / PRODUZIONE' THEN 'C2'
+ELSE 'C2' END AS valore
+        from DBI_USER.ifc_sap_anagrcontrgas v, gas_prodotto_operando a, gas_anagrafica_operandi b,
+		DBI_USER.ifc_sap_punti_fornitura D
         where  a.ctar1=v.ctar1
-        and v.cncon IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
-        and a.operando = b.operando and  d.pr_anu=v.cncon
+        and v.cncon IN (SELECT CNCON FROM z_test_contratti)
+        and a.operando = b.operando and  d.dbi_punto_key=v.cncon
         and tipo = 'USERDEF'
-        group by 
-        v.cncon, 
-        v.cncon, 
-         to_char(v.cdsti,'yyyymmdd'),
-        a.operando,a.valori, d.CATEGORIA_USO_GAS_ANU,
-       a.CTAR1,
-        b.id_operando
-     order by v.cncon
+            order by v.cncon
        ]]></mainSelect>
      <insertTable name='GAS_FACTS_KEY' truncate = 'false' break_index='0'    >
 		     <field name='LEGACY' index='0' />
@@ -125,6 +177,7 @@
 		     <field name='OPERAND' index = '2' />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'  index ='5' />
+		      <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		    <insertTable name='GAS_FACTS_V_UDEF' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
@@ -138,6 +191,7 @@
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDGIR' constant_value='' />
 		     <field name='PROG'  index ='5' />
+		         <field name='CPOD'  index ='1' />
 		    </insertTable> 
 		    </UDEFGasAggregator>
 		  

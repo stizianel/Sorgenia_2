@@ -25,7 +25,8 @@ SELECT
     Intestatario_Contratto ,
     Referente ,
     Referente_Contabile ,
-    Venditore_Uscente ,
+    --Venditore_Uscente ,
+    'ENEL',
     testa.Cod_Cliente ,
     testa.Cod_Conto_Contrattuale ,
     Tipologia_Contratto ,
@@ -41,7 +42,8 @@ SELECT
     TO_CHAR(Data_Invio_Contr_Tseller,'yyyymmddhh24miss') ,
     TO_CHAR(Data_Invio_Pre_Benv,'yyyymmddhh24miss') ,
     TO_CHAR(Data_Creazione_Offerta,'yyyymmddhh24miss') ,
-    TO_CHAR(Data_Esito_Riascolto,'yyyymmddhh24miss') ,
+    --TO_CHAR(Data_Esito_Riascolto,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Creazione_Offerta,'yyyymmddhh24miss') ,
     Esito_Riascolto ,
     Flag_Esito_Riascolto ,
     Stato_Offerta ,
@@ -59,13 +61,16 @@ FROM
     dbi_user.IFC_SAP_CRM_OFF_TESTATA testa,
     dbi_user.IFC_SAP_CRM_OFF_POSIZIONE posi,
     sapsr3.but000@sap_caq b, --partner
-    --sapsr3.isu_pod@sap_caq c, --ext_ui
+    sapsr3.isu_pod@sap_caq c, --ext_ui
     sapsr3.crmm_babr_h@sap_caq d --zzvkona
+    --,sapsr3.but050@sap_caq rel -- referenti 
 WHERE
     lpad(testa.cod_cliente,10,'0') = lpad(b.partner,10,'0')
-    --AND pod = c.ext_ui
+    AND pod = c.ext_ui
     and testa.cod_proposta = posi.cod_proposta
-AND d.zzvkona = testa.cod_conto_contrattuale   
+    AND d.zzvkona = testa.cod_conto_contrattuale  
+    and lpad(testa.Referente_Contrattuale,10,'0') = lpad(b.partner,10,'0')
+    --and lpad(testa.Referente_Contrattuale,10,'0') = lpad(rel.partner2,10,'0')
 group by 
 testa.Cod_Proposta ,
     Cod_Agente ,
@@ -76,7 +81,8 @@ testa.Cod_Proposta ,
     Intestatario_Contratto ,
     Referente ,
     Referente_Contabile ,
-    Venditore_Uscente ,
+    --Venditore_Uscente ,
+    'ENEL',
     testa.Cod_Cliente ,
     testa.Cod_Conto_Contrattuale ,
     Tipologia_Contratto ,
@@ -92,7 +98,8 @@ testa.Cod_Proposta ,
     TO_CHAR(Data_Invio_Contr_Tseller,'yyyymmddhh24miss') ,
     TO_CHAR(Data_Invio_Pre_Benv,'yyyymmddhh24miss') ,
     TO_CHAR(Data_Creazione_Offerta,'yyyymmddhh24miss') ,
-    TO_CHAR(Data_Esito_Riascolto,'yyyymmddhh24miss') ,
+    --TO_CHAR(Data_Esito_Riascolto,'yyyymmddhh24miss') ,
+    TO_CHAR(Data_Creazione_Offerta,'yyyymmddhh24miss') ,
     Esito_Riascolto ,
     Flag_Esito_Riascolto ,
     Stato_Offerta ,
@@ -106,7 +113,6 @@ testa.Cod_Proposta ,
     Associazione_Consorzio ,
     Campagna ,
     Ufficio
-
 '''
 #inizializzazione e apertura file di log
 date=datetime.datetime.now()

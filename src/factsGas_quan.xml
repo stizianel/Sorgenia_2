@@ -2,32 +2,33 @@
 	<queries>
 	<QuanAggregator>
 		<mainSelect ><![CDATA[
-        SELECT A.CNCON,  --0
-               A.CNCON,        --1
+        SELECT A.DBI_ORIGINAL_KEY_PR,  --0
+               A.cpod,        --1
                b.operando,   --2
-               -- to_char(a.cdsti,'yyyymmdd'),--3
-               '20090701',
-               b.data_validita_al, --4
+               to_char(a.d_valido_dal,'yyyymmdd'), --3
+               to_char(a.d_valido_al,'yyyymmdd'), --4
                b.valori, --5  
                b.prezzo, --6
                c.id_operando ,  --7
-               nvl(d.volumi_annui_anu,0) --8 --campo menge
-              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,z_prodotto_operando b,z_anagrafica_operandi c,dbi_user.ifc_delibera_gas D
+               nvl(d.consumo_cliente,0) --8 --campo menge
+              FROM DBI_USER.IFC_SAP_ANAGRCONTRGAS A,gas_prodotto_operando b,z_anagrafica_operandi c,
+              DBI_USER.ifc_sap_fornitura_gas_config D
              WHERE b.operando=c.operando
-               and a.CNCON  in (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+               and a.DBI_ORIGINAL_KEY_PR  in (SELECT CNCON FROM z_test_contratti)
                and b.ctar1=a.ctar1
-                AND d.pr_anu=A.CNCON
-               AND C.TIPO='QUAN'
-               group by a.cncon,
-               A.CNCON,
-               b.operando,
-                to_char(a.cdsti,'yyyymmdd'),--3
-               b.data_validita_al,
-               b.valori,
-               b.prezzo,
-                c.id_operando ,
-               d.volumi_annui_anu 
-               order by a.cncon
+                AND d.dbi_punto_key=A.DBI_ORIGINAL_KEY_PR
+               AND C.TIPO='QUANT'
+               group by A.DBI_ORIGINAL_KEY_PR,  --0
+               A.cpod,        --1
+               b.operando,   --2
+               to_char(a.d_valido_dal,'yyyymmdd'),
+               to_char(a.d_valido_al,'yyyymmdd'), --4
+               b.valori, --5  
+               b.prezzo, --6
+               c.id_operando ,  --7
+               nvl(d.consumo_cliente,0) --8 --campo menge
+              -- order by a.cncon
+
         ]]></mainSelect>
 		
 		<insertTable name='GAS_FACTS_KEY' truncate = 'True' break_index='0'    >
@@ -35,6 +36,7 @@
 		     <field name='TIPO' constant_value='KEY' />
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS' constant_value='99991231' />
+		       <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		     <insertTable name='EMG_FACTS_QUANT' truncate = 'True' break_index='' >
 		     <field name='LEGACY'  index='0' />
@@ -42,6 +44,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON'  constant_value='' />
 		     <field name='PROG'    index= '7' />
+		         <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		   <insertTable name='EMG_VALUE_QUANT' truncate = 'True' break_index='' >
 		     <field name='LEGACY'    index='0' />
@@ -52,6 +55,7 @@
 		     <field name='AB'         index='3' />
 		     <field name='BIS'        index='4' />
 		     <field name='PROG'       index= '7' /> 
+		         <field name='CPOD'  index ='1' />
 		     </insertTable> 
 		
 	</QuanAggregator>

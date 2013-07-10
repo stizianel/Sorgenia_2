@@ -2,31 +2,30 @@
 	<queries>
 	<qpriGasAggregator>
 		<mainSelect ><![CDATA[
-       select v.cncon,    --0
-        v.cncon,                                       --1
+       select v.DBI_ORIGINAL_KEY_PR,    --0
+        v.cpod,                                       --1
         a.operando,                                    --2    
-        -- to_char(v.cdsti,'yyyymmdd'),--3                           --3 
-        '20090701',
-        data_validita_al,                              --4
+        to_char(v.d_valido_dal,'yyyymmdd'),            --3
+        to_char(v.d_valido_al,'yyyymmdd'),             --4        
         valori,                                        --5
         nvl(prezzo,0),                                 --6
         b.id_operando ,                                 --7  
-        tipo ,                                        --8      
-        v.cncon||a.operando                         --9    
-        from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v, z_prodotto_operando a, z_anagrafica_operandi b
+        tipo                                      --8      
+        from DBI_USER.IFC_SAP_ANAGRCONTRGAS  v, gas_prodotto_operando a, gas_anagrafica_operandi b
         where a.ctar1=v.ctar1
-        and v.cncon IN (SELECT CNCON FROM Z_pr_in_lavorazione_gas)
+        and v.DBI_ORIGINAL_KEY_PR IN (SELECT CNCON FROM z_test_contratti)
         and a.operando = b.operando
         and tipo ='QPRICE'
         group by 
-        v.cncon, 
-        v.cncon, 
-        a.operando, 
-        to_char(v.cdsti,'yyyymmdd'),--3,
-        data_validita_al, 
-        valori, 
-        nvl(prezzo,0),b.id_operando,tipo
-        order by  v.cncon||a.operando 
+         v.DBI_ORIGINAL_KEY_PR,    --0
+        v.cpod,                                       --1
+        a.operando,                                    --2    
+        to_char(v.d_valido_dal,'yyyymmdd'),            --3
+        to_char(v.d_valido_al,'yyyymmdd'),             --4        
+        valori,                                        --5
+        nvl(prezzo,0),                                 --6
+        b.id_operando ,                                 --7  
+        tipo    
         ]]></mainSelect>
 		
 		<insertTable name='GAS_FACTS_KEY' truncate = 'False'  break_index='0'    >
@@ -34,6 +33,7 @@
 		     <field name='TIPO'  constant_value='KEY' />
 		     <field name='ANLAGE' index='1' />
 		     <field name='BIS'  index='4' />
+		       <field name='CPOD'    index= '1' />
 		   </insertTable> 
 		     <insertTable name='GAS_FACTS_F_QPRICE' truncate = 'True' break_index='9' >
 		     <field name='LEGACY' index='0' />
@@ -41,6 +41,7 @@
 		     <field name='OPERAND' index = '2'  />
 		     <field name='SAISON' constant_value='' />
 		     <field name='PROG'   index='7' />
+		         <field name='CPOD'  index ='1' />
 		   </insertTable> 
 		   <insertTable name='GAS_FACTS_V_QPRICE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
@@ -53,6 +54,7 @@
 		     <field name='TARIFART' constant_value='' />
 		     <field name='KONDGIR' constant_value='' />
 		     <field name='PROG'    index='7' />   
+		         <field name='CPOD'  index ='1' />
 		     </insertTable> 
 		
 	</qpriGasAggregator>

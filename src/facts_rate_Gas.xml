@@ -2,7 +2,7 @@
 	<queries>
 	<RateGasAggregator>
 		<mainSelect ><![CDATA[
-      select v.cncon,  --0
+  select v.Dbi_Original_Key_Pr,  --0
         v.cpod,                                 --1
         a.operando,                              --2
          to_char(v.d_valido_dal,'yyyymmdd'), --3
@@ -24,27 +24,21 @@
         AND l.Indprog = g.Indprog
         and v.Dbi_Original_Key_Pr=ee.dbi_punto_key
         and tipo = 'RATE TYPE'
+        and a.operando !='GRESENZION'
          and to_char(v.d_valido_dal,'yyyymmdd') > '20090701'
         group by 
-         v.cncon,  --0
-        v.cncon,                                 --1
+         v.Dbi_Original_Key_Pr,  --0
+        v.cpod,                                 --1
         a.operando,                              --2
          to_char(v.d_valido_dal,'yyyymmdd'), --3
                to_char(v.d_valido_al,'yyyymmdd'), --4
         GET_GAS_VALORI_TARIFART(A.OPERANDO,v.ctar1,l.indccom),--5
        GET_GAS_PREZZO_KONDIGR(A.OPERANDO,v.ctar1,l.indccom,v.d_valido_dal),--6
          b.id_operando --7 
-        order by v.cncon
+        order by v.Dbi_Original_Key_Pr,a.operando
         ]]></mainSelect>
 		
-		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='1' />
-		     <field name='BIS' constant_value='99991231' />
-		       <field name='CPOD'    index= '1' />
-		   </insertTable> 
-		     <insertTable name='GAS_FACTS_F_RATE_TYPE' truncate = 'True' break_index='' >
+		    <insertTable name='GAS_FACTS_F_RATE_TYPE' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_RATE' />
 		     <field name='OPERAND' index = '2'  />

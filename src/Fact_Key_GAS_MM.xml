@@ -1,0 +1,37 @@
+<root>
+	<queries>    
+	<KeyGasAggregator>
+         <mainSelect ><![CDATA[
+         select legacy,cpod from emg_facts_quant
+         union 
+         select legacy,cpod from gas_facts_f_qprice
+         union 
+         select legacy,cpod from gas_facts_f_factor
+         union
+         select legacy,cpod from emg_facts_integer
+         union 
+         select legacy,cpod from gas_facts_f_rate_type
+         union
+         select legacy,cpod from gas_facts_f_udef
+         
+       ]]></mainSelect>
+     <insertTable name='GAS_FACTS_KEY' truncate = 'True' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		    <insertTable name='FACTS_KEY_SAV' truncate = 'True' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		   </insertTable> 
+		    </KeyGasAggregator>      
+		    		    
+		    
+		                
+ </queries>
+</root>     
+	    
+         

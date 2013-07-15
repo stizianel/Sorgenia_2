@@ -74,7 +74,13 @@ GROUP BY
 ORDER BY
     operando
         ]]></mainSelect>
-		
+			
+		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
+		     <field name='LEGACY' index='0' />
+		     <field name='TIPO' constant_value='KEY' />
+		     <field name='ANLAGE' index='1' />
+		     <field name='BIS' constant_value='99991231' />
+		       <field name='CPOD'    index= '1' />
 		  </insertTable> 
 		     <insertTable name='GAS_FACTS_F_FACTOR' truncate = 'True' break_index='' >
 		     <field name='LEGACY'  index='0' />
@@ -163,14 +169,16 @@ ELSE 'C2' END AS valore
         and v.cncon IN (SELECT CNCON FROM z_test_contratti)
         and a.operando = b.operando and  d.dbi_punto_key=v.cncon
         and tipo = 'USERDEF'
+        group by 
+        v.cncon,  --0
+           v.CPOD,                                    --1 
+           a.operando,                                 --2
+           to_char(v.d_valido_dal,'yyyymmdd'),            --3
+           to_char(v.d_valido_al,'yyyymmdd'),             --4  
+           b.id_operando,DESC_DEST_USO
             order by v.cncon
        ]]></mainSelect>
-     <insertTable name='GAS_FACTS_KEY' truncate = 'false' break_index='0'    >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='1' />
-		     <field name='BIS' constant_value='99991231' />
-		   </insertTable> 
+     
 		   <insertTable name='GAS_FACTS_F_UDEF' truncate = 'True' break_index=''  >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_UDEF' />

@@ -17,7 +17,7 @@
                and a.DBI_ORIGINAL_KEY_PR  in (SELECT CNCON FROM z_test_contratti)
                and b.ctar1=a.ctar1
                 AND d.dbi_punto_key=A.DBI_ORIGINAL_KEY_PR
-               AND C.TIPO='QUANT'
+               AND C.TIPO='QUAN'
                group by A.DBI_ORIGINAL_KEY_PR,  --0
                A.cpod,        --1
                b.operando,   --2
@@ -31,14 +31,7 @@
 
         ]]></mainSelect>
 		
-		<insertTable name='GAS_FACTS_KEY' truncate = 'True' break_index='0'    >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='1' />
-		     <field name='BIS' constant_value='99991231' />
-		       <field name='CPOD'    index= '1' />
-		   </insertTable> 
-		     <insertTable name='EMG_FACTS_QUANT' truncate = 'True' break_index='' >
+		    <insertTable name='EMG_FACTS_QUANT' truncate = 'True' break_index='' >
 		     <field name='LEGACY'  index='0' />
 		     <field name='TIPO'    constant_value='F_QUAN' />
 		     <field name='OPERAND' index = '2'  />

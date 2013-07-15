@@ -295,6 +295,7 @@ WHERE
                          'No S.R.')
 AND Tipologia_Sr IS NOT NULL
 AND lpad(sr.codice_cliente,10,'0') = lpad(b.partner,10,'0')
+--AND lpad(sr.id_persona_contatto,10,'0') = lpad(b.partner,10,'0')
 AND pod = c.ext_ui
 AND d.zzvkona = rrmb_cod_entita_fatturabile
 '''

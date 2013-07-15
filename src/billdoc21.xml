@@ -300,7 +300,7 @@
        ,f.record_key                --91
         FROM z_Pod2pr2hash            pod
      , Tmp_Billdoc_Erch_Full  f
-    WHERE pod.HashTarget in (1,2,3,4,5,6,7,8,9,10)
+    WHERE pod.HashTarget between 461 and 480
        AND f.Vertrag = pod.Vertrag
        AND f.Anno >= 2012
        order by f.legacy, f.billdocline

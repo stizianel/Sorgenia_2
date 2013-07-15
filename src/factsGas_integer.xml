@@ -34,14 +34,7 @@
                order by a.cncon
         ]]></mainSelect>
 		
-		<insertTable name='GAS_FACTS_KEY' truncate = 'False' break_index='0'    >
-		     <field name='LEGACY' index='0' />
-		     <field name='TIPO' constant_value='KEY' />
-		     <field name='ANLAGE' index='1' />
-		     <field name='BIS' constant_value='99991231' />
-		       <field name='CPOD'    index= '1' />
-		   </insertTable> 
-		     <insertTable name='EMG_FACTS_INTEGER' truncate = 'True' break_index='' >
+		    <insertTable name='EMG_FACTS_INTEGER' truncate = 'True' break_index='' >
 		     <field name='LEGACY' index='0' />
 		     <field name='TIPO' constant_value='F_INTE' />
 		     <field name='OPERAND' index = '2'  />

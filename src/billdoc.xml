@@ -221,6 +221,21 @@ FROM
 				<field name='AB'      index='2' />
 				<field name='BIS'     constant_value=' ' />
 		</insertTable>
+	</billdoc_ERCHP_Aggregator>
+	
+	<billdoc_ERCHP_Aggregator2>
+		<mainSelect ><![CDATA[
+SELECT
+    vertrag,
+    begabrpe,
+    endabrpe+1,
+    actperorg,
+    '',
+    --saldo_precedente(vertrag, endabrpe, actperorg, begabrpe),
+    legacy
+FROM
+    BILLDOC_ERCH
+		]]></mainSelect>
 		<insertTable name='BILLDOC_ERCHP' truncate = 'False' break_index='' >
 				<field name='LEGACY'  index='5' />
 				<field name='TIPO'    constant_value='ERCHP' />
@@ -228,7 +243,7 @@ FROM
 				<field name='AB'      index='2' />
 				<field name='BIS'     constant_value=' ' />
 		</insertTable>
-	</billdoc_ERCHP_Aggregator>
+	</billdoc_ERCHP_Aggregator2>	
 	
 	<billdoc_ERCHZ_Prepare>
 		<mainSelect ><![CDATA[

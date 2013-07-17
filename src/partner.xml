@@ -2,7 +2,7 @@
 	<queries>
 	<partnerAggregatorBase>
 	<mainSelect ><![CDATA[
-		SELECT
+SELECT
     SUBSTR(a.acdan,0,10),--0
     'Z000000006', --1
     SUBSTR(arags,0,40), --2
@@ -57,13 +57,15 @@
     CASE
         WHEN stato IN ('O',
                        'K')
-        THEN 'IMI'
+         AND pool IN ('D','E')              
+        THEN 'IMI' 
         WHEN stato IN ('C',
                        'M' ,
                        'S' ,
                        'V')
+         AND pool IN ('A','B','C')
         THEN 'IFI'
-        ELSE ''
+        ELSE NULL
     END , --31
     SUBSTR(a.arag5,0,40)
 FROM

@@ -1,0 +1,17 @@
+<root>
+	<queries>
+	  <BollettiniExtractor>
+		<mainSelect ><![CDATA[
+		select t.cd_intestatario, t.s_fattura_def, t.s_boll_post
+  		from dbi_user.rpl_anu_t_documenti t,
+  		sapsr3.but000@sap_iap z --partner z
+ 		where t.s_boll_post is not null
+ 		and lpad(t.cd_intestatario,10,'0') = lpad(z.partner,10,'0')
+ 		and rownum < 10
+	    ]]></mainSelect>
+       	<csvLine line_index='0' break_index='' field_start_index='0' field_end_index='2'>
+       	</csvLine>
+       	<ende field_index='0' />
+	  </BollettiniExtractor>
+	</queries>
+</root>

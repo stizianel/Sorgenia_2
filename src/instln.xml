@@ -3,44 +3,59 @@
 
 	<instlnAggregator>
 		<mainSelect ><![CDATA[
-	   select a.cpod, --0
-       '', --1
-       decode(a.ctipo, '3', 'G', '1', 'P', 'P'), --2
-       decode(a.ctipo, '3', '02', '1', '04', '04'), --3
-       decode(a.mercato_versione, 'LARGE', 'ECTLGRES00', 'ECTMMRES00'), --4
-       'P001', --5
-       ' ', --6
-       a.cpod, --7
-       dec_rete(a.cdist), --8  
-       dec_anlart(a.ctfor, a.crete), --9  
-       dec_spebene(a.crete, a.ctens), --10
-       dec_branche(a.ctfor), --11
-       ulettura, --12
-       to_char(min(a.d_valido_dal), 'yyyymmdd') as dtinizio, --13
-       cflg1,
-       cncon
-  from DBI_USER.ifc_sap_anagrcontrele a, z_temp_ulettura b, 
-       dbi_user.ifc_sap_punti_fornitura  ee
- where a.dbi_original_key_pr in (select cncon from z_pr_in_lavorazione)
-   and a.cpod = b.cpod
-   and ee.dbi_punto_key = a.cncon and ee.valid_from = a.d_valido_dal and ee.valid_until = a.d_valido_al
-   and cdist <> '0'
- group by a.cpod, --0
-          '', --1
-          decode(a.ctipo, '3', 'G', '1', 'P', 'P'), --2
-          decode(a.ctipo, '3', '02', '1', '04', '04'), --3
-          decode(a.mercato_versione, 'LARGE', 'ECTLGRES00', 'ECTMMRES00'), --4
-          'P001', --5
-          ' ', --6
-          a.cpod, --7
-          a.cdist,
-          dec_rete(a.cdist), --8  
-          dec_anlart(a.ctfor, a.crete), --9  
-          dec_spebene(a.crete, a.ctens), --10
-          dec_branche(a.ctfor), --11
-          ulettura,
-          cflg1
-           order by a.cpod, dtinizio asc
+SELECT
+    a.cpod, --0
+    '', --1
+    DECODE(a.ctipo, '3', 'G', '1', 'P', 'P'), --2
+    DECODE(a.ctipo, '3', '02', '1', '04', '04'), --3
+    DECODE(a.mercato_versione, 'LARGE', 'ECTLGRES00', 'ECTMMRES00'), --4
+    'P001', --5
+    ' ', --6
+    a.cpod, --7
+    dec_rete(a.cdist), --8
+    dec_anlart(a.ctfor, a.crete), --9
+    dec_spebene(a.crete, a.ctens), --10
+    dec_branche(a.ctfor), --11
+    ulettura, --12
+    TO_CHAR(MIN(a.d_valido_dal), 'yyyymmdd') AS dtinizio, --13
+    cflg1,
+    cncon
+FROM
+    DBI_USER.ifc_sap_anagrcontrele a,
+    z_temp_ulettura b,
+    dbi_user.ifc_sap_punti_fornitura ee
+WHERE
+    a.dbi_original_key_pr IN
+    (
+        SELECT
+            cncon
+        FROM
+            z_pr_in_lavorazione)
+AND a.cpod = b.cpod
+AND ee.dbi_punto_key = a.cncon
+AND ee.valid_from = a.d_valido_dal
+AND ee.valid_until = a.d_valido_al
+AND cdist <> '0'
+GROUP BY
+    a.cpod, --0
+    '', --1
+    DECODE(a.ctipo, '3', 'G', '1', 'P', 'P'), --2
+    DECODE(a.ctipo, '3', '02', '1', '04', '04'), --3
+    DECODE(a.mercato_versione, 'LARGE', 'ECTLGRES00', 'ECTMMRES00'), --4
+    'P001', --5
+    ' ', --6
+    a.cpod, --7
+    a.cdist,
+    dec_rete(a.cdist), --8
+    dec_anlart(a.ctfor, a.crete), --9
+    dec_spebene(a.crete, a.ctens), --10
+    dec_branche(a.ctfor), --11
+    ulettura,
+    cflg1,
+    cncon
+ORDER BY
+    a.cpod,
+    TO_CHAR(MIN(a.d_valido_dal), 'yyyymmdd') ASC
 		]]></mainSelect>
 		<insertTable name='INSTLN_KEY' truncate = 'True' break_index='7' >
 				<field name='LEGACY' index='7' />

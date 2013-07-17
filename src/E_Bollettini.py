@@ -13,9 +13,9 @@ from it_eutile_utils_csvmanager.CsvManager import CsvManager
 stat_finale = '''
 select t.cd_intestatario, t.s_fattura_def, t.s_boll_post
   from dbi_user.rpl_anu_t_documenti t,
-  z_temksv z
+  sapsr3.but000@sap_iap z --partner z
  where t.s_boll_post is not null
- and (t.cd_intestatario = z.oldkey and z.object = 'PARTNER')
+ and lpad(t.cd_intestatario,10,'0') = lpad(z.partner,10,'0')
       
 '''
 #inizializzazione e apertura file di log

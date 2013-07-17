@@ -29,6 +29,7 @@ stat_finale = '''
             v.ctar1 = c.cd_versione
         AND c.id_prodotto = p.id_prodotto
         AND b.vrefer = v.cncon
+        --AND NOT EXISTS (SELECT 1 FROM sapsr3.everh@sap_iap k WHERE k.vertrag = b.vertrag)
         GROUP BY
             vrefer,
             vertrag,

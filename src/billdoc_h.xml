@@ -7,7 +7,7 @@ SELECT
 FROM
     (
         SELECT
-            t.dbi_cd_punto||TO_CHAR(t.ldall,'YYYYMMDD') AS lk, -- 0
+            'T'||t.dbi_cd_punto||TO_CHAR(t.ldall,'YYYYMMDD') AS lk, -- 0
             e.acdan, -- 1
             e.cflg9, -- 2
             e.dbi_original_key_pr, -- 3
@@ -19,7 +19,7 @@ FROM
             dec_ktokl(e.cserv, e.acatc), -- 9
             dec_tipolettura(e.cflg4, t.ldall), -- 10
             t.dbi_cd_punto , --11
-            row_number() over (partition BY t.dbi_cd_punto, lmari, lprog ORDER BY ldall DESC)
+            row_number() over (partition BY t.dbi_cd_punto, lmari, lprog ORDER BY t.dbi_cd_punto,ldall ASC)
             ordine
         FROM
             instmgmt_diint i,
@@ -39,12 +39,13 @@ FROM
         AND e.cpod = z.legacy
         AND t.dbi_cd_punto = f.dbi_punto_key
         AND t.ldall > to_date(i.eadat, 'YYYYMMDD')
+        AND f.dt_inizio_fornitura >= to_date('20120101', 'YYYYMMDD')
         AND ldall IS NOT NULL )
 WHERE
     ordine = 1
 ORDER BY
-    dbi_cd_punto DESC,
-    dtfine DESC
+    dbi_cd_punto ASC,
+    dtfine ASC
         ]]></mainSelect>
 		<insertTable name='BILLDOC_ERCH_H' truncate = 'True' break_index='11' >
 				<field name='LEGACY' index='0' />
